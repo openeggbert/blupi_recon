@@ -1,0 +1,19 @@
+:root { color-scheme: dark; font-family: system-ui, sans-serif; background: #101d2a; color: #e8eff5; }
+body { margin: 0; }
+main { max-width: 960px; margin: auto; padding: 24px; }
+h1 { color: #ffe26d; }
+a { color: #a9d9ff; }
+section { padding: 20px; background: #1d3042; border-radius: 12px; }
+label { display: block; margin: 12px 0; }
+input { margin: 8px; max-width: 100%; }
+button, .button { display: inline-block; background: #f1cc50; color: #102131; font: inherit; border: 0; border-radius: 6px; padding: 10px 16px; cursor: pointer; }
+button:disabled { opacity: .45; cursor: default; }
+button:focus-visible, a:focus-visible, .button:focus-within { outline: 3px solid white; outline-offset: 3px; }
+.actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.hint, footer { font-size: .9rem; color: #b3c5d5; }
+canvas { width: 100%; max-width: 960px; height: auto; aspect-ratio: 4/3; display: block; background: #000; image-rendering: pixelated; touch-action: none; }
+canvas:fullscreen { object-fit: contain; height: 100%; max-width: none; background: #000; }
+pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 240px; overflow-y: auto; }
+.games { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.games a { padding: 24px; background: #1d3042; border: 1px solid #39546d; border-radius: 12px; text-decoration: none; }
+footer { margin-top: 24px; }

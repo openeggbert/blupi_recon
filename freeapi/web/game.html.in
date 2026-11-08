@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>@BLUPI_GAME@ / @BLUPI_EDITION@ — Speedy Blupi &amp; Eggbert</title>
+<link rel="stylesheet" href="style.css">
+<body data-game="@BLUPI_GAME@-@BLUPI_EDITION@">
+<main>
+  <a href="../">← All four games</a>
+  <h1 id="title">Speedy Blupi &amp; Eggbert</h1>
+  <p>Graphics, levels, sound effects and music are included. Just press play.</p>
+  <section id="setup" aria-label="Start game">
+    <button id="start" disabled>Start game</button>
+  </section>
+  <p id="status" role="status" aria-live="polite">Loading game data…</p>
+  <canvas id="canvas" width="640" height="480" tabindex="0" aria-label="Game screen" oncontextmenu="event.preventDefault()"></canvas>
+  <div class="actions">
+    <button id="fullscreen" disabled>Fullscreen</button>
+    <button id="save" disabled>Save to browser</button>
+    <button id="export" disabled>Export saves</button>
+    <label class="button">Import saves <input id="import" type="file" accept=".json" hidden disabled></label>
+  </div>
+  <p class="hint">Arrow keys: move · Space: jump · Esc: back. Progress is stored separately for each game in this browser.</p>
+  <details><summary>Runtime log</summary><pre id="log"></pre></details>
+  <footer><a href="COPYING.txt">GPLv3 source licence</a> · <a href="../#licenses">Third-party notices</a> · Game data © Epsitec SA.</footer>
+</main>
+<script src="player.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
