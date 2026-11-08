@@ -111,7 +111,9 @@ The static output is **`build/freeapi-web/site/`**:
 
 Each game directory contains `index.html`, `game.js`, `game.wasm`, `game.data`, and the player UI.
 The shared `soundfont/` directory contains MIDI instruments. Serve the entire
-`site/` directory over HTTPS (or localhost), with these headers on every response:
+`site/` directory over HTTPS (or localhost). Static hosting, including GitHub Pages,
+uses the shared browser bootstrap and isolation service worker described below.
+Servers may instead supply these headers directly:
 
 ```text
 Cross-Origin-Opener-Policy: same-origin
@@ -119,8 +121,49 @@ Cross-Origin-Embedder-Policy: require-corp
 ```
 
 The included foreground server supplies the headers and the `application/wasm` MIME type.
-Use `--port 9000` to change its port; Ctrl-C stops it. `file://` and servers without these headers
-cannot run the threaded build. The browser must support WebAssembly threads and WebGL.
+Use `--port 9000` to change its port; Ctrl-C stops it. `file://` cannot run the threaded build.
+The browser must support WebAssembly threads and WebGL, and permit service workers when
+the server does not supply the isolation headers.
+
+### GitHub Pages and other static hosting
+
+`web/bootstrap.js` checks isolation before loading either the player or `game.js`. On a host
+without COOP/COEP it registers the package-root `coi-serviceworker.js`, waits for activation,
+and reloads the document. The worker adds COOP `same-origin` and COEP `require-corp` to fetched
+responses. Its default scope covers the four game directories and SoundFont, including direct
+links into a game, without controlling unrelated pages above the package directory. The worker
+does not cache assets offline. A session-storage marker bounds automatic reloads; failures
+display a retry button and never start the WASM runtime or leave a misleading download status.
+On servers already providing isolation, the bootstrap loads the game directly.
+
+The worker is the unmodified MIT-licensed upstream file from
+https://github.com/gzuidhof/coi-serviceworker at commit
+`7b1d2a092d0d2dd2b7270b6f12f13605de26f214` (v0.1.7), SHA-256
+`e97bbac6017322d48aa54a5bc7ce473c725a4b7376ff245002e0ba71c3dcdd7e`.
+Its license is retained in `web/coi-serviceworker.LICENSE.txt` and packaged as
+`licenses/coi-serviceworker.txt`. It is registered as a worker only; its optional window-side
+automatic-update/reload code is not used, so checking for updates cannot reload an active game.
+
+To refresh the HTML/JavaScript shell and ZIP around existing binaries without recompiling C++:
+
+```bash
+python3 freeapi/tools/package_web.py --archive build/freeapi-web/blupi-four-games-web.zip
+```
+
+Publish the entire resulting `site/` directory, including both shared JavaScript files. The
+GitHub Pages regression below serves it under `/SpeedyBlupiEggbert12/` without isolation headers;
+each game starts in its own fresh browser context, then also reloads with its existing saves.
+
+[EVIDENCE] Chrome 155, 2026-11-08: all four games passed cold direct links under
+`/SpeedyBlupiEggbert12/` on a server sending no COOP/COEP headers. Each first start used exactly
+two document requests (initial page and one controlled navigation) and one game-data request.
+All four passed title/player/play navigation, recorded demos, WebAudio, save reload and backup
+round trips, fullscreen/restore and editor input; Eggbert 2 also passed sustained motor audio.
+A server already sending isolation headers still passed. Missing-worker (404) and active-worker
+without isolation tests both showed a terminal error with Retry loading, did not load the WASM
+runtime/data, and did not reload indefinitely. Reports are `build/freeapi-web/bundled-smoke/`,
+`pages-smoke.log`, `pages-missing-worker-report.json` and `pages-reload-limit-report.json` under
+`build/freeapi-web/`. These are bounded browser checks, not a historical matching proof.
 
 ### Browser adapter and saves
 
@@ -171,7 +214,7 @@ is not patched. Reports and screenshots use the `sb2-eggbert-engine` filename pr
 
 [EVIDENCE] On 2026-11-08 the previous web build failed this check with zero audio throughout
 the low/high motor windows. With the Free Direct fix, every sample of the 3 s low, 2 s high
-and 2 s low-again windows had RMS above 0.033; quiet/stopped controls were exactly zero.
+and 2 s low-again windows had RMS above 0.03; quiet/stopped controls were exactly zero.
 The native DirectSound, no-driver and DirectDraw/DirectSound integration suites passed.
 All four rebuilt web editions also passed the regular smoke and presentation checks.
 Before/after logs are `build/freeapi-web/engine-browser-{before,after}.log`; the current
@@ -226,6 +269,8 @@ node freeapi/tools/smoke_web.mjs --navigate true --presentation true --output bu
 node freeapi/tools/smoke_web.mjs --presentation true --dpr 2 --output build/freeapi-web/storage-check sb1-blupi
 # Verify sustained hovercraft audio and stopping in Speedy Eggbert 2:
 node freeapi/tools/smoke_web.mjs --navigate true --engine true --output build/freeapi-web/storage-check sb2-eggbert
+# Static hosting: cold direct links at the deployed subdirectory, no server isolation headers:
+node freeapi/tools/smoke_web.mjs --headers false --cold true --prefix SpeedyBlupiEggbert12 --mount-prefix true --navigate true --output build/freeapi-web/bundled-smoke
 ```
 
 The check starts a temporary localhost server and one headless browser, loads the packaged

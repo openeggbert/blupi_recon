@@ -56,16 +56,6 @@ for game in sb1 sb2; do
         cp "$build_root/$variant/web/"* "$web_root/$variant/"
     done
 done
-python3 - "$web_root" "$build_root/blupi-four-games-web.zip" <<'PY'
-from pathlib import Path
-from zipfile import ZIP_DEFLATED, ZipFile
-import sys
-root, archive = map(Path, sys.argv[1:])
-with ZipFile(archive, 'w', compression=ZIP_DEFLATED, compresslevel=9) as out:
-    for file in sorted(root.rglob('*')):
-        if file.is_file():
-            assert file.suffix.lower() not in {'.exe', '.dll', '.com', '.bat'}
-            out.write(file, file.relative_to(root))
-print(f'Web archive: {archive} ({archive.stat().st_size} bytes)')
-PY
+python3 "$repo_root/freeapi/tools/package_web.py" --site "$web_root" \
+    --archive "$build_root/blupi-four-games-web.zip"
 printf 'Built all four games: %s\n' "$web_root"

@@ -24,7 +24,6 @@
   <details><summary>Runtime log</summary><pre id="log"></pre></details>
   <footer><a href="COPYING.txt">GPLv3 source licence</a> · <a href="../#licenses">Third-party notices</a> · Game data © Epsitec SA.</footer>
 </main>
-<script src="player.js"></script>
-<script src="game.js"></script>
+<script src="../bootstrap.js"></script>
 </body>
 </html>

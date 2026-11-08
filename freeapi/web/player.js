@@ -15,7 +15,7 @@ const log = (message) => {
 var Module = {
   canvas: $("canvas"), noInitialRun: true,
   print: log, printErr: log,
-  setStatus: (message) => { if (message && !ready) status(message); },
+  setStatus: (message) => { if (message && !ready && !window.BlupiWebStartup.failed) status(message); },
   preRun: [() => {
     ENV.FREE_API_SOUNDFONT = "/soundfont/default.sf2";
     ENV.FREE_DIRECT_ENABLE_VSYNC = "0";
@@ -39,9 +39,9 @@ var Module = {
       $("import").disabled = false;
       $("export").disabled = false;
       status("Ready to play — " + titles[game]);
-    } catch (error) { status("Could not prepare game: " + error.message); }
+    } catch (error) { window.BlupiWebStartup.fail(error); }
   },
-  onAbort: (reason) => status("Game stopped: " + reason),
+  onAbort: (reason) => window.BlupiWebStartup.fail(new Error("Game stopped: " + reason)),
   onExit: (code) => { running = false; save().catch(log); status("Game closed (" + code + "). Reload to play again."); }
 };
 
@@ -58,11 +58,6 @@ function seedData(source, destination) {
     }
   }
 }
-if (!window.crossOriginIsolated || typeof SharedArrayBuffer === "undefined") {
-  status("WebAssembly threads require COOP/COEP headers. Start this build with freeapi/tools/serve_web.py.");
-  window.addEventListener("error", () => status("WebAssembly threads unavailable. Use the included server with COOP/COEP headers."));
-}
-
 function save() {
   if (!ready) return Promise.resolve();
   syncPromise = syncPromise.catch(() => {}).then(() => new Promise((resolve, reject) => {

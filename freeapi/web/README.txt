@@ -14,10 +14,17 @@ no original executable is run.
 Saves are stored in the browser, separately for each game and site origin.
 Use Export saves for a backup. Import saves is available before starting.
 
-For other hosting, serve this directory over HTTPS with these response headers:
+For static hosting (including GitHub Pages), serve the entire directory over HTTPS.
+bootstrap.js registers coi-serviceworker.js for this directory and reloads once
+on first use. The game runtime loads only after browser isolation is enabled.
+Allow service workers; use Retry loading if preparation fails. The worker does
+not add an offline asset cache or modify browser saves.
+
+Servers can alternatively supply these headers directly, as serve_web.py does:
     Cross-Origin-Opener-Policy: same-origin
     Cross-Origin-Embedder-Policy: require-corp
-The .wasm MIME type is application/wasm.
+The .wasm MIME type is application/wasm. Keep bootstrap.js, coi-serviceworker.js
+and licenses/coi-serviceworker.txt in the package root, above all four games.
 
 Source and build instructions: https://github.com/openeggbert/blupi_recon
 See freeapi/README.md in the source tree. COPYING.txt contains GPLv3;

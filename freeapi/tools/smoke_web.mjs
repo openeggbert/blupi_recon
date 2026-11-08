@@ -21,17 +21,28 @@ for (let i = 2; i < process.argv.length; i++) {
 if (!games.length) games.push(...knownGames);
 if (typeof WebSocket === "undefined") throw new Error("Use Node 22+.");
 const site = path.resolve(options.site), output = path.resolve(options.output);
+const prefix = options.prefix ? '/' + options.prefix.replace(/^\/+|\/+$/g,'') : '';
 await mkdir(output, {recursive: true});
 const requests = [];
 const server = createServer(async (request, response) => {
   try {
     requests.push({method: request.method, path: request.url});
     const relative = decodeURIComponent(new URL(request.url, "http://localhost").pathname);
-    let file = path.resolve(site, "." + relative);
+    const mounted = options['mount-prefix'] && relative.startsWith(prefix+'/') ? relative.slice(prefix.length) : relative;
+    let file = path.resolve(site, "." + mounted);
     if (!file.startsWith(site + path.sep) && file !== site) throw new Error("Invalid path");
     if ((await stat(file)).isDirectory()) file = path.join(file, "index.html");
     const content = await readFile(file);
-    response.writeHead(200, {"Cross-Origin-Opener-Policy": "same-origin", "Cross-Origin-Embedder-Policy": "require-corp",
+    if (options['worker-status'] && file.endsWith('/coi-serviceworker.js')) {
+      response.writeHead(Number(options['worker-status'])); response.end(); return;
+    }
+    if (options['worker-plain'] && file.endsWith('/coi-serviceworker.js')) {
+      response.writeHead(200, {'Content-Type':'text/javascript'});
+      response.end("self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));");
+      return;
+    }
+    response.writeHead(200, {...(options.headers === 'false' ? {} : {
+      "Cross-Origin-Opener-Policy": "same-origin", "Cross-Origin-Embedder-Policy": "require-corp"}),
       "Content-Type": ({".wasm": "application/wasm", ".js": "text/javascript", ".html": "text/html", ".css": "text/css"})[path.extname(file)] || "application/octet-stream"});
     response.end(content);
   } catch { response.writeHead(404); response.end(); }
@@ -40,7 +51,7 @@ await new Promise((resolve, reject) => {
   server.once("error", reject);
   server.listen(0, "127.0.0.1", resolve);
 });
-const base = "http://127.0.0.1:" + server.address().port;
+const base = options['base-url']?.replace(/\/$/,'') || "http://127.0.0.1:" + server.address().port + prefix;
 const browser = spawn(options.chrome, ["--headless=new", "--no-sandbox", "--disable-dev-shm-usage",
   ...(options.presentation ? ["--screen-info={1920x1080 devicePixelRatio=" + Number(options.dpr || 1) + "}", "--window-size=1008,1000"] : []),
   "--no-first-run", "--no-default-browser-check", "--use-angle=swiftshader", "--enable-unsafe-swiftshader",
@@ -81,6 +92,10 @@ try {
       if (message.error) callbacks.reject(new Error(JSON.stringify(message.error)));
       else callbacks.resolve(message.result);
     } else if (message.method === "Runtime.exceptionThrown") errors.push(message.params.exceptionDetails);
+    else if (options['base-url'] && message.method === 'Network.requestWillBeSent') {
+      const request = message.params.request;
+      if (/^https?:/.test(request.url)) requests.push({method:request.method,path:new URL(request.url).pathname});
+    }
   };
   const send = (method, params = {}, sessionId) => new Promise((resolve, reject) => {
     const callId = ++id;
@@ -99,7 +114,8 @@ try {
   await send("Browser.setDownloadBehavior", {behavior: "allow", downloadPath: path.join(output, "downloads")});
   for (const game of games) {
     errors.length = 0;
-    const {targetId} = await send("Target.createTarget", {url: "about:blank"});
+    const context = options.cold ? await send('Target.createBrowserContext') : {};
+    const {targetId} = await send("Target.createTarget", {url: "about:blank",...context});
     const {sessionId} = await send("Target.attachToTarget", {targetId, flatten: true});
     const command = (method, params) => send(method, params, sessionId);
     const evaluate = async (expression) => {
@@ -117,17 +133,38 @@ try {
         }
         await new Promise((resolve) => setTimeout(resolve, 100));
       }
-      throw new Error(game + " timeout: " + expression + "\n" + await evaluate("document.body.innerText"));
+      throw new Error(game + " timeout: " + expression + "\n" + JSON.stringify(await evaluate("({body:document.body.innerText,url:location.href,isolated:crossOriginIsolated,controller:navigator.serviceWorker?.controller?.scriptURL,storage:{...sessionStorage}})")));
     };
     await command("Runtime.enable");
     await command("Page.enable");
+    await command('Network.enable');
     // Fullscreen tests use an actual virtual monitor, so screen size, window
     // size and framebuffer transitions stay consistent (including high DPI).
     if (!options.presentation) {
       await command("Emulation.setDeviceMetricsOverride", {width: 1008, height: 1100, deviceScaleFactor: Number(options.dpr || 1), mobile: false});
     }
     await command("Page.navigate", {url: base + "/" + game + "/"});
+    if (options['expect-failure']) {
+      await waitFor('window.BlupiWebStartup?.failed === true');
+      const failure = await evaluate("({message:document.querySelector('#status').textContent,disabled:document.querySelector('#start').disabled,runtimeLoaded:typeof Module !== 'undefined'})");
+      if (!failure.disabled || failure.runtimeLoaded || !failure.message.startsWith('Could not start game:')) throw new Error('Startup failure was not handled');
+      const screenshot = await command('Page.captureScreenshot',{format:'png'});
+      await writeFile(path.join(output,game+'-startup-failure.png'),Buffer.from(screenshot.data,'base64'));
+      results.push({game,failure});
+      await command('Target.closeTarget',{targetId});
+      if (context.browserContextId) await send('Target.disposeBrowserContext',context);
+      continue;
+    }
     await waitFor("typeof ready !== 'undefined' && ready");
+    const isolation = await evaluate("({isolated:crossOriginIsolated,sharedMemory:typeof SharedArrayBuffer !== 'undefined',worker:navigator.serviceWorker?.controller?.scriptURL || null})");
+    if (!isolation.isolated || !isolation.sharedMemory) throw new Error(game+' is not isolated');
+    if (options.headers === 'false' && !isolation.worker?.endsWith('/coi-serviceworker.js')) throw new Error(game+' did not use the isolation worker');
+    if (options.cold && options.headers === 'false' && !options['base-url']) {
+      const pagePath = new URL(base+'/'+game+'/').pathname;
+      isolation.coldDocumentLoads = requests.filter(r=>r.path===pagePath).length;
+      isolation.initialDataRequests = requests.filter(r=>r.path===pagePath+'game.data').length;
+      if (isolation.coldDocumentLoads !== 2 || isolation.initialDataRequests !== 1) throw new Error(game+' unexpected bootstrap reload/data requests: '+JSON.stringify(isolation));
+    }
     if (await evaluate("FS.analyzePath('/data/web-smoke.txt').exists")) {
       const marker = await evaluate("FS.readFile('/data/web-smoke.txt',{encoding:'utf8'})");
       if (marker !== game) throw new Error("Another edition's saves leaked into " + game);
@@ -168,6 +205,7 @@ try {
     await new Promise((resolve) => setTimeout(resolve, 5000));
     const runtime = await evaluate("({status:document.querySelector('#status').textContent, phase:Module._BlupiWebPhase(), log:document.querySelector('#log').textContent, canvas:[Module.canvas.width,Module.canvas.height], files:FS.readdir('/data')})");
     runtime.bundled = bundled;
+    runtime.isolation = isolation;
     console.log(game, JSON.stringify({status: runtime.status, phase: runtime.phase, canvas: runtime.canvas, files: runtime.files.length}));
     const screenshot = await command("Page.captureScreenshot", {format: "png"});
     await writeFile(path.join(output, game + ".png"), Buffer.from(screenshot.data, "base64"));
@@ -257,10 +295,14 @@ try {
     runtime.backupRoundtrip = true;
     results.push({game, ...runtime, persisted, errors: [...errors]});
     await command("Target.closeTarget", {targetId});
+    if (context.browserContextId) await send('Target.disposeBrowserContext',context);
   }
   if (requests.some(request => !['GET', 'HEAD'].includes(request.method))) throw new Error('Unexpected upload request');
   for (const game of games) {
-    if (!requests.some(request => request.path === '/' + game + '/game.data')) throw new Error(game + ' did not load its packaged assets');
+    const dataPath = new URL(base+'/'+game+'/game.data').pathname;
+    if (options['expect-failure']) {
+      if (requests.some(request => request.path === dataPath)) throw new Error('Game data loaded before isolation');
+    } else if (!requests.some(request => request.path === dataPath)) throw new Error(game + ' did not load its packaged assets');
   }
   await writeFile(path.join(output, "report.json"), JSON.stringify(results, null, 2));
   await writeFile(path.join(output, "requests.json"), JSON.stringify(requests, null, 2));
