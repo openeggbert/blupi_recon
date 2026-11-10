@@ -143,7 +143,8 @@ try {
     if (!options.presentation) {
       await command("Emulation.setDeviceMetricsOverride", {width: 1008, height: 1100, deviceScaleFactor: Number(options.dpr || 1), mobile: false});
     }
-    await command("Page.navigate", {url: base + "/" + game + "/"});
+    // --query scale=2: run with higher-resolution backing surfaces (README.md).
+    await command("Page.navigate", {url: base + "/" + game + "/" + (options.query ? "?" + options.query : "")});
     if (options['expect-failure']) {
       await waitFor('window.BlupiWebStartup?.failed === true');
       const failure = await evaluate("({message:document.querySelector('#status').textContent,disabled:document.querySelector('#start').disabled,runtimeLoaded:typeof Module !== 'undefined'})");
@@ -206,7 +207,8 @@ try {
     const runtime = await evaluate("({status:document.querySelector('#status').textContent, phase:Module._BlupiWebPhase(), log:document.querySelector('#log').textContent, canvas:[Module.canvas.width,Module.canvas.height], files:FS.readdir('/data')})");
     runtime.bundled = bundled;
     runtime.isolation = isolation;
-    console.log(game, JSON.stringify({status: runtime.status, phase: runtime.phase, canvas: runtime.canvas, files: runtime.files.length}));
+    runtime.backbuffer = (runtime.log.match(/source\/backbuffer=(\d+x\d+)/) || [])[1] || null;
+    console.log(game, JSON.stringify({status: runtime.status, phase: runtime.phase, canvas: runtime.canvas, backbuffer: runtime.backbuffer, files: runtime.files.length}));
     const screenshot = await command("Page.captureScreenshot", {format: "png"});
     await writeFile(path.join(output, game + ".png"), Buffer.from(screenshot.data, "base64"));
     if (errors.length || !runtime.status.startsWith("Running")) throw new Error(game + " runtime failed: " + JSON.stringify(errors));

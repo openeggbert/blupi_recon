@@ -144,10 +144,26 @@ if(EMSCRIPTEN)
     find_package(Python3 3.9 REQUIRED COMPONENTS Interpreter)
     set(BLUPI_WEB_ASSETS "${CMAKE_CURRENT_BINARY_DIR}/assets")
     file(GLOB_RECURSE BLUPI_WEB_INPUTS CONFIGURE_DEPENDS "${BLUPI_WEB_INSTALL}/*")
+    # Optional higher-resolution images (README.md, "Higher-resolution images"):
+    # a folder with IMAGE08/IMAGE16 laid out like the game's, every image
+    # BLUPI_WEB_HIRES_SCALE times the original's size. Staged as /hires.
+    set(BLUPI_WEB_HIRES_PACK "" CACHE PATH "Optional higher-resolution image pack for this edition")
+    set(BLUPI_WEB_HIRES_SCALE 2 CACHE STRING "Scale of BLUPI_WEB_HIRES_PACK's images (2..4)")
+    set(BLUPI_WEB_STAGE_HIRES "")
+    set(BLUPI_WEB_HIRES_INPUTS "")
+    set(BLUPI_WEB_HIRES_ATTRIBUTE 0)
+    if(BLUPI_WEB_HIRES_PACK)
+        if(NOT IS_DIRECTORY "${BLUPI_WEB_HIRES_PACK}" OR NOT BLUPI_WEB_HIRES_SCALE MATCHES "^[2-4]$")
+            message(FATAL_ERROR "BLUPI_WEB_HIRES_PACK must be a folder and BLUPI_WEB_HIRES_SCALE 2..4")
+        endif()
+        file(GLOB_RECURSE BLUPI_WEB_HIRES_INPUTS CONFIGURE_DEPENDS "${BLUPI_WEB_HIRES_PACK}/*")
+        set(BLUPI_WEB_STAGE_HIRES --hires "${BLUPI_WEB_HIRES_PACK}")
+        set(BLUPI_WEB_HIRES_ATTRIBUTE "${BLUPI_WEB_HIRES_SCALE}")
+    endif()
     add_custom_command(OUTPUT "${BLUPI_WEB_ASSETS}/manifest.json"
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tools/stage_web_data.py"
-            --source "${BLUPI_WEB_INSTALL}" --output "${BLUPI_WEB_ASSETS}"
-        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/tools/stage_web_data.py" ${BLUPI_WEB_INPUTS}
+            --source "${BLUPI_WEB_INSTALL}" --output "${BLUPI_WEB_ASSETS}" ${BLUPI_WEB_STAGE_HIRES}
+        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/tools/stage_web_data.py" ${BLUPI_WEB_INPUTS} ${BLUPI_WEB_HIRES_INPUTS}
         VERBATIM)
     add_custom_target(blupi_web_data DEPENDS "${BLUPI_WEB_ASSETS}/manifest.json")
     add_dependencies(${BLUPI_EXE} blupi_web_data)
@@ -163,7 +179,11 @@ if(EMSCRIPTEN)
         "-sEXPORTED_RUNTIME_METHODS=['FS','IDBFS','callMain']"
         -sEXIT_RUNTIME=1 -sENVIRONMENT=web,worker
         -Wl,--wrap=PeekMessageA -Wl,--wrap=WaitMessage)
-    foreach(directory data_seed image08 image16 sound)
+    set(BLUPI_WEB_PRELOAD data_seed image08 image16 sound)
+    if(BLUPI_WEB_HIRES_PACK)
+        list(APPEND BLUPI_WEB_PRELOAD hires)
+    endif()
+    foreach(directory IN LISTS BLUPI_WEB_PRELOAD)
         target_link_options(${BLUPI_EXE} PRIVATE "SHELL:--preload-file \"${BLUPI_WEB_ASSETS}/${directory}@/${directory}\"")
     endforeach()
     add_custom_command(TARGET ${BLUPI_EXE} POST_BUILD

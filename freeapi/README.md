@@ -56,6 +56,101 @@ FREE_API_SOUNDFONT=/path/to/soundfont.sf2 ./blupi-freeapi -nocd
 (`FREE_API_SOUNDFONT`, or `soundfont/default.sf2`; the GeneralUser GS file of
 `../port/third_party/generaluser-gs` works).
 
+## Higher-resolution images
+
+The games can show images at twice (or up to four times) the original resolution, for example
+sprites re-rendered from the original 3D models (`../../sprite-utils/plan.md`). The historical
+source does not change. The game keeps computing in its 640×480 pixels. Only the compatibility
+libraries know about the higher resolution:
+
+- **Free Direct** (`FREE_DIRECT_BACKING_SCALE=k`): every DirectDraw surface keeps a pixel buffer
+  `k` times larger on each axis, while surface sizes, blit rectangles and GDI coordinates stay
+  logical. The logical presentation stays 640×480, so the mouse is unaffected.
+- **Free API** (`FREE_API_IMAGE_OVERLAY=<pack>`, `FREE_API_IMAGE_SCALE=k`, default 2):
+  `LoadImageA` takes an image from the pack when it is exactly `k` times the original's width and
+  height. `GetObjectA` then reports the original's size. Any other size is ignored with one log
+  line, and the original loads.
+
+Details: `../../free-direct/docs/directdraw-limitations.md` (backing scale) and
+`../../free-api/docs/image-overlay.md` (overlay, scaled DCs, window).
+
+**Native run.** Run from the game folder as above:
+
+```bash
+FREE_DIRECT_BACKING_SCALE=2 FREE_API_WINDOW_SCALE=2 FREE_API_IMAGE_OVERLAY=/path/to/pack \
+    ./blupi-freeapi -nocd
+```
+
+- `FREE_API_WINDOW_SCALE=2` opens a 1280×960 window.
+- On a high-DPI screen, use `FREE_API_HIGH_PIXEL_DENSITY=1` instead.
+- In full screen the display's resolution is used anyway.
+- Without a pack, `FREE_DIRECT_BACKING_SCALE=2` shows the original images enlarged. Missing pack
+  files fall back the same way, so a pack may be incomplete.
+
+**Web.** Configure an edition with `-DBLUPI_WEB_HIRES_PACK=<pack>` (and `-DBLUPI_WEB_HIRES_SCALE`,
+default 2), or give `build_web.sh` `BLUPI_WEB_HIRES_ROOT` containing one pack per edition
+directory (`sb1-blupi/`, …).
+
+- The pack is staged as `/hires`, and the page then starts at its scale.
+- `?scale=1` shows the original pixels.
+- `?scale=2` without a pack shows enlarged originals.
+- The canvas uses the browser's device-pixel ratio. A 2× image shows its detail in full screen
+  or on a high-DPI screen.
+
+**What a pack must contain:**
+
+- **Layout:** the game's folder layout (`IMAGE08/OBJECT.BLP`, `IMAGE16/DECOR000.BLP`, …). Names
+  may differ in case, or use `.bmp`/`.png` for `.blp`.
+- **Size:** each image exactly `k` times the size of the **file** it replaces, for example Speedy
+  Blupi 1's `OBJECT.BLP` 896×987 → 1792×1974. Every icon rectangle of the sheet must also be
+  exactly `k` times larger (`sprite-utils` `--scale`/`pack` produce this).
+- **Colour mode:** use 24-bit images (8-bit works too) for the 16-bit colour mode. In 8-bit mode
+  the images are reduced to the game palette.
+- **Transparency:** transparency is still the games' colour key. Sprites need hard edges on pure
+  blue `RGB(0,0,255)`, or white where the original uses white.
+  - In 16-bit mode every colour with R < 8, G < 4 and B ≥ 248 is transparent too.
+  - The "hide" power-up's mask icons keep their pure red.
+  - An alpha channel is ignored, and anti-aliased edges against blue show blue fringes.
+- **Fonts:** `TEXT.BLP`/`LITTLE.BLP` glyphs must stay inside their 2× cells. Character widths come
+  from the game's tables.
+
+**Checks** (tools under `tools/`):
+
+- **Synthetic pack:** `make_test_pack.py --game <installation> --output build/<dir>` writes a pack
+  that merely enlarges every image (nearest neighbour). Frames with it must equal frames without
+  it at the same scale.
+- **Frame capture:** `FREE_DIRECT_CAPTURE_PRIMARY=<dir>` (with `FREE_DIRECT_CAPTURE_LIMIT`) saves
+  every changed presented frame.
+- **Comparison:** `compare_frames.py upscale <1x> <2x>` checks that each 2× frame is an exact 2×
+  enlargement of a 1× frame. `compare_frames.py same <a> <b>` compares two captures.
+
+[EVIDENCE] 2026-11-10, Linux, SDL dummy video driver, Free API `176765b` and Free Direct `c97fece`
+plus this change. The game was left idle on its title until the attract demo started (about
+50 s); 40 frames each:
+
+| Check | Speedy Blupi 1 | Speedy Eggbert 2 |
+|---|---|---|
+| 2× without a pack: exact 2× enlargements of 1× frames | 40 of 40 | 38 of 40 (see below) |
+| 2× with the synthetic pack equals 2× without it | 40 of 40 (17 images from the pack) | 40 of 40 (18 images from the pack) |
+
+In Eggbert 2, two start-up frames contain a 90×90 area under the software cursor whose odd
+physical columns hold the next logical pixel (a one-pixel horizontal offset at 2×). It is
+reproducible, the same with and without a pack, and gone from the third frame on. Its cause is
+not yet found; no blit there has unequal source and destination sizes. The minimap (`DrawMap`)
+stretches at the physical resolution, so it is not an exact enlargement either; the captured
+frames did not reach it.
+
+Other checks:
+
+- `blupi_presentation_test` passes at scales 1 and 2 for all five window sizes.
+- The Free Direct and Free API test suites pass, with new tests for the backing scale, overlay,
+  scaled DCs and window scale.
+- The web smoke check (`--navigate true`) passed for all four editions at scale 1 and for Speedy
+  Blupi 1 and Speedy Eggbert 2 at `?scale=2`: title → players → world, demo, audio and saves,
+  with a 1280×960 back buffer.
+- A web package with a marked 2× `IMAGE16/INIT.BLP` showed its one-pixel lines on the title,
+  which a 1× image cannot hold.
+
 ## Web: build all four games
 
 From the repository root, with CMake ≥ 3.24, Ninja, and an activated Emscripten SDK:

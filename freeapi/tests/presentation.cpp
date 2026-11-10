@@ -1,6 +1,7 @@
 // Public-API regression: the game's cursor updates use ClientToScreen + a
 // clipped primary Blt. Partial updates must equal a full back-buffer copy
-// even when the SDL window differs from the 640x480 virtual desktop.
+// even when the SDL window differs from the 640x480 virtual desktop, also
+// with Free Direct's backing scale for higher-resolution images.
 #include <windows.h>
 #include <ddraw.h>
 #include <SDL3/SDL.h>
@@ -47,20 +48,18 @@ static void CopyToScreen(HWND window, LPDIRECTDRAWSURFACE primary, LPDIRECTDRAWS
     CHECK(primary->Blt(&screen, back, &rect, DDBLT_WAIT, nullptr) == DD_OK);
 }
 
-int main()
+// Runs the cursor-update comparison with Free Direct's backing scale (1: the
+// original pixels; 2: higher-resolution images, docs in ../README.md). The
+// game's coordinates are the same in both; with scale 2 every buffer holds
+// 1280x960 physical pixels, all of which must match.
+static void RunAtBackingScale(HWND window, int scale)
 {
-    SDL_setenv_unsafe("SDL_VIDEODRIVER", "dummy", 1);
-    SDL_setenv_unsafe("SDL_RENDER_DRIVER", "software", 1);
-    SDL_setenv_unsafe("FREE_DIRECT_ENABLE_VSYNC", "0", 1);
-    WNDCLASSA wc{};
-    wc.lpfnWndProc = WindowProc;
-    wc.lpszClassName = "BlupiPresentationRegression";
-    CHECK(RegisterClassA(&wc));
-    HWND window = CreateWindowExA(0, wc.lpszClassName, "presentation test", WS_VISIBLE,
-                                 0, 0, 640, 480, nullptr, nullptr, nullptr, nullptr);
-    CHECK(window != nullptr);
+    char value[8];
+    std::snprintf(value, sizeof(value), "%d", scale);
+    SDL_setenv_unsafe("FREE_DIRECT_BACKING_SCALE", value, 1);
     LPDIRECTDRAW dd = nullptr;
     CHECK(DirectDrawCreate(nullptr, &dd, nullptr) == DD_OK);
+    SDL_unsetenv_unsafe("FREE_DIRECT_BACKING_SCALE");
     CHECK(dd->SetCooperativeLevel(window, DDSCL_NORMAL) == DD_OK);
     LPDIRECTDRAWSURFACE primary = Surface(dd, true), back = Surface(dd, false), snapshot = Surface(dd, false);
     LPDIRECTDRAWCLIPPER clipper = nullptr;
@@ -87,17 +86,34 @@ int main()
         actual.dwSize = sizeof(actual); expected.dwSize = sizeof(expected);
         CHECK(snapshot->Lock(nullptr, &actual, 0, nullptr) == DD_OK);
         CHECK(back->Lock(nullptr, &expected, 0, nullptr) == DD_OK);
+        CHECK(actual.dwWidth == 640 && actual.dwHeight == 480);
+        CHECK(actual.lPitch == 640 * 4 * scale);
         int different = 0;
-        for (int y=0; y<480; ++y) {
+        for (int y=0; y<480*scale; ++y) {
             auto* a = reinterpret_cast<const unsigned char*>(actual.lpSurface) + y*actual.lPitch;
             auto* e = reinterpret_cast<const unsigned char*>(expected.lpSurface) + y*expected.lPitch;
-            for (int x=0; x<640; ++x) if (std::memcmp(a+4*x, e+4*x, 4)) ++different;
+            for (int x=0; x<640*scale; ++x) if (std::memcmp(a+4*x, e+4*x, 4)) ++different;
         }
-        std::printf("window %dx%d: %d mismatched pixels after cursor move\n", size.x, size.y, different);
+        std::printf("scale %d, window %dx%d: %d mismatched pixels after cursor move\n", scale, size.x, size.y, different);
         CHECK(different == 0);
         CHECK(snapshot->Unlock(nullptr) == DD_OK); CHECK(back->Unlock(nullptr) == DD_OK);
     }
     snapshot->Release(); back->Release(); primary->Release(); clipper->Release(); dd->Release();
+}
+
+int main()
+{
+    SDL_setenv_unsafe("SDL_VIDEODRIVER", "dummy", 1);
+    SDL_setenv_unsafe("SDL_RENDER_DRIVER", "software", 1);
+    SDL_setenv_unsafe("FREE_DIRECT_ENABLE_VSYNC", "0", 1);
+    WNDCLASSA wc{};
+    wc.lpfnWndProc = WindowProc;
+    wc.lpszClassName = "BlupiPresentationRegression";
+    CHECK(RegisterClassA(&wc));
+    HWND window = CreateWindowExA(0, wc.lpszClassName, "presentation test", WS_VISIBLE,
+                                 0, 0, 640, 480, nullptr, nullptr, nullptr, nullptr);
+    CHECK(window != nullptr);
+    for (int scale : {1, 2}) RunAtBackingScale(window, scale);
     DestroyWindow(window);
     return failures ? 1 : 0;
 }

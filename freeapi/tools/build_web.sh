@@ -43,14 +43,23 @@ if ! cmp -s "$soundfont" "$web_root/soundfont/default.sf2"; then
     cp "$soundfont" "$web_root/soundfont/default.sf2"
 fi
 cp "$soundfont_license" "$web_root/licenses/SoundFont.txt"
+# Optional higher-resolution images: BLUPI_WEB_HIRES_ROOT/<variant>/ (IMAGE08, IMAGE16), every
+# image BLUPI_WEB_HIRES_SCALE (default 2) times the original's size (README.md).
+hires_root="${BLUPI_WEB_HIRES_ROOT:-}"
+hires_scale="${BLUPI_WEB_HIRES_SCALE:-2}"
 for game in sb1 sb2; do
     for edition in blupi eggbert; do
         variant="$game-$edition"
+        hires_pack=""
+        if [[ -n "$hires_root" && -d "$hires_root/$variant" ]]; then
+            hires_pack="$hires_root/$variant"
+        fi
         emcmake cmake -S "$repo_root/freeapi" -B "$build_root/$variant" -G Ninja \
             -DCMAKE_BUILD_TYPE=Release -DCMAKE_FIND_ROOT_PATH="$build_root/sdk" \
             -DCMAKE_PREFIX_PATH="$build_root/sdk" \
             -DBLUPI_GAME="$game" -DBLUPI_EDITION="$edition" \
-            -DBLUPI_WEB_DATA_ROOT="$data_root" "${cmake_args[@]}"
+            -DBLUPI_WEB_DATA_ROOT="$data_root" \
+            -DBLUPI_WEB_HIRES_PACK="$hires_pack" -DBLUPI_WEB_HIRES_SCALE="$hires_scale" "${cmake_args[@]}"
         cmake --build "$build_root/$variant" --parallel 4
         mkdir -p "$web_root/$variant"
         cp "$build_root/$variant/web/"* "$web_root/$variant/"

@@ -19,6 +19,18 @@ var Module = {
   preRun: [() => {
     ENV.FREE_API_SOUNDFONT = "/soundfont/default.sf2";
     ENV.FREE_DIRECT_ENABLE_VSYNC = "0";
+    // Higher-resolution images (README.md): the package's /hires images when it has them, or
+    // ?scale=N (1..4) for N-times backing surfaces; ?scale=1 shows the original pixels.
+    const scale = displayScale();
+    if (scale > 1) {
+      ENV.FREE_DIRECT_BACKING_SCALE = String(scale);
+      ENV.FREE_API_HIGH_PIXEL_DENSITY = "1";
+      if (scale === hiresScale) {
+        ENV.FREE_API_IMAGE_OVERLAY = "/hires";
+        ENV.FREE_API_IMAGE_SCALE = String(scale);
+      }
+      $("canvas").style.imageRendering = "auto";
+    }
   }],
   onRuntimeInitialized: async () => {
     try {
@@ -44,6 +56,14 @@ var Module = {
   onAbort: (reason) => window.BlupiWebStartup.fail(new Error("Game stopped: " + reason)),
   onExit: (code) => { running = false; save().catch(log); status("Game closed (" + code + "). Reload to play again."); }
 };
+
+// The scale of the bundled /hires images (0: none), and the backing scale to run with.
+const hiresScale = Number(document.body.dataset.hiresScale) || 0;
+function displayScale() {
+  const requested = new URLSearchParams(location.search).get("scale");
+  const scale = requested === null ? (hiresScale || 1) : Number(requested);
+  return Number.isInteger(scale) && scale >= 1 && scale <= 4 ? scale : 1;
+}
 
 function seedData(source, destination) {
   for (const name of FS.readdir(source)) {

@@ -4,7 +4,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>@BLUPI_GAME@ / @BLUPI_EDITION@ — Speedy Blupi &amp; Eggbert</title>
 <link rel="stylesheet" href="style.css">
-<body data-game="@BLUPI_GAME@-@BLUPI_EDITION@">
+<body data-game="@BLUPI_GAME@-@BLUPI_EDITION@" data-hires-scale="@BLUPI_WEB_HIRES_ATTRIBUTE@">
 <main>
   <a href="../">← All four games</a>
   <h1 id="title">Speedy Blupi &amp; Eggbert</h1>
