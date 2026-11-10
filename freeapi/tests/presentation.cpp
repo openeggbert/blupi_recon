@@ -101,6 +101,54 @@ static void RunAtBackingScale(HWND window, int scale)
     snapshot->Release(); back->Release(); primary->Release(); clipper->Release(); dd->Release();
 }
 
+// The game's own full screen (DDSCL_FULLSCREEN, SetDisplayMode 640x480): no
+// clipper, and CPixmap::Display blits to the primary at the rectangle
+// ClientToScreen returns. The window then has the display's size, but the
+// game's screen is its display mode, so the whole frame must still land on
+// the whole primary (the frame was squeezed into its right part before).
+static void RunFullscreen(HWND window, int scale)
+{
+    char value[8];
+    std::snprintf(value, sizeof(value), "%d", scale);
+    SDL_setenv_unsafe("FREE_DIRECT_BACKING_SCALE", value, 1);
+    LPDIRECTDRAW dd = nullptr;
+    CHECK(DirectDrawCreate(nullptr, &dd, nullptr) == DD_OK);
+    SDL_unsetenv_unsafe("FREE_DIRECT_BACKING_SCALE");
+    CHECK(dd->SetCooperativeLevel(window, DDSCL_EXCLUSIVE | DDSCL_FULLSCREEN) == DD_OK);
+    CHECK(dd->SetDisplayMode(640, 480, 32) == DD_OK);
+    SDL_PumpEvents();
+    LPDIRECTDRAWSURFACE primary = Surface(dd, true), back = Surface(dd, false), snapshot = Surface(dd, false);
+    // A full frame (its present sets the logical presentation), then the
+    // cursor's partial updates (MouseQuickDraw), as in the windowed case.
+    RECT oldCursor{70,92,134,152}, newCursor{300,240,364,300};
+    Fill(back, nullptr, 0x00224466);
+    Fill(back, &oldCursor, 0x0000ffff);
+    CopyToScreen(window, primary, back, RECT{0,0,640,480});
+    Fill(back, &oldCursor, 0x00224466);
+    Fill(back, &newCursor, 0x0000ffff);
+    CopyToScreen(window, primary, back, oldCursor);
+    CopyToScreen(window, primary, back, newCursor);
+    POINT point{100, 50};
+    CHECK(ClientToScreen(window, &point) && point.x == 100 && point.y == 50);
+    CHECK(snapshot->Blt(nullptr, primary, nullptr, DDBLT_WAIT, nullptr) == DD_OK);
+    DDSURFACEDESC actual{}, expected{};
+    actual.dwSize = sizeof(actual); expected.dwSize = sizeof(expected);
+    CHECK(snapshot->Lock(nullptr, &actual, 0, nullptr) == DD_OK);
+    CHECK(back->Lock(nullptr, &expected, 0, nullptr) == DD_OK);
+    int different = 0;
+    for (int y=0; y<480*scale; ++y) {
+        auto* a = reinterpret_cast<const unsigned char*>(actual.lpSurface) + y*actual.lPitch;
+        auto* e = reinterpret_cast<const unsigned char*>(expected.lpSurface) + y*expected.lPitch;
+        for (int x=0; x<640*scale; ++x) if (std::memcmp(a+4*x, e+4*x, 4)) ++different;
+    }
+    int w = 0, h = 0;
+    SDL_GetWindowSize(reinterpret_cast<SDL_Window*>(window), &w, &h);
+    std::printf("scale %d, full screen %dx%d: %d mismatched pixels after Display\n", scale, w, h, different);
+    CHECK(different == 0);
+    CHECK(snapshot->Unlock(nullptr) == DD_OK); CHECK(back->Unlock(nullptr) == DD_OK);
+    snapshot->Release(); back->Release(); primary->Release(); dd->Release();
+}
+
 int main()
 {
     SDL_setenv_unsafe("SDL_VIDEODRIVER", "dummy", 1);
@@ -114,6 +162,7 @@ int main()
                                  0, 0, 640, 480, nullptr, nullptr, nullptr, nullptr);
     CHECK(window != nullptr);
     for (int scale : {1, 2}) RunAtBackingScale(window, scale);
+    for (int scale : {1, 2}) RunFullscreen(window, scale);
     DestroyWindow(window);
     return failures ? 1 : 0;
 }

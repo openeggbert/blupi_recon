@@ -170,6 +170,14 @@ Other checks:
   1280×960 window with `../../speedyblupi-hd/games/Speedy Eggbert/Game/2x` (Ray Dream re-renders
   and upscaled fallbacks). All 21 images it loaded came from the pack, none was rejected, and the
   game quit normally.
+- Real 4× sheets: Speedy Eggbert 2 ran at `FREE_DIRECT_BACKING_SCALE=4`/`FREE_API_IMAGE_SCALE=4`
+  with `speedyblupi-hd`'s `4x` pack, using the game's full screen (`FullScreen=1`) and
+  `FREE_API_HIGH_PIXEL_DENSITY=1`, on a 2560×1440 monitor.
+  - The back buffer was 2560×1920 and was shown in real pixels.
+  - The game ran at 20 frames per second, using about 0.5 GB of memory.
+  - 24 images came from the pack.
+  - A 4× window would not fit such a screen; full screen does (see "Cursor and fullscreen
+    coordinates" for the full-screen fix it needed).
 
 ## Web: build all four games
 
@@ -352,6 +360,21 @@ compares every primary-buffer pixel with the back buffer. Before the fix, the mi
 counts at window sizes 640×480, 1280×960, 945×708, 1280×720 and 320×240 were respectively
 0, 7680, 15513, 11280 and 8400. After the fix every case has zero differences. Build this native
 fixture with `-DBLUPI_FREEAPI_PRESENTATION_TESTS=ON` and run `blupi_presentation_test`.
+
+[EVIDENCE] The games' own full screen (`FullScreen=1` in `config.def`) was broken natively on any
+display larger than 640×480: the frame was squeezed into the right part of the screen, and
+stale pixels stayed on the left.
+- **Cause.** In full screen the primary surface has no clipper, and `CPixmap::Display` and
+  `MouseQuickDraw` blit at the rectangle `ClientToScreen` returns. Free API mapped it to the
+  display-sized window instead of the game's 640×480 screen.
+- **Fix.** Free API's `src/winuser_cursor.cpp` now treats the game's full screen as real
+  DirectDraw does: the screen is the display mode, so `ClientToScreen`/`ScreenToClient` leave
+  points unchanged, and `GetCursorPos`/`SetCursorPos` use the same logical coordinates.
+- **Test.** `blupi_presentation_test` covers it: a full frame, then cursor updates, at backing
+  scales 1 and 2. Without the fix it finds 17362 and 69448 mismatched pixels on the dummy
+  1024×768 display; with the fix, none.
+- **Real run.** Speedy Eggbert 2 ran at 4× in full screen on a 2560×1440 monitor, with
+  `FREE_API_HIGH_PIXEL_DENSITY=1`, at 20 frames per second, with the whole frame shown.
 
 [EVIDENCE] The web fullscreen button also bypassed SDL by calling the DOM fullscreen API
 directly. The canvas pixel buffer and renderer viewport then disagreed, cropping the game,
