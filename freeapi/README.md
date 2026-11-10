@@ -106,11 +106,19 @@ directory (`sb1-blupi/`, …).
   exactly `k` times larger (`sprite-utils` `--scale`/`pack` produce this).
 - **Colour mode:** use 24-bit images (8-bit works too) for the 16-bit colour mode. In 8-bit mode
   the images are reduced to the game palette.
-- **Transparency:** transparency is still the games' colour key. Sprites need hard edges on pure
-  blue `RGB(0,0,255)`, or white where the original uses white.
-  - In 16-bit mode every colour with R < 8, G < 4 and B ≥ 248 is transparent too.
-  - The "hide" power-up's mask icons keep their pure red.
-  - An alpha channel is ignored, and anti-aliased edges against blue show blue fringes.
+- **Transparency:** either of two forms, also mixed within a pack.
+  - **Alpha channel:** a 32-bit BMP with an alpha mask (or PNG, natively; the web build's
+    SDL_image has no PNG codec). Edges may be soft and anything may be semi-transparent: Free
+    Direct blends it over the background. Use straight (not premultiplied) alpha.
+  - **Colour key, as in the originals:** hard edges on pure blue `RGB(0,0,255)`. Anti-aliased edges
+    against blue show blue fringes.
+
+  In both forms:
+  - The games' colour key still applies. Opaque pixels must avoid the key, which in 16-bit mode is
+    every colour with R < 8, G < 4 and B ≥ 248.
+  - The "hide" power-up's mask icons (object sheet, icons 0xED and 0xF5) keep their pure red.
+    Their other part may be blue or transparent; both give the same result.
+  - 8-bit mode cannot blend; it draws pixels with alpha ≥ 128.
 - **Fonts:** `TEXT.BLP`/`LITTLE.BLP` glyphs must stay inside their 2× cells. Character widths come
   from the game's tables.
 
@@ -119,6 +127,9 @@ directory (`sb1-blupi/`, …).
 - **Synthetic pack:** `make_test_pack.py --game <installation> --output build/<dir>` writes a pack
   that merely enlarges every image (nearest neighbour). Frames with it must equal frames without
   it at the same scale.
+  - `--alpha` writes the blue-keyed sprite sheets as 32-bit BMPs in which every key pixel is
+    transparent black. Frames must still be the same, now through the alpha path.
+  - `--sheets-only` limits the pack to those sheets.
 - **Frame capture:** `FREE_DIRECT_CAPTURE_PRIMARY=<dir>` (with `FREE_DIRECT_CAPTURE_LIMIT`) saves
   every changed presented frame.
 - **Comparison:** `compare_frames.py upscale <1x> <2x>` checks that each 2× frame is an exact 2×
@@ -132,6 +143,7 @@ plus this change. The game was left idle on its title until the attract demo sta
 |---|---|---|
 | 2× without a pack: exact 2× enlargements of 1× frames | 40 of 40 | 38 of 40 (see below) |
 | 2× with the synthetic pack equals 2× without it | 40 of 40 (17 images from the pack) | 40 of 40 (18 images from the pack) |
+| 2× with the alpha pack (`--alpha --sheets-only`) equals 2× without it | 30 of 30 (13 sheets with alpha) | 30 of 30 (13 sheets with alpha) |
 
 In Eggbert 2, two start-up frames contain a 90×90 area under the software cursor whose odd
 physical columns hold the next logical pixel (a one-pixel horizontal offset at 2×). It is
@@ -150,6 +162,14 @@ Other checks:
   with a 1280×960 back buffer.
 - A web package with a marked 2× `IMAGE16/INIT.BLP` showed its one-pixel lines on the title,
   which a 1× image cannot hold.
+- With `BLUPI000.BLP` made 50 % transparent, Blupi and the lives in the HUD are drawn blended
+  with the background, without a box around them.
+- After the alpha support, the web smoke check again passed for all four editions at scale 1 and
+  for Speedy Eggbert 2 at `?scale=2`.
+- Real 2× sheets: Speedy Eggbert 1 (`build/freeapi-se1-linux`) ran on a Wayland desktop in a
+  1280×960 window with `../../speedyblupi-hd/games/Speedy Eggbert/Game/2x` (Ray Dream re-renders
+  and upscaled fallbacks). All 21 images it loaded came from the pack, none was rejected, and the
+  game quit normally.
 
 ## Web: build all four games
 
