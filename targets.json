@@ -2834,6 +2834,219 @@
           ]
         }
       ]
+    },
+    "sb1/eggbert/value": {
+      "exe": "assets/downloads/eggbert_value/SpeedyEggbertSEValueware_v1.0_EN.exe",
+      "sha256": "2cf7fa8f1ebb5aba1ea31ae805b788f67f224a0b1e0aef314f8e889568800ee3",
+      "built": "1999-06-24",
+      "linker": "LINK 5.00.7022 (VC5 RTM: no Rich header, separate .idata); docs/EGGBERT_VALUE.md",
+      "link_tree": "rtm",
+      "status": "active",
+      "manifest": "recon.json",
+      "oracle": "oracle/sb1-eggbert-value",
+      "defines": [
+        "_EGAMES=1"
+      ],
+      "game_text_end": "0x238e0",
+      "source_overlays": [
+        "games/sb1-eggbert-value"
+      ],
+      "accepted_overrides": {
+        "?ReadConfig@@YAHPAD@Z": {
+          "size": 656,
+          "note": "1.1: without a CD-Rom= line, the current directory (_EGAMES)"
+        },
+        "?CheckWorld1@CEvent@@IAEHXZ": {
+          "size": 16,
+          "note": "1.1: no CD check (_EGAMES)"
+        },
+        "??1CJauge@@QAE@XZ": {
+          "status": "strict",
+          "note": "this linker keeps CJauge's body for the identical 16-byte bodies"
+        },
+        "??1CMenu@@QAE@XZ": {
+          "status": "folded",
+          "into": {
+            "symbol": "??1CJauge@@QAE@XZ",
+            "rva": "0x0001ee30",
+            "tu": "src/jauge.cpp"
+          }
+        },
+        "??1CButton@@QAE@XZ": {
+          "into": {
+            "symbol": "??1CJauge@@QAE@XZ",
+            "rva": "0x0001ee30",
+            "tu": "src/jauge.cpp"
+          }
+        },
+        "?OutputDebug@@YAXPAD@Z": {
+          "into": {
+            "symbol": "??1CJauge@@QAE@XZ",
+            "rva": "0x0001ee30",
+            "tu": "src/jauge.cpp"
+          }
+        },
+        "?WindowProc@@YGJPAXIIJ@Z": {
+          "exclude": true,
+          "note": "[OPEN] three alignment-padding bytes before its jump table differ (90 8b ff vs 8d 49 00)"
+        },
+        "?DoInit@@YAHPAXPADH@Z": {
+          "exclude": true,
+          "note": "its reference to WindowProc is verified only once WindowProc is STRICT"
+        },
+        "?GetHide@CJauge@@QAEHXZ": {
+          "status": "folded",
+          "into": {
+            "symbol": "?GetNbSessions@CNetwork@@QAEHXZ",
+            "tu": "src/network.cpp",
+            "rva": "0x20cb0"
+          }
+        },
+        "?GetNbSessions@CNetwork@@QAEHXZ": {
+          "status": "strict"
+        },
+        "?Write@CDecor@@QAEHHHH@Z": {
+          "size": 544,
+          "note": "Valueware: level marker 1"
+        },
+        "?Read@CDecor@@QAEHHHH@Z": {
+          "size": 640,
+          "note": "Valueware: rejects official levels without the marker"
+        },
+        "?DrawButtons@CEvent@@QAEHXZ": {
+          "size": 7456,
+          "note": "Valueware: Version 1.0 and VALUEWARE on the title screen"
+        },
+        "?NetAdjustLobbyButtons@CEvent@@IAEXXZ": {
+          "size": 448,
+          "note": "Valueware: PREV/NEXT in demo state"
+        }
+      },
+      "accepted_functions": [
+        {
+          "symbol": "?SetDemo@CButton@@QAEXH@Z",
+          "rva": "0x2d20",
+          "size": 48,
+          "tu": "src/button.cpp",
+          "note": "[EVIDENCE] demo-state method, STRICT in Valueware (dead and stripped in the retail builds)"
+        },
+        {
+          "symbol": "?SetDemo@CEvent@@QAEXHH@Z",
+          "rva": "0x16610",
+          "size": 48,
+          "tu": "src/event.cpp",
+          "note": "[EVIDENCE] demo-state method, STRICT in Valueware; its callers ChangePhase and NetAdjustLobbyButtons place it"
+        }
+      ],
+      "equivalent_functions": [
+        {
+          "name": "ChangePhase",
+          "symbol": "?ChangePhase@CEvent@@QAEHI@Z",
+          "tu": "src/event.cpp",
+          "rva": "0x192f0",
+          "size": 7040,
+          "certificate": "evidence/equivalence/sb1-eggbert-value/ChangePhase.json",
+          "proof_method": "sb1-local",
+          "returns_value": true,
+          "code_end": "0x1b80",
+          "regions": [
+            [
+              "0xc5",
+              "0x110"
+            ],
+            [
+              "0x5f0",
+              "0x5fc"
+            ]
+          ]
+        },
+        {
+          "name": "TreatEventBase",
+          "symbol": "?TreatEventBase@CEvent@@QAEHIIJ@Z",
+          "tu": "src/event.cpp",
+          "rva": "0x1d280",
+          "size": 7056,
+          "certificate": "evidence/equivalence/sb1-eggbert-value/TreatEventBase.json",
+          "proof_method": "sb1-local",
+          "returns_value": true,
+          "code_end": "0x19bf",
+          "regions": [],
+          "switches": [
+            {
+              "jump": "0x6fd",
+              "compare": "0x6ec",
+              "table": "0x19c0",
+              "count": 17,
+              "bytes": "0x1a04"
+            },
+            {
+              "jump": "0xc9d",
+              "compare": "0xc8c",
+              "table": "0x1a6c",
+              "count": 8,
+              "bytes": "0x1a8c"
+            },
+            {
+              "jump": "0xe59",
+              "compare": "0xe50",
+              "table": "0x1aa8",
+              "count": 5
+            },
+            {
+              "jump": "0x10a9",
+              "compare": "0x10a0",
+              "table": "0x1abc",
+              "count": 7
+            },
+            {
+              "jump": "0x14f6",
+              "compare": "0x14e5",
+              "table": "0x1ad8",
+              "count": 17,
+              "bytes": "0x1b1c"
+            }
+          ],
+          "padding": [
+            [
+              "0x1aa5",
+              "0x1aa8"
+            ]
+          ]
+        },
+        {
+          "name": "WindowProc",
+          "symbol": "?WindowProc@@YGJPAXIIJ@Z",
+          "tu": "src/blupi.cpp",
+          "rva": "0x15f0",
+          "size": 1360,
+          "certificate": "evidence/equivalence/sb1-eggbert-value/WindowProc.json",
+          "proof_method": "sb1-local",
+          "returns_value": true,
+          "code_end": "0x42d",
+          "regions": [],
+          "padding": [
+            [
+              "0x42d",
+              "0x430"
+            ]
+          ],
+          "switches": [
+            {
+              "jump": "0x219",
+              "compare": "0x210",
+              "table": "0x430",
+              "count": 4
+            },
+            {
+              "jump": "0x2f6",
+              "compare": "0x2e3",
+              "table": "0x440",
+              "count": 5,
+              "bytes": "0x454"
+            }
+          ]
+        }
+      ]
     }
   }
 }

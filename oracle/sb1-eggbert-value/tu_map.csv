@@ -1,0 +1,422 @@
+rva,size,tu,confidence,best_source,status,evidence
+0x1000,37,blupi.cpp,anchored,sb2:blupi.cpp:GetNum,strict,"[EVIDENCE] unique cmpfunc location from sb2:blupi.cpp (48 bytes, STRICT); GetNum"
+0x1030,673,blupi.cpp,bracketed,sb2:blupi.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x12c0,528,blupi.cpp,bracketed,sb2:blupi.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x14d0,203,blupi.cpp,bracketed,sb2:blupi.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?SetDecor@@YAXXZ in src/blupi.cpp object.
+0x15a0,34,blupi.cpp,anchored,sb2:blupi.cpp:RestoreGame,strict,"[EVIDENCE] unique cmpfunc location from sb2:blupi.cpp (48 bytes, RELOC-UNVERIFIED); RestoreGame; calls: 0x166b0; [EVIDENCE] integrated STRICT code and relocation match for ?RestoreGame@@YAHXZ in src/blupi.cpp object."
+0x15d0,18,blupi.cpp,anchored,sb2:blupi.cpp:FlushGame,strict,"[EVIDENCE] unique cmpfunc location from sb2:blupi.cpp (32 bytes, RELOC-UNVERIFIED); FlushGame; [EVIDENCE] integrated STRICT code and relocation match for ?FlushGame@@YAHXZ in src/blupi.cpp object."
+0x1b40,234,blupi.cpp,anchored,sb2:blupi.cpp:FinishObjects,strict,"[EVIDENCE] unique cmpfunc location from sb2:blupi.cpp (240 bytes, RELOC-UNVERIFIED); FinishObjects; calls: 0x1c210,0x20450,0x23bb0; [EVIDENCE] integrated STRICT code and relocation match for ?FinishObjects@@YAXXZ in src/blupi.cpp object."
+0x1c70,197,blupi.cpp,anchored,sb2:blupi.cpp:InitFail,strict,"[EVIDENCE] unique cmpfunc location from sb2:blupi.cpp (208 bytes, STRICT); InitFail; imports: USER32.dll; calls: 0x01b60"
+0x1d40,204,blupi.cpp,bracketed,sb2:blupi.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?Benchmark@@YAHXZ in src/blupi.cpp object.
+0x1e10,191,blupi.cpp,anchored,sb2:blupi.cpp:WinMain,strict,"[EVIDENCE] unique cmpfunc location from sb2:blupi.cpp (192 bytes, RELOC-UNVERIFIED); WinMain; imports: WINMM.dll,USER32.dll; calls: 0x01ef0,0x01d60; [EVIDENCE] integrated STRICT code and relocation match for _WinMain@16 in src/blupi.cpp object."
+0x1ed0,2801,blupi.cpp,bracketed,sb2:blupi.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x2a10,161,button.cpp,bracketed,sb2:button.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x2ac0,45,button.cpp,anchored,sb2:button.cpp:CButton::SetIconMenu,strict,"[EVIDENCE] unique cmpfunc location from sb2:button.cpp (48 bytes, STRICT); CButton::SetIconMenu"
+0x2af0,48,button.cpp,anchored,sb2:button.cpp:CButton::SetToolTips,strict,"[EVIDENCE] unique cmpfunc location from sb2:button.cpp (48 bytes, STRICT); CButton::SetToolTips"
+0x2b20,325,button.cpp,bracketed,sb2:button.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x2c70,4,button.cpp,anchored,sb2:button.cpp:CButton::GetState,strict,"[EVIDENCE] unique cmpfunc location from sb2:button.cpp (16 bytes, STRICT); CButton::GetState"
+0x2c80,35,button.cpp,anchored,sb2:button.cpp:CButton::SetState,strict,"[EVIDENCE] unique cmpfunc location from sb2:button.cpp (48 bytes, STRICT); CButton::SetState"
+0x2cb0,7,button.cpp,anchored,sb2:button.cpp:CButton::GetMenu,strict,"[EVIDENCE] unique cmpfunc location from sb2:button.cpp (16 bytes, STRICT); CButton::GetMenu"
+0x2cc0,33,button.cpp,anchored,sb2:button.cpp:CButton::SetMenu,strict,"[EVIDENCE] unique cmpfunc location from sb2:button.cpp (48 bytes, STRICT); CButton::SetMenu"
+0x2cf0,38,button.cpp,anchored,sb2:button.cpp:CButton::SetEnable,strict,"[EVIDENCE] unique cmpfunc location from sb2:button.cpp (48 bytes, STRICT); CButton::SetEnable"
+0x2d20,38,button.cpp,audited,src:button.cpp:CButton::SetDemo,none,"[EVIDENCE] Demo-only method, live in this executable: called by ChangePhase and NetAdjustLobbyButtons; placed between SetEnable and SetHide as in the source order. Placement input, not acceptance."
+0x2d50,27,button.cpp,anchored,sb2:button.cpp:CButton::SetHide,strict,"[EVIDENCE] unique cmpfunc location from sb2:button.cpp (32 bytes, STRICT); CButton::SetHide"
+0x2d70,111,button.cpp,anchored,sb2:button.cpp:CButton::TreatEvent,strict,"[EVIDENCE] unique cmpfunc location from sb2:button.cpp (144 bytes, RELOC-UNVERIFIED); CButton::TreatEvent; calls: 0x1f330,0x02f70,0x02fd0; [EVIDENCE] integrated STRICT code and relocation match for ?TreatEvent@CButton@@QAEHIIJ@Z in src/button.cpp object."
+0x2e00,18,button.cpp,anchored,sb2:button.cpp:CButton::MouseOnButton,strict,"[EVIDENCE] unique cmpfunc location from sb2:button.cpp (32 bytes, STRICT); CButton::MouseOnButton; calls: 0x02f00"
+0x2e20,237,button.cpp,bracketed,sb2:button.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x2f10,101,button.cpp,anchored,sb2:button.cpp:CButton::Detect,strict,"[EVIDENCE] unique cmpfunc location from sb2:button.cpp (112 bytes, STRICT); CButton::Detect"
+0x2f80,84,button.cpp,bracketed,sb2:button.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x2fe0,201,button.cpp,bracketed,sb2:button.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?MouseMove@CButton@@IAEHUtagPOINT@@@Z in src/button.cpp object.
+0x30b0,85,button.cpp,anchored,sb2:button.cpp:CButton::MouseUp,strict,"[EVIDENCE] unique cmpfunc location from sb2:button.cpp (96 bytes, STRICT); CButton::MouseUp; imports: USER32.dll; calls: 0x02f00"
+0x3110,10,ddutil.cpp,bracketed,pb:ddutil.cpp,strict,[EVIDENCE] comparator has masked/ambiguous candidate(s); location/function identity is not unique; [EVIDENCE] integrated STRICT code and relocation match for _DDSetDebug in src/ddutil.cpp object.
+0x3120,397,ddutil.cpp,anchored,pb:ddutil.cpp:_DDLoadBitmap,strict,"[EVIDENCE] unique cmpfunc location from pb:ddutil.cpp (400 bytes, RELOC-UNVERIFIED); _DDLoadBitmap; imports: GDI32.dll,USER32.dll,KERNEL32.dll; calls: 0x1f010,0x1f690,0x03340; [EVIDENCE] integrated STRICT code and relocation match for _DDLoadBitmap in src/ddutil.cpp object."
+0x32b0,154,ddutil.cpp,anchored,pb:ddutil.cpp:_DDReLoadBitmap,strict,"[EVIDENCE] unique cmpfunc location from pb:ddutil.cpp (160 bytes, RELOC-UNVERIFIED); _DDReLoadBitmap; imports: GDI32.dll,USER32.dll,KERNEL32.dll; calls: 0x1f010,0x03340; [EVIDENCE] integrated STRICT code and relocation match for _DDReLoadBitmap in src/ddutil.cpp object."
+0x3350,499,ddutil.cpp,anchored,pb:ddutil.cpp:_DDCopyBitmap,strict,"[EVIDENCE] unique cmpfunc location from pb:ddutil.cpp (512 bytes, RELOC-UNVERIFIED); _DDCopyBitmap; imports: GDI32.dll; calls: 0x1f010; [EVIDENCE] integrated STRICT code and relocation match for _DDCopyBitmap in src/ddutil.cpp object."
+0x3550,608,ddutil.cpp,anchored,pb:ddutil.cpp:_DDLoadPalette,strict,"[EVIDENCE] unique cmpfunc location from pb:ddutil.cpp (608 bytes, RELOC-UNVERIFIED); _DDLoadPalette; imports: KERNEL32.dll; calls: 0x1f010,0x23b40; [EVIDENCE] integrated STRICT code and relocation match for _DDLoadPalette in src/ddutil.cpp object."
+0x37b0,255,ddutil.cpp,anchored,pb:ddutil.cpp:_DDColorMatch,strict,"[EVIDENCE] unique cmpfunc location from pb:ddutil.cpp (256 bytes, STRICT); _DDColorMatch; imports: GDI32.dll"
+0x38b0,48,ddutil.cpp,anchored,pb:ddutil.cpp:_DDSetColorKey,strict,"[EVIDENCE] unique cmpfunc location from pb:ddutil.cpp (48 bytes, STRICT); _DDSetColorKey; calls: 0x037a0"
+0x38e0,62,ddutil.cpp,anchored,pb:ddutil.cpp:_DDSetColorKey2,strict,"[EVIDENCE] unique cmpfunc location from pb:ddutil.cpp (64 bytes, STRICT); _DDSetColorKey2; calls: 0x037a0"
+0x3920,158,decblock.cpp,inferred,sb2:decblock.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x39c0,22,decblock.cpp,inferred,sb2:decblock.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x39e0,196,decblock.cpp,inferred,sb2:decblock.cpp,none,"[HYPOTHESIS] placed by TU block/source order; calls: 0x03b80,0x1edf0,0x1efd0"
+0x3ab0,183,decblock.cpp,inferred,sb2:decblock.cpp,none,"[HYPOTHESIS] placed by TU block/source order; image asset path; calls: 0x22dc0,0x23b40,0x21870"
+0x3b70,31,decblock.cpp,inferred,sb2:decblock.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x3b90,744,decblock.cpp,inferred,sb2:decblock.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x3e80,13,decblock.cpp,inferred,sb2:decblock.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x3e90,7,decblock.cpp,inferred,sb2:decblock.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x3ea0,703,decblock.cpp,inferred,sb2:decblock.cpp,none,"[HYPOTHESIS] placed by TU block/source order; calls: 0x13b20,0x12e10,0x10a00"
+0x4160,109,decblock.cpp,inferred,sb2:decblock.cpp,none,[HYPOTHESIS] placed by TU block/source order; calls: 0x10a00
+0x41d0,7,decblock.cpp,inferred,sb2:decblock.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x41e0,261,decblock.cpp,inferred,sb2:decblock.cpp,none,"[HYPOTHESIS] placed by TU block/source order; calls: 0x115c0,0x09280,0x11160"
+0x42f0,40,decblock.cpp,inferred,sb2:decblock.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x4320,30,decblock.cpp,inferred,sb2:decblock.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x4340,26,decblock.cpp,inferred,sb2:decblock.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x4360,3866,decblock.cpp,inferred,sb2:decblock.cpp,none,"[HYPOTHESIS] placed by TU block/source order; calls: 0x21af0,0x21ac0,0x05670"
+0x5280,1010,decblock.cpp,inferred,sb2:decblock.cpp,none,"[HYPOTHESIS] placed by TU block/source order; calls: 0x23770,0x04310,0x21b20"
+0x5680,269,decblock.cpp,inferred,sb2:decblock.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x5790,13,decblock.cpp,inferred,sb2:decblock.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x57a0,13,decblock.cpp,inferred,sb2:decblock.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x57b0,13,decblock.cpp,inferred,sb2:decblock.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x57c0,67,decblock.cpp,inferred,sb2:decblock.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x5810,124,decblock.cpp,inferred,sb2:decblock.cpp,none,"[HYPOTHESIS] placed by TU block/source order; calls: 0x10980,0x230c0"
+0x5890,68,decblock.cpp,inferred,sb2:decblock.cpp,none,[HYPOTHESIS] placed by TU block/source order; calls: 0x23050
+0x58e0,123,decblock.cpp,anchored,sb2:decblock.cpp:AdaptMotorVehicleSound,strict,[EVIDENCE] strict integrated code and relocation match in src/decblock.cpp.
+0x5960,208,decblock.cpp,inferred,sb2:decblock.cpp,none,"[HYPOTHESIS] placed by TU block/source order; calls: 0x23050,0x230c0"
+0x5a30,133,decdesign.cpp,anchored,sb2:decdesign.cpp:ScreenPosToCelPos,strict,[EVIDENCE] strict integrated code and relocation match in src/decdesign.cpp.
+0x5ac0,46,decdesign.cpp,anchored,sb2:decdesign.cpp:CDecor::SetCelHiliFromScreenPos,strict,[EVIDENCE] forced code+relocation-strict comparison at 0x5ab0; candidate method and same-TU order identify decdesign.cpp.
+0x5af0,93,decdesign.cpp,anchored,sb2:decdesign.cpp:SetIconLiftAndStuff,strict,[EVIDENCE] strict integrated code and relocation match in src/decdesign.cpp.
+0x5b50,90,decdesign.cpp,anchored,sb2:decdesign.cpp:CDecor::DeleteCel,strict,[EVIDENCE] forced code+relocation-strict comparison at 0x5b40; calls and same-TU order identify decdesign.cpp.
+0x5bb0,125,decdesign.cpp,anchored,sb2:decdesign.cpp:PlaceDecor,strict,[EVIDENCE] strict integrated code and relocation match with the target-proven int* helper signature.
+0x5c30,595,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[EVIDENCE] table/grid helper candidate; source method unresolved; calls: 0x05ba0
+0x5e90,877,decdesign.cpp,inferred,sb2:decdesign.cpp,none,"[EVIDENCE] table/grid helper candidate; source method unresolved; calls: 0x05ba0,0x144d0"
+0x6200,825,decdesign.cpp,inferred,sb2:decdesign.cpp,none,"[EVIDENCE] table/grid helper candidate; source method unresolved; calls: 0x05ba0,0x144d0"
+0x6540,3619,decdesign.cpp,inferred,sb2:decdesign.cpp,none,"[EVIDENCE] table/grid helper candidate; source method unresolved; calls: 0x12dd0,0x13a30,0x13ab0"
+0x7370,1980,decdesign.cpp,inferred,sb2:decdesign.cpp,none,"[HYPOTHESIS] placed by TU block/source order; calls: 0x13a30,0x13ab0,0x144d0"
+0x7b30,2077,decdesign.cpp,inferred,sb2:decdesign.cpp,none,"[HYPOTHESIS] placed by TU block/source order; calls: 0x13a30,0x13ab0,0x05ba0"
+0x8350,478,decdesign.cpp,inferred,sb2:decdesign.cpp,none,"[HYPOTHESIS] placed by TU block/source order; calls: 0x05ba0,0x13a30,0x13ab0"
+0x8530,7,decdesign.cpp,anchored,sb2:decdesign.cpp:CDecor::GetMissionTitle,strict,[EVIDENCE] strict source-body match in the integrated decdesign.cpp object.
+0x8540,46,decdesign.cpp,anchored,sb2:decdesign.cpp:CDecor::SetMissionTitle,strict,[EVIDENCE] strict source-body match in the integrated decdesign.cpp object.
+0x8570,7,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x8580,13,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x8590,7,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x85a0,13,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x85b0,24,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x85d0,23,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x85f0,7,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x8600,13,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x8610,7,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x8620,13,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x8630,35,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x8660,35,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x8690,32,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order; calls: 0x15e30
+0x86b0,1686,decdesign.cpp,inferred,sb2:decdesign.cpp,none,"[HYPOTHESIS] placed by TU block/source order; calls: 0x11bd0,0x05800,0x05880"
+0x8d50,7,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x8d60,13,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x8d70,7,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x8d80,13,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x8d90,7,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x8da0,13,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x8db0,7,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x8dc0,13,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x8dd0,7,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x8de0,30,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x8e00,112,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order; calls: 0x23b40
+0x8e70,13,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x8e80,13,decdesign.cpp,inferred,sb2:decdesign.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x8e90,1020,decdesign.cpp,inferred,sb2:decdesign.cpp,none,"[HYPOTHESIS] placed by TU block/source order; calls: 0x05800,0x0fe20"
+0x9290,25269,decblupi.cpp,inferred,sb2:decblupi.cpp,none,"[EVIDENCE] reads SB2 table_vitesse_march/nage/surf sequences; calls: 0x0f8c0,0x0f640,0x101b0"
+0xf550,108,decblupi.cpp,inferred,sb2:decblupi.cpp,strict,[HYPOTHESIS] placed by TU block/source order; [EVIDENCE] integrated STRICT code and relocation match for ?GetPosDecor@CDecor@@QAE?AUtagPOINT@@U2@@Z in src/decblupi.cpp object.
+0xf5c0,142,decblupi.cpp,inferred,sb2:decblupi.cpp,strict,[HYPOTHESIS] placed by TU block/source order; [EVIDENCE] integrated STRICT code and relocation match for ?BlupiAddFifo@CDecor@@QAEXUtagPOINT@@@Z in src/decblupi.cpp object.
+0xf650,640,decblupi.cpp,inferred,sb2:decblupi.cpp,none,[HYPOTHESIS] placed by TU block/source order; imports: USER32.dll
+0xf8d0,833,decblupi.cpp,anchored,sb2:decblupi.cpp:CDecor::TestPath,strict,"[EVIDENCE] unique cmpfunc location from sb2:decblupi.cpp (848 bytes, RELOC-UNVERIFIED); CDecor::TestPath; calls: 0x0f640; [EVIDENCE] integrated STRICT code and relocation match for ?TestPath@CDecor@@QAEHUtagRECT@@UtagPOINT@@PAU3@@Z in src/decblupi.cpp object."
+0xfc20,439,decblupi.cpp,bracketed,sb2:decblupi.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0xfde0,75,decblupi.cpp,bracketed,sb2:decblupi.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0xfe30,94,decblupi.cpp,bracketed,sb2:decblupi.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0xfe90,261,decblupi.cpp,bracketed,sb2:decblupi.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0xffa0,184,decblupi.cpp,bracketed,sb2:decblupi.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x10060,248,decblupi.cpp,bracketed,sb2:decblupi.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x10160,88,decblupi.cpp,bracketed,sb2:decblupi.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x101c0,94,decblupi.cpp,bracketed,sb2:decblupi.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x10220,115,decblupi.cpp,bracketed,sb2:decblupi.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x102a0,71,decblupi.cpp,bracketed,sb2:decblupi.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?IsDeepWater@CDecor@@QAEHUtagPOINT@@@Z in src/decblupi.cpp object.
+0x102f0,75,decblupi.cpp,bracketed,sb2:decblupi.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x10340,63,decblupi.cpp,bracketed,sb2:decblupi.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x10380,55,decblupi.cpp,bracketed,sb2:decblupi.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x103c0,200,decblupi.cpp,bracketed,sb2:decblupi.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x10490,486,decblupi.cpp,bracketed,sb2:decblupi.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x10680,50,decnet.cpp,anchored,sb2:decnet.cpp:CDecor::NetStopCloud,strict,"[EVIDENCE] unique cmpfunc location from sb2:decnet.cpp (64 bytes, RELOC-UNVERIFIED); CDecor::NetStopCloud; calls: 0x113c0; [EVIDENCE] integrated STRICT code and relocation match for ?NetStopCloud@CDecor@@QAEXH@Z in src/decnet.cpp object."
+0x106c0,489,decnet.cpp,bracketed,sb2:decnet.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x108b0,112,decnet.cpp,anchored,sb2:decnet.cpp:CDecor::ObjectDelete,strict,[EVIDENCE] strict body and relocations match in the canonical decnet.cpp object; the identical decmove.cpp candidate is not a second target owner.
+0x10920,100,decnet.cpp,bracketed,sb2:decnet.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?ModifDecor@CDecor@@QAEXUtagPOINT@@HH@Z in src/decnet.cpp object.
+0x10990,59,decnet.cpp,anchored,sb2:decnet.cpp:CDecor::NetPlaySound,strict,"[EVIDENCE] unique cmpfunc location from sb2:decnet.cpp (64 bytes, RELOC-UNVERIFIED); CDecor::NetPlaySound; calls: 0x113c0; [EVIDENCE] integrated STRICT code and relocation match for ?NetPlaySound@CDecor@@QAEXFUtagPOINT@@@Z in src/decnet.cpp object."
+0x109d0,50,decnet.cpp,anchored,sb2:decnet.cpp:CDecor::NetStopSound,strict,"[EVIDENCE] unique cmpfunc location from sb2:decnet.cpp (64 bytes, RELOC-UNVERIFIED); CDecor::NetStopSound; calls: 0x113c0; [EVIDENCE] integrated STRICT code and relocation match for ?NetStopSound@CDecor@@QAEXF@Z in src/decnet.cpp object."
+0x10a10,86,decmove.cpp,inferred,sb2:decmove.cpp,none,[HYPOTHESIS] placed by TU block/source order; calls: 0x113a0
+0x10a70,45,decmove.cpp,inferred,sb2:decmove.cpp,none,[HYPOTHESIS] placed by TU block/source order; calls: 0x20ec0
+0x10aa0,1545,decmove.cpp,inferred,sb2:decmove.cpp,none,"[HYPOTHESIS] placed by TU block/source order; calls: 0x11420,0x20ec0,0x20f10"
+0x110b0,187,decmove.cpp,inferred,sb2:decmove.cpp,none,[HYPOTHESIS] placed by TU block/source order; calls: 0x0f8c0
+0x11170,72,decmove.cpp,inferred,sb2:decmove.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x111c0,259,decmove.cpp,inferred,sb2:decmove.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x112d0,217,decmove.cpp,inferred,sb2:decmove.cpp,none,[HYPOTHESIS] placed by TU block/source order; imports: USER32.dll
+0x113b0,21,decmove.cpp,inferred,sb2:decmove.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x113d0,96,decmove.cpp,inferred,sb2:decmove.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x11430,97,decmove.cpp,inferred,sb2:decmove.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x114a0,31,decmove.cpp,inferred,sb2:decmove.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x114c0,86,decmove.cpp,inferred,sb2:decmove.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x11520,130,decmove.cpp,inferred,sb2:decmove.cpp,none,"[HYPOTHESIS] placed by TU block/source order; calls: 0x114b0,0x230c0"
+0x115b0,23,decmove.cpp,inferred,sb2:decmove.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x115d0,591,decmove.cpp,inferred,sb2:decmove.cpp,none,"[HYPOTHESIS] placed by TU block/source order; calls: 0x11810,0x11bd0,0x138a0"
+0x11820,946,decmove.cpp,inferred,sb2:decmove.cpp,none,"[HYPOTHESIS] placed by TU block/source order; imports: USER32.dll; calls: 0x21030,0x113c0"
+0x11be0,4165,decmove.cpp,inferred,sb2:decmove.cpp,none,"[EVIDENCE] reads SB2 moving-object animation sequences; record stride 0x30; calls: 0x106b0,0x05800"
+0x12c30,324,decmove.cpp,inferred,sb2:decmove.cpp,none,[HYPOTHESIS] placed by TU block/source order; imports: USER32.dll
+0x12d80,96,decmove.cpp,inferred,sb2:decmove.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x12de0,54,decmove.cpp,inferred,sb2:decmove.cpp,strict,[HYPOTHESIS] placed by TU block/source order; [EVIDENCE] integrated STRICT code and relocation match for ?AscenseurSynchro@CDecor@@QAEXH@Z in src/decmove.cpp object.
+0x12e20,60,decmove.cpp,inferred,sb2:decmove.cpp,strict,[HYPOTHESIS] placed by TU block/source order; [EVIDENCE] integrated STRICT code and relocation match for ?UpdateCaisse@CDecor@@QAEXXZ in src/decmove.cpp object.
+0x12e60,215,decmove.cpp,inferred,sb2:decmove.cpp,strict,"[HYPOTHESIS] placed by TU block/source order; calls: 0x13020,0x12f30; [EVIDENCE] integrated STRICT code and relocation match for ?TestPushCaisse@CDecor@@QAEHHUtagPOINT@@H@Z in src/decmove.cpp object."
+0x12f40,229,decmove.cpp,inferred,sb2:decmove.cpp,strict,[HYPOTHESIS] placed by TU block/source order; calls: 0x0f640; [EVIDENCE] integrated STRICT code and relocation match for ?TestPushOneCaisse@CDecor@@QAEHHUtagPOINT@@H@Z in src/decmove.cpp object.
+0x13030,453,decmove.cpp,inferred,sb2:decmove.cpp,none,[HYPOTHESIS] placed by TU block/source order; imports: USER32.dll; calls: 0x131f0
+0x13200,73,decmove.cpp,inferred,sb2:decmove.cpp,strict,[HYPOTHESIS] placed by TU block/source order; [EVIDENCE] integrated STRICT code and relocation match for ?AddLinkCaisse@CDecor@@QAEHH@Z in src/decmove.cpp object.
+0x13250,119,decmove.cpp,inferred,sb2:decmove.cpp,strict,[HYPOTHESIS] placed by TU block/source order; [EVIDENCE] integrated STRICT code and relocation match for ?CaisseInFront@CDecor@@QAEHXZ in src/decmove.cpp object.
+0x132d0,89,decmove.cpp,inferred,sb2:decmove.cpp,strict,[HYPOTHESIS] placed by TU block/source order; [EVIDENCE] integrated STRICT code and relocation match for ?CaisseGetMove@CDecor@@QAEHH@Z in src/decmove.cpp object.
+0x13330,532,decmove.cpp,inferred,sb2:decmove.cpp,none,[HYPOTHESIS] placed by TU block/source order; imports: USER32.dll
+0x13550,151,decmove.cpp,inferred,sb2:decmove.cpp,none,[HYPOTHESIS] placed by TU block/source order; imports: USER32.dll
+0x135f0,538,decmove.cpp,inferred,sb2:decmove.cpp,none,[HYPOTHESIS] placed by TU block/source order; imports: USER32.dll
+0x13810,159,decmove.cpp,inferred,sb2:decmove.cpp,none,[HYPOTHESIS] placed by TU block/source order; imports: USER32.dll
+0x138b0,190,decmove.cpp,inferred,sb2:decmove.cpp,none,[HYPOTHESIS] placed by TU block/source order; imports: USER32.dll
+0x13970,208,decmove.cpp,inferred,sb2:decmove.cpp,none,[HYPOTHESIS] placed by TU block/source order; imports: USER32.dll
+0x13a40,115,decmove.cpp,inferred,sb2:decmove.cpp,strict,[HYPOTHESIS] placed by TU block/source order; [EVIDENCE] integrated STRICT code and relocation match for ?MoveObjectDelete@CDecor@@QAEXUtagPOINT@@@Z in src/decmove.cpp object.
+0x13ac0,63,decmove.cpp,inferred,sb2:decmove.cpp,strict,[HYPOTHESIS] placed by TU block/source order; [EVIDENCE] integrated STRICT code and relocation match for ?MoveObjectFree@CDecor@@QAEHXZ in src/decmove.cpp object.
+0x13b00,34,decmove.cpp,inferred,sb2:decmove.cpp,strict,[HYPOTHESIS] placed by TU block/source order; [EVIDENCE] integrated STRICT code and relocation match for ?SortGetType@@YAHH@Z in src/decmove.cpp object.
+0x13b30,234,decmove.cpp,inferred,sb2:decmove.cpp,none,[HYPOTHESIS] placed by TU block/source order; calls: 0x13af0
+0x13c20,160,decmove.cpp,inferred,sb2:decmove.cpp,none,[HYPOTHESIS] placed by TU block/source order; calls: 0x12e10
+0x13cc0,153,decmove.cpp,inferred,sb2:decmove.cpp,strict,[HYPOTHESIS] placed by TU block/source order; [EVIDENCE] integrated STRICT code and relocation match for ?MoveObjectSearch@CDecor@@QAEHUtagPOINT@@H@Z in src/decmove.cpp object.
+0x13d60,31,decor.cpp,anchored,sb2:decor.cpp:CDecor::VoyageGetPosVie,strict,"[EVIDENCE] unique cmpfunc location from sb2:decor.cpp (32 bytes, STRICT); CDecor::VoyageGetPosVie"
+0x13d80,377,decor.cpp,bracketed,sb2:decor.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x13f00,345,decor.cpp,bracketed,sb2:decor.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x14060,100,decor.cpp,bracketed,sb2:decor.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?VoyageDraw@CDecor@@QAEXXZ in src/decor.cpp object.
+0x140d0,775,decor.cpp,bracketed,sb2:decor.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x143e0,253,decor.cpp,anchored,sb2:decor.cpp:AdaptMidBorder,strict,[EVIDENCE] strict integrated code/data match; the one-past relocation lands exactly at the end of the byte-verified 80-entry table.
+0x144e0,114,decor.cpp,bracketed,sb2:decor.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x14560,805,decor.cpp,bracketed,sb2:decor.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x14890,86,decor.cpp,bracketed,sb2:decio.cpp:CDecor::GetMissionPath,strict,"[HYPOTHESIS] path literals and candidate role in ANCESTRY_SB2.md; world-file path; calls: 0x23b40,0x1f560; [EVIDENCE] integrated STRICT code and relocation match for ?GetMissionPath@CDecor@@QAEXPADHHH@Z in src/decor.cpp object."
+0x148f0,527,decor.cpp,anchored,sb2:decor.cpp:Write,strict,[EVIDENCE] strict integrated code and relocation match with DescFile::reserve1 as int[50].
+0x14d90,61,decor.cpp,bracketed,sb2:decor.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?DeleteMission@CDecor@@QAEHHHH@Z in src/decor.cpp object.
+0x14dd0,1574,decor.cpp,bracketed,sb2:decio.cpp:CDecor::CurrentWrite,none,"[HYPOTHESIS] save path/write-buffer role in ANCESTRY_SB2.md; save-file path; calls: 0x23b40,0x1f560,0x23b20"
+0x15400,1564,decor.cpp,bracketed,sb2:decio.cpp:CDecor::CurrentRead,none,"[HYPOTHESIS] save path/read-buffer role in ANCESTRY_SB2.md; save-file path; calls: 0x23b40,0x1f560,0x23b20"
+0x15a20,540,decor.cpp,bracketed,sb2:decio.cpp:CDecor::FileExist,none,"[HYPOTHESIS] save-file role in ANCESTRY_SB2.md; save-file path; calls: 0x23b40,0x1f560,0x23b20"
+0x15c40,451,decor.cpp,bracketed,sb2:decor.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?SearchWorld@CDecor@@QAEHHPAUtagPOINT@@0@Z in src/decor.cpp object.
+0x15e10,69,decor.cpp,anchored,sb2:decor.cpp:CDecor::SearchDoor,strict,"[EVIDENCE] unique cmpfunc location from sb2:decor.cpp (80 bytes, STRICT); CDecor::SearchDoor"
+0x15e60,840,decor.cpp,bracketed,sb2:decor.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x161b0,17,decor.cpp,bracketed,sb2:decor.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x161d0,34,decor.cpp,bracketed,sb2:decor.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?OpenGoldsWin@CDecor@@QAEXXZ in src/decor.cpp object.
+0x16200,73,decor.cpp,bracketed,sb2:decor.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?DoorsLost@CDecor@@QAEXXZ in src/decor.cpp object.
+0x16250,319,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x16390,113,event.cpp,anchored,sb2:event.cpp:CEvent::~CEvent,similar,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (128 bytes, RELOC-UNVERIFIED); CEvent::~CEvent; calls: 0x1c280,0x1f010"
+0x16410,84,event.cpp,anchored,sb2:event.cpp:CEvent::OutputNetDebug,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (96 bytes, RELOC-UNVERIFIED); CEvent::OutputNetDebug; calls: 0x08dc0,0x23b20,0x23bc0; [EVIDENCE] integrated STRICT code and relocation match for ?OutputNetDebug@CEvent@@QAEXPBD@Z in src/event.cpp object."
+0x16470,59,event.cpp,anchored,sb2:event.cpp:CEvent::GetMousePos,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (64 bytes, STRICT); CEvent::GetMousePos; imports: USER32.dll"
+0x164b0,13,event.cpp,anchored,sb2:event.cpp:CEvent::SetFullScreen,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (16 bytes, STRICT); CEvent::SetFullScreen"
+0x164c0,13,event.cpp,anchored,sb2:event.cpp:CEvent::SetMouseType,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (16 bytes, STRICT); CEvent::SetMouseType"
+0x164d0,90,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x16530,80,event.cpp,bracketed,sb2:event.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?GetButtonIndex@CEvent@@QAEHH@Z in src/event.cpp object.
+0x16580,48,event.cpp,bracketed,sb2:event.cpp,strict,"[EVIDENCE] comparator has masked/ambiguous candidate(s); location/function identity is not unique; calls: 0x16500,0x02c90; [EVIDENCE] integrated STRICT code and relocation match for ?GetState@CEvent@@QAEHH@Z in src/event.cpp object."
+0x165b0,47,event.cpp,bracketed,sb2:event.cpp,strict,"[EVIDENCE] comparator has masked/ambiguous candidate(s); location/function identity is not unique; calls: 0x16500,0x02ca0; [EVIDENCE] integrated STRICT code and relocation match for ?SetState@CEvent@@QAEXHH@Z in src/event.cpp object."
+0x165e0,47,event.cpp,bracketed,sb2:event.cpp,strict,"[EVIDENCE] comparator has masked/ambiguous candidate(s); location/function identity is not unique; calls: 0x16500,0x02d10; [EVIDENCE] integrated STRICT code and relocation match for ?SetEnable@CEvent@@QAEXHH@Z in src/event.cpp object."
+0x16610,47,event.cpp,audited,src:event.cpp:CEvent::SetDemo,none,"[EVIDENCE] Demo-only method, live in this executable: called by ChangePhase and NetAdjustLobbyButtons; placed between SetEnable and SetHide as in the source order. Placement input, not acceptance."
+0x16640,47,event.cpp,bracketed,sb2:event.cpp,strict,"[EVIDENCE] comparator has masked/ambiguous candidate(s); location/function identity is not unique; calls: 0x16500,0x02d40; [EVIDENCE] integrated STRICT code and relocation match for ?SetHide@CEvent@@QAEXHH@Z in src/event.cpp object."
+0x16670,48,event.cpp,bracketed,sb2:event.cpp,strict,"[EVIDENCE] comparator has masked/ambiguous candidate(s); location/function identity is not unique; calls: 0x16500,0x02cd0; [EVIDENCE] integrated STRICT code and relocation match for ?GetMenu@CEvent@@QAEHH@Z in src/event.cpp object."
+0x166a0,47,event.cpp,bracketed,sb2:event.cpp,strict,"[EVIDENCE] comparator has masked/ambiguous candidate(s); location/function identity is not unique; calls: 0x16500,0x02ce0; [EVIDENCE] integrated STRICT code and relocation match for ?SetMenu@CEvent@@QAEXHH@Z in src/event.cpp object."
+0x166d0,52,event.cpp,anchored,sb2:event.cpp:CEvent::SetIconMenu,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (64 bytes, RELOC-UNVERIFIED); CEvent::SetIconMenu; calls: 0x16500,0x02ae0; [EVIDENCE] integrated STRICT code and relocation match for ?SetIconMenu@CEvent@@QAEXHPAHH@Z in src/event.cpp object."
+0x16710,61,event.cpp,anchored,sb2:event.cpp:CEvent::RestoreGame,similar,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (64 bytes, RELOC-UNVERIFIED); CEvent::RestoreGame; calls: 0x18db0,0x18d40,0x18e30"
+0x16750,24,event.cpp,anchored,sb2:event.cpp:CEvent::FlushInput,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (32 bytes, RELOC-UNVERIFIED); CEvent::FlushInput; calls: 0x05780; [EVIDENCE] integrated STRICT code and relocation match for ?FlushInput@CEvent@@QAEXXZ in src/event.cpp object."
+0x16770,479,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x16950,41,event.cpp,anchored,sb2:event.cpp:CEvent::NetCreate,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (48 bytes, RELOC-UNVERIFIED); CEvent::NetCreate; calls: 0x1b040,0x20ab0,0x1b060; [EVIDENCE] integrated STRICT code and relocation match for ?NetCreate@CEvent@@IAEHH@Z in src/event.cpp object."
+0x16980,34,event.cpp,anchored,sb2:event.cpp:CEvent::NetEnumSessions,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (48 bytes, RELOC-UNVERIFIED); CEvent::NetEnumSessions; calls: 0x1b040,0x20bd0,0x1b060; [EVIDENCE] integrated STRICT code and relocation match for ?NetEnumSessions@CEvent@@IAEHXZ in src/event.cpp object."
+0x169b0,278,event.cpp,bracketed,sb2:event.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?CreateButtons@CEvent@@IAEHXZ in src/event.cpp object.
+0x16ad0,494,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x16c90,119,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x16d10,78,event.cpp,anchored,sb2:event.cpp:CEvent::NetSendLobby,strict,"[EVIDENCE] Integrated STRICT code and relocation match for CEvent::NetSendLobby in src/event.cpp. At 0x16e80, DrawMap has the same body and target; only NetDraw is accepted."
+0x16d60,43,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x16d90,230,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x16e80,48,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x16eb0,36,event.cpp,anchored,sb2:event.cpp:CEvent::NetDraw,strict,"[EVIDENCE] Integrated STRICT code and relocation match for CEvent::NetDraw in src/event.cpp. At 0x16e80, DrawMap has the same body and target; only NetDraw is accepted."
+0x16ee0,109,event.cpp,anchored,sb2:event.cpp:AddCheatCode,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (112 bytes, RELOC-UNVERIFIED); AddCheatCode; [EVIDENCE] integrated STRICT code and relocation match for ?AddCheatCode@@YAXPAD0@Z in src/event.cpp object."
+0x16f50,74,event.cpp,anchored,sb2:event.cpp:CEvent::DrawTextCenter,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (80 bytes, RELOC-UNVERIFIED); CEvent::DrawTextCenter; calls: 0x1f1f0,0x237a0; [EVIDENCE] integrated STRICT code and relocation match for ?DrawTextCenter@CEvent@@IAEXHHHH@Z in src/event.cpp object."
+0x16fa0,7419,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x18cc0,123,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x18d40,68,event.cpp,bracketed,sb2:event.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?MouseSprite@CEvent@@QAEXUtagPOINT@@@Z in src/event.cpp object.
+0x18d90,111,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x18e00,121,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x18e80,111,event.cpp,bracketed,sb2:event.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?DisableMouse@CEvent@@QAEXH@Z in src/event.cpp object.
+0x18ef0,547,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x19120,153,event.cpp,bracketed,sb2:event.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?MouseOnButton@CEvent@@IAEHUtagPOINT@@@Z in src/event.cpp object.
+0x191c0,50,event.cpp,bracketed,sb2:event.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?SearchPhase@CEvent@@IAEHI@Z in src/event.cpp object.
+0x19200,44,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x19230,7,event.cpp,anchored,sb2:event.cpp:CEvent::IsPrivate,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (16 bytes, STRICT); CEvent::IsPrivate"
+0x19240,7,event.cpp,anchored,sb2:event.cpp:CEvent::IsMulti,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (16 bytes, STRICT); CEvent::IsMulti"
+0x19250,71,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x192a0,59,event.cpp,anchored,sb2:event.cpp:CEvent::SetMission,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (64 bytes, STRICT); CEvent::SetMission"
+0x192e0,113,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x192f0,6919,event.cpp,bracketed,sb2:event.cpp:CEvent::ChangePhase,none,"[EVIDENCE] references literal ""CEvent::ChangePhase [LoadImages]""; movie path; sound path; imports: WINMM.dll,USER32.dll"
+0x1ae70,7,event.cpp,anchored,sb2:event.cpp:CEvent::GetPhase,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (16 bytes, STRICT); CEvent::GetPhase"
+0x1ae80,59,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x1aec0,77,event.cpp,anchored,sb2:event.cpp:CEvent::MovieToStart,similar,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (80 bytes, RELOC-UNVERIFIED); CEvent::MovieToStart; calls: 0x18db0,0x1c0b0,0x19310"
+0x1af10,146,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x1afb0,87,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x1b010,97,event.cpp,bracketed,sb2:event.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?CurrentWrite@CEvent@@IAEHH@Z in src/event.cpp object.
+0x1b080,8,event.cpp,anchored,sb2:event.cpp,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (16 bytes, STRICT); method identity ambiguous: CEvent::BuildUp|CEvent::PlayDown|CEvent::PlayMove|CEvent::PlayUp"
+0x1b090,19,event.cpp,bracketed,sb2:event.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?MouseRelease@CEvent@@IAEXXZ in src/event.cpp object.
+0x1b0b0,19,event.cpp,bracketed,sb2:event.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?MouseCapture@CEvent@@IAEXXZ in src/event.cpp object.
+0x1b0d0,7,event.cpp,bracketed,sb2:event.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?IsMouseRelease@CEvent@@QAEHXZ in src/event.cpp object.
+0x1b0e0,181,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x1b1a0,195,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x1b270,2854,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x1bda0,799,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x1c0c0,55,event.cpp,anchored,sb2:event.cpp:CEvent::BuildMove,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (64 bytes, RELOC-UNVERIFIED); CEvent::BuildMove; calls: 0x1bd50,0x05ab0; [EVIDENCE] integrated STRICT code and relocation match for ?BuildMove@CEvent@@IAEHUtagPOINT@@H@Z in src/event.cpp object."
+0x1c100,349,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x1c260,82,event.cpp,anchored,sb2:event.cpp:CEvent::StopMovie,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (96 bytes, RELOC-UNVERIFIED); CEvent::StopMovie; calls: 0x205b0,0x21840,0x22580; [EVIDENCE] integrated STRICT code and relocation match for ?StopMovie@CEvent@@QAEXXZ in src/event.cpp object."
+0x1c2c0,7,event.cpp,anchored,sb2:event.cpp:CEvent::IsMovie,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (16 bytes, STRICT); CEvent::IsMovie"
+0x1c2d0,413,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x1c470,475,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x1c650,79,event.cpp,anchored,sb2:event.cpp:CEvent::ClearGamer,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (80 bytes, RELOC-UNVERIFIED); CEvent::ClearGamer; calls: 0x23b40,0x1f560; [EVIDENCE] integrated STRICT code and relocation match for ?ClearGamer@CEvent@@QAEHH@Z in src/event.cpp object."
+0x1c6a0,13,event.cpp,anchored,sb2:event.cpp:CEvent::SetNbVies,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (16 bytes, STRICT); CEvent::SetNbVies"
+0x1c6b0,7,event.cpp,anchored,sb2:event.cpp:CEvent::GetSpeed,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (16 bytes, STRICT); CEvent::GetSpeed"
+0x1c6c0,23,event.cpp,anchored,sb2:event.cpp:CEvent::SetSpeed,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (32 bytes, STRICT); CEvent::SetSpeed"
+0x1c6e0,94,event.cpp,bracketed,sb2:event.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?DemoRecStart@CEvent@@IAEXXZ in src/event.cpp object.
+0x1c740,230,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x1c830,447,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x1c9f0,92,event.cpp,bracketed,sb2:event.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?DemoPlayStop@CEvent@@IAEXXZ in src/event.cpp object.
+0x1ca50,188,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x1cb10,87,event.cpp,bracketed,sb2:event.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?DemoRecEvent@CEvent@@IAEXXZ in src/event.cpp object.
+0x1cb70,21,event.cpp,bracketed,sb2:event.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?ChatFlush@CEvent@@IAEXXZ in src/event.cpp object.
+0x1cb90,76,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x1cbe0,123,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x1cc60,343,event.cpp,anchored,sb2:event.cpp:CEvent::ChatSend,strict,"[EVIDENCE] Integrated STRICT code and relocation match for CEvent::ChatSend in src/event.cpp. At 0x16e80, DrawMap has the same body and target; only NetDraw is accepted."
+0x1cdc0,389,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x1cf50,83,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x1cfb0,586,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x1d200,24,event.cpp,bracketed,sb2:event.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?GetLastMousePos@CEvent@@QAE?AUtagPOINT@@XZ in src/event.cpp object.
+0x1d220,89,event.cpp,bracketed,sb2:event.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?TreatEvent@CEvent@@QAEHIIJ@Z in src/event.cpp object.
+0x1d280,6616,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x1ee30,1,menu.cpp,bracketed,sb2:menu.cpp,strict,[EVIDENCE] comparator has masked/ambiguous candidate(s); location/function identity is not unique; [EVIDENCE] integrated STRICT code and relocation match for ??1CMenu@@QAE@XZ in src/menu.cpp object.
+0x1ee40,83,jauge.cpp,anchored,sb2:jauge.cpp:CJauge::Create,strict,"[EVIDENCE] unique cmpfunc location from sb2:jauge.cpp (96 bytes, STRICT); CJauge::Create"
+0x1eea0,255,jauge.cpp,bracketed,sb2:jauge.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x1efa0,4,jauge.cpp,anchored,sb2:jauge.cpp:CJauge::GetLevel,strict,"[EVIDENCE] unique cmpfunc location from sb2:jauge.cpp (16 bytes, STRICT); CJauge::GetLevel"
+0x1efb0,38,jauge.cpp,anchored,sb2:jauge.cpp:CJauge::SetLevel,strict,"[EVIDENCE] unique cmpfunc location from sb2:jauge.cpp (48 bytes, STRICT); CJauge::SetLevel"
+0x1efe0,4,jauge.cpp,anchored,sb2:jauge.cpp:CJauge::GetType,strict,"[EVIDENCE] unique cmpfunc location from sb2:jauge.cpp (16 bytes, STRICT); CJauge::GetType"
+0x1eff0,24,jauge.cpp,anchored,sb2:jauge.cpp:CJauge::SetType,strict,"[EVIDENCE] unique cmpfunc location from sb2:jauge.cpp (32 bytes, STRICT); CJauge::SetType"
+0x1f010,24,jauge.cpp,anchored,sb2:jauge.cpp:CJauge::SetHide,strict,"[EVIDENCE] unique cmpfunc location from sb2:jauge.cpp (32 bytes, STRICT); CJauge::SetHide"
+0x1f030,20,menu.cpp,anchored,sb2:menu.cpp:CMenu::CMenu,strict,"[EVIDENCE] unique cmpfunc location from sb2:menu.cpp (32 bytes, STRICT); CMenu::CMenu"
+0x1f050,18,menu.cpp,anchored,sb2:menu.cpp:CMenu::Delete,strict,"[EVIDENCE] unique cmpfunc location from sb2:menu.cpp (32 bytes, STRICT); CMenu::Delete"
+0x1f070,117,menu.cpp,anchored,sb2:menu.cpp:CMenu::TreatEvent,strict,"[EVIDENCE] unique cmpfunc location from sb2:menu.cpp (144 bytes, RELOC-UNVERIFIED); CMenu::TreatEvent; calls: 0x1f330,0x1f140,0x1f150; [EVIDENCE] integrated STRICT code and relocation match for ?TreatEvent@CMenu@@QAEHIIJ@Z in src/menu.cpp object."
+0x1f100,107,menu.cpp,anchored,sb2:menu.cpp:CMenu::Detect,strict,"[EVIDENCE] unique cmpfunc location from sb2:menu.cpp (112 bytes, STRICT); CMenu::Detect"
+0x1f170,5,menu.cpp,anchored,sb2:menu.cpp:CMenu::MouseDown,strict,"[EVIDENCE] unique cmpfunc location from sb2:menu.cpp (16 bytes, STRICT); CMenu::MouseDown"
+0x1f180,95,menu.cpp,anchored,sb2:menu.cpp:CMenu::MouseMove,strict,"[EVIDENCE] unique cmpfunc location from sb2:menu.cpp (96 bytes, STRICT); CMenu::MouseMove; calls: 0x1f0d0,0x1f020"
+0x1f1e0,44,menu.cpp,anchored,sb2:menu.cpp:CMenu::MouseUp,strict,"[EVIDENCE] unique cmpfunc location from sb2:menu.cpp (48 bytes, STRICT); CMenu::MouseUp; calls: 0x1f0d0"
+0x1f210,10,misc.cpp,bracketed,pb:misc.cpp:InitHInstance,strict,[EVIDENCE] first misc function; same-TU boundary and LoadStringA successor at 0x1f1f0 prove placement
+0x1f220,28,misc.cpp,anchored,pb:misc.cpp:LoadStringA,strict,"[EVIDENCE] unique cmpfunc location from pb:misc.cpp (32 bytes, STRICT); LoadStringA; imports: USER32.dll"
+0x1f240,285,misc.cpp,bracketed,pb:misc.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x1f360,17,misc.cpp,anchored,pb:misc.cpp:ConvLongToPos,strict,"[EVIDENCE] unique cmpfunc location from pb:misc.cpp (32 bytes, STRICT); ConvLongToPos"
+0x1f380,11,misc.cpp,bracketed,pb:misc.cpp,strict,[EVIDENCE] comparator has masked/ambiguous candidate(s); location/function identity is not unique; [EVIDENCE] integrated STRICT code and relocation match for ?InitRandom@@YAXXZ in src/misc.cpp object.
+0x1f390,170,misc.cpp,anchored,pb:misc.cpp:GetCurrentDir,strict,[EVIDENCE] strict integrated body and relocation match; __pgmptr binds through the uniquely matched VC5 CRT reference and zero-filled definition.
+0x1f440,324,misc.cpp,bracketed,pb:misc.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x1f590,300,misc.cpp,anchored,pb:misc.cpp:AddUserPath,strict,"[EVIDENCE] unique cmpfunc location from pb:misc.cpp (304 bytes, RELOC-UNVERIFIED); AddUserPath; imports: KERNEL32.dll; calls: 0x238b0; [EVIDENCE] integrated STRICT code and relocation match for ?AddUserPath@@YAXPAD@Z in src/misc.cpp object."
+0x1f6c0,2075,misc.cpp,anchored,pb:misc.cpp:TraceErrorDD,strict,[EVIDENCE] strict integrated code and relocation match; helper references are resolved by verified CRT and reconstructed functions.
+0x1ffd0,423,misc.cpp,anchored,pb:misc.cpp:TraceErrorDS,strict,"[EVIDENCE] unique cmpfunc location from pb:misc.cpp (432 bytes, RELOC-UNVERIFIED); TraceErrorDS; DirectSound error strings; calls: 0x23b40,0x1f010; [EVIDENCE] integrated STRICT code and relocation match for ?TraceErrorDS@@YAXJPADH@Z in src/misc.cpp object."
+0x20180,68,movie.cpp,anchored,pb:movie.cpp:CMovie::initAVI,strict,"[EVIDENCE] unique cmpfunc location from pb:movie.cpp (80 bytes, STRICT); CMovie::initAVI; imports: WINMM.dll"
+0x201d0,33,movie.cpp,anchored,pb:movie.cpp:CMovie::termAVI,strict,"[EVIDENCE] unique cmpfunc location from pb:movie.cpp (48 bytes, STRICT); CMovie::termAVI; imports: WINMM.dll"
+0x20200,35,movie.cpp,anchored,pb:movie.cpp:CMovie::positionMovie,strict,"[EVIDENCE] unique cmpfunc location from pb:movie.cpp (48 bytes, STRICT); CMovie::positionMovie; imports: USER32.dll"
+0x20230,67,movie.cpp,anchored,pb:movie.cpp:CMovie::fileCloseMovie,strict,"[EVIDENCE] unique cmpfunc location from pb:movie.cpp (80 bytes, STRICT); CMovie::fileCloseMovie; imports: WINMM.dll,USER32.dll"
+0x20280,357,movie.cpp,anchored,pb:movie.cpp:CMovie::fileOpenMovie,strict,"[EVIDENCE] unique cmpfunc location from pb:movie.cpp (368 bytes, RELOC-UNVERIFIED); CMovie::fileOpenMovie; imports: WINMM.dll,USER32.dll; calls: 0x1f360,0x20200,0x201d0; [EVIDENCE] integrated STRICT code and relocation match for ?fileOpenMovie@CMovie@@IAEHPAXUtagRECT@@PAD@Z in src/movie.cpp object."
+0x203f0,128,movie.cpp,anchored,pb:movie.cpp:CMovie::playMovie,strict,"[EVIDENCE] unique cmpfunc location from pb:movie.cpp (128 bytes, STRICT); CMovie::playMovie; imports: WINMM.dll"
+0x20470,16,movie.cpp,anchored,pb:movie.cpp:CMovie::CMovie,strict,"[EVIDENCE] unique cmpfunc location from pb:movie.cpp (16 bytes, STRICT); CMovie::CMovie"
+0x20490,35,movie.cpp,anchored,pb:movie.cpp:CMovie::Create,strict,"[EVIDENCE] unique cmpfunc location from pb:movie.cpp (48 bytes, STRICT); CMovie::Create; calls: 0x20150"
+0x204c0,3,movie.cpp,anchored,pb:movie.cpp:CMovie::GetEnable,strict,"[EVIDENCE] unique cmpfunc location from pb:movie.cpp (16 bytes, STRICT); CMovie::GetEnable"
+0x204d0,171,movie.cpp,anchored,pb:movie.cpp:CMovie::IsExist,strict,"[EVIDENCE] unique cmpfunc location from pb:movie.cpp (176 bytes, RELOC-UNVERIFIED); CMovie::IsExist; calls: 0x1f360,0x23b20,0x23930; [EVIDENCE] integrated STRICT code and relocation match for ?IsExist@CMovie@@QAEHPAD@Z in src/movie.cpp object."
+0x20580,94,movie.cpp,anchored,pb:movie.cpp:CMovie::Play,strict,"[EVIDENCE] unique cmpfunc location from pb:movie.cpp (96 bytes, STRICT); CMovie::Play; calls: 0x20250,0x203c0"
+0x205e0,18,movie.cpp,anchored,pb:movie.cpp:CMovie::Stop,strict,"[EVIDENCE] unique cmpfunc location from pb:movie.cpp (32 bytes, STRICT); CMovie::Stop; calls: 0x20200"
+0x20600,916,network.cpp,anchored,sb2:network.cpp:TraceErrorDP,strict,[EVIDENCE] Integrated STRICT code and relocation match for TraceErrorDP in src/network.cpp; see docs/NETWAVE_TU.md.
+0x209a0,31,network.cpp,anchored,sb2:network.cpp:CNetwork::CNetwork,strict,[EVIDENCE] Integrated STRICT code and relocation match for CNetwork::CNetwork in src/network.cpp; see docs/NETWAVE_TU.md.
+0x209c0,36,network.cpp,anchored,sb2:network.cpp:CNetwork::~CNetwork,strict,[EVIDENCE] Integrated STRICT code and relocation match for CNetwork::~CNetwork in src/network.cpp; see docs/NETWAVE_TU.md.
+0x20a60,76,network.cpp,anchored,sb2:network.cpp:CNetwork::EnumProviders,strict,[EVIDENCE] Integrated STRICT code and relocation match for CNetwork::EnumProviders in src/network.cpp; see docs/NETWAVE_TU.md.
+0x20ab0,36,network.cpp,anchored,sb2:network.cpp:CNetwork::GetProviderName,strict,[EVIDENCE] Integrated STRICT code and relocation match for CNetwork::GetProviderName in src/network.cpp; see docs/NETWAVE_TU.md.
+0x20ae0,111,network.cpp,anchored,sb2:network.cpp:CNetwork::CreateProvider,strict,[EVIDENCE] Integrated STRICT code and relocation match for CNetwork::CreateProvider in src/network.cpp; see docs/NETWAVE_TU.md.
+0x20b50,35,network.cpp,anchored,sb2:network.cpp:CNetwork::FreeProviderList,strict,[EVIDENCE] Integrated STRICT code and relocation match for CNetwork::FreeProviderList in src/network.cpp; see docs/NETWAVE_TU.md.
+0x20c00,163,network.cpp,anchored,sb2:network.cpp:CNetwork::EnumSessions,strict,[EVIDENCE] Integrated STRICT code and relocation match for CNetwork::EnumSessions in src/network.cpp; see docs/NETWAVE_TU.md.
+0x20cb0,4,network.cpp,anchored,sb2:network.cpp:CNetwork::GetNbSessions,strict,[EVIDENCE] Shared getter lies in CNetwork's source-order slot between the independently located EnumSessions (0x20b30) and GetSessionName (0x20bf0) bodies; all six Eggbert 1 originals place the same 16 bytes at 0x20be0. Unique identical CJauge::GetHide bytes do not establish physical ownership.
+0x20cc0,36,network.cpp,anchored,sb2:network.cpp:CNetwork::GetSessionName,strict,[EVIDENCE] Integrated STRICT code and relocation match for CNetwork::GetSessionName in src/network.cpp; see docs/NETWAVE_TU.md.
+0x20cf0,237,network.cpp,inferred,sb2:network.cpp,none,[HYPOTHESIS] placed by TU block/source order; calls: 0x205d0
+0x20de0,35,network.cpp,anchored,sb2:network.cpp:CNetwork::FreeSessionList,strict,[EVIDENCE] Integrated STRICT code and relocation match for CNetwork::FreeSessionList in src/network.cpp; see docs/NETWAVE_TU.md.
+0x20e10,234,network.cpp,inferred,sb2:network.cpp,none,[HYPOTHESIS] placed by TU block/source order; calls: 0x205d0
+0x20f00,77,network.cpp,inferred,sb2:network.cpp,none,[HYPOTHESIS] placed by TU block/source order; calls: 0x205d0
+0x20f50,207,network.cpp,anchored,sb2:network.cpp:CNetwork::Receive,strict,[EVIDENCE] Integrated STRICT code and relocation match for CNetwork::Receive in src/network.cpp; see docs/NETWAVE_TU.md.
+0x21020,18,network.cpp,inferred,sb2:network.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x21040,35,network.cpp,anchored,sb2:network.cpp:CNetwork::FreeUnknownList,strict,[EVIDENCE] Integrated STRICT code and relocation match for CNetwork::FreeUnknownList in src/network.cpp; see docs/NETWAVE_TU.md.
+0x21070,4,network.cpp,anchored,sb2:network.cpp:CNetwork::IsHost,strict,[EVIDENCE] Integrated STRICT code and relocation match for CNetwork::IsHost in src/network.cpp; see docs/NETWAVE_TU.md.
+0x21080,133,pixmap.cpp,bracketed,pb:pixmap.cpp:CPixmap::CPixmap,none,[EVIDENCE] first pixmap function after network TU boundary: 0x21030 size 4 aligns to 0x21040; target constructor body remains unmatched
+0x21110,148,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::~CPixmap,strict,[EVIDENCE] unique strict 160-byte candidate body in clean combined verification
+0x211b0,19,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::SetDebug,strict,[EVIDENCE] unique strict 32-byte candidate body in clean combined verification
+0x211d0,902,pixmap.cpp,inferred,pb:pixmap.cpp,none,"[HYPOTHESIS] placed by TU block/source order; pixmap literal; imports: GDI32.dll,USER32.dll; calls: 0x23896,0x1f010,0x1f690"
+0x21560,11,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::Restore,strict,[EVIDENCE] unique strict 16-byte candidate body in clean combined verification
+0x21570,87,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::InitSysPalette,strict,[EVIDENCE] unique strict 96-byte candidate body in clean combined verification
+0x215d0,172,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::RestoreAll,strict,[EVIDENCE] unique strict 176-byte candidate body in clean combined verification
+0x21680,228,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::BltFast(int),strict,[EVIDENCE] unique strict 240-byte candidate body in clean combined verification
+0x21770,88,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::BltFast(surface),strict,[EVIDENCE] unique strict 96-byte candidate body in clean combined verification
+0x217d0,98,pixmap.cpp,anchored,pb:pixmap.cpp:DrawMap,strict,[EVIDENCE] strict integrated code and relocation match in src/pixmap.cpp.
+0x21840,40,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::SavePalette,strict,[EVIDENCE] unique strict 48-byte candidate body in clean combined verification
+0x21870,35,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::RestorePalette,strict,[EVIDENCE] unique strict 48-byte candidate body in clean combined verification
+0x218a0,391,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::Cache,strict,[EVIDENCE] unique strict 400-byte candidate body in clean combined verification
+0x21a30,44,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::Flush,strict,[EVIDENCE] unique strict 48-byte candidate body in clean combined verification
+0x21a60,60,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::SetTransparent,strict,[EVIDENCE] unique strict 64-byte candidate body in clean combined verification
+0x21aa0,67,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::SetTransparent2,strict,[EVIDENCE] unique strict 80-byte candidate body in clean combined verification
+0x21af0,33,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::SetClipping,strict,[EVIDENCE] unique strict 48-byte candidate body in clean combined verification
+0x21b20,36,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::GetClipping,strict,[EVIDENCE] unique strict 48-byte candidate body in clean combined verification
+0x21b50,770,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x21e60,719,pixmap.cpp,anchored,pb:pixmap.cpp:DrawIcon,strict,[EVIDENCE] strict integrated code; oracle-backed atlas base mappings land in .data. Atlas contents remain open.
+0x22130,185,pixmap.cpp,anchored,pb:pixmap.cpp:DrawPart,strict,[EVIDENCE] strict integrated code and relocation match in src/pixmap.cpp.
+0x221f0,115,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::DrawImage,strict,[EVIDENCE] unique strict 128-byte candidate body in clean combined verification
+0x22270,145,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::Display,strict,[EVIDENCE] unique strict 160-byte candidate body in clean combined verification
+0x22310,67,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::SetMousePosSprite,strict,[EVIDENCE] unique strict 80-byte candidate body in clean combined verification
+0x22360,41,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::SetMouseSprite,strict,[EVIDENCE] unique strict 48-byte candidate body in clean combined verification
+0x22390,10,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::MouseShow,strict,[EVIDENCE] unique strict 16-byte candidate body in clean combined verification
+0x223a0,326,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x224f0,186,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::MouseQuickDraw,strict,[EVIDENCE] unique strict 192-byte candidate body in clean combined verification
+0x225b0,8,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::MouseInvalidate,strict,[EVIDENCE] unique strict 16-byte candidate body in clean combined verification
+0x225c0,18,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x225e0,268,pixmap.cpp,anchored,pb:pixmap.cpp:MouseBackDraw,strict,[EVIDENCE] strict integrated code and relocation match in src/pixmap.cpp.
+0x226f0,241,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x227f0,193,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x228c0,123,pixmap.cpp,anchored,pb:pixmap.cpp:MouseRectSprite,strict,[EVIDENCE] strict integrated code; oracle-backed table_icon_element mapping lands in .data.
+0x22940,43,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x22970,206,sound.cpp,anchored,pb:sound.cpp:CSound::CreateSoundBuffer,similar,"[EVIDENCE] unique cmpfunc location from pb:sound.cpp (208 bytes, RELOC-UNVERIFIED); CSound::CreateSoundBuffer; literal: F:\Profil\sound.cpp; calls: 0x1ffa0"
+0x22a40,290,sound.cpp,anchored,pb:sound.cpp:CSound::ReadData,strict,"[EVIDENCE] unique cmpfunc location from pb:sound.cpp (304 bytes, RELOC-UNVERIFIED); CSound::ReadData; imports: USER32.dll; calls: 0x239b0,0x1f010; [EVIDENCE] integrated STRICT code and relocation match for ?ReadData@CSound@@IAEHPAUIDirectSoundBuffer@@PAU_iobuf@@KK@Z in src/sound.cpp object."
+0x22b70,236,sound.cpp,anchored,pb:sound.cpp:CSound::CreateBufferFromWaveFile,strict,"[EVIDENCE] unique cmpfunc location from pb:sound.cpp (240 bytes, RELOC-UNVERIFIED); CSound::CreateBufferFromWaveFile; calls: 0x23b20,0x239b0,0x23930; [EVIDENCE] integrated STRICT code and relocation match for ?CreateBufferFromWaveFile@CSound@@IAEHHPAD@Z in src/sound.cpp object."
+0x22c60,124,sound.cpp,anchored,pb:sound.cpp:InitMidiVolume,strict,"[EVIDENCE] unique cmpfunc location from pb:sound.cpp (128 bytes, STRICT); InitMidiVolume; imports: WINMM.dll"
+0x22ce0,88,sound.cpp,anchored,pb:sound.cpp:CSound::CSound,strict,"[EVIDENCE] unique cmpfunc location from pb:sound.cpp (96 bytes, STRICT); CSound::CSound"
+0x22d40,67,sound.cpp,anchored,pb:sound.cpp:CSound::~CSound,strict,"[EVIDENCE] unique cmpfunc location from pb:sound.cpp (80 bytes, STRICT); CSound::~CSound; calls: 0x22c30"
+0x22d90,82,sound.cpp,anchored,pb:sound.cpp:CSound::Create,similar,"[EVIDENCE] unique cmpfunc location from pb:sound.cpp (96 bytes, RELOC-UNVERIFIED); CSound::Create; calls: 0x23890,0x1f010"
+0x22df0,4,sound.cpp,anchored,pb:sound.cpp:CSound::GetEnable,strict,"[EVIDENCE] unique cmpfunc location from pb:sound.cpp (16 bytes, STRICT); CSound::GetEnable"
+0x22e00,10,sound.cpp,anchored,pb:sound.cpp:CSound::SetState,strict,"[EVIDENCE] unique cmpfunc location from pb:sound.cpp (16 bytes, STRICT); CSound::SetState"
+0x22e10,13,sound.cpp,anchored,pb:sound.cpp:CSound::SetAudioVolume,strict,"[EVIDENCE] unique cmpfunc location from pb:sound.cpp (16 bytes, STRICT); CSound::SetAudioVolume"
+0x22e20,17,sound.cpp,anchored,pb:sound.cpp:CSound::GetAudioVolume,strict,"[EVIDENCE] unique cmpfunc location from pb:sound.cpp (32 bytes, STRICT); CSound::GetAudioVolume"
+0x22e40,13,sound.cpp,anchored,pb:sound.cpp:CSound::SetMidiVolume,strict,"[EVIDENCE] unique cmpfunc location from pb:sound.cpp (16 bytes, STRICT); CSound::SetMidiVolume"
+0x22e50,17,sound.cpp,anchored,pb:sound.cpp:CSound::GetMidiVolume,strict,"[EVIDENCE] unique cmpfunc location from pb:sound.cpp (32 bytes, STRICT); CSound::GetMidiVolume"
+0x22e70,64,sound.cpp,anchored,pb:sound.cpp:CSound::CacheAll,strict,"[EVIDENCE] unique cmpfunc location from pb:sound.cpp (64 bytes, RELOC-UNVERIFIED); CSound::CacheAll; sound path; calls: 0x23b40,0x22e80; [EVIDENCE] integrated STRICT code and relocation match for ?CacheAll@CSound@@QAEXXZ in src/sound.cpp object."
+0x22eb0,63,sound.cpp,anchored,pb:sound.cpp:CSound::Cache,strict,"[EVIDENCE] unique cmpfunc location from pb:sound.cpp (64 bytes, STRICT); CSound::Cache; calls: 0x22ec0,0x22b40"
+0x22ef0,51,sound.cpp,anchored,pb:sound.cpp:CSound::Flush,strict,"[EVIDENCE] unique cmpfunc location from pb:sound.cpp (64 bytes, STRICT); CSound::Flush"
+0x22f30,189,sound.cpp,bracketed,pb:sound.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x22ff0,131,sound.cpp,bracketed,pb:sound.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x23080,99,sound.cpp,bracketed,pb:sound.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x230f0,351,sound.cpp,bracketed,pb:sound.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x23250,278,sound.cpp,bracketed,pb:sound.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x23370,431,sound.cpp,anchored,pb:sound.cpp:CSound::PlayMusic,strict,"[EVIDENCE] unique cmpfunc location from pb:sound.cpp (432 bytes, RELOC-UNVERIFIED); CSound::PlayMusic; imports: WINMM.dll; calls: 0x22c30,0x1f360,0x1f010; [EVIDENCE] integrated STRICT code and relocation match for ?PlayMusic@CSound@@QAEHPAXPAD@Z in src/sound.cpp object."
+0x23520,80,sound.cpp,anchored,pb:sound.cpp:CSound::RestartMusic,strict,"[EVIDENCE] unique cmpfunc location from pb:sound.cpp (80 bytes, RELOC-UNVERIFIED); CSound::RestartMusic; calls: 0x1f010,0x23340; [EVIDENCE] integrated STRICT code and relocation match for ?RestartMusic@CSound@@QAEHXZ in src/sound.cpp object."
+0x23570,77,sound.cpp,anchored,pb:sound.cpp:CSound::SuspendMusic,strict,"[EVIDENCE] unique cmpfunc location from pb:sound.cpp (80 bytes, STRICT); CSound::SuspendMusic; imports: WINMM.dll"
+0x235c0,17,sound.cpp,anchored,pb:sound.cpp:CSound::StopMusic,strict,"[EVIDENCE] unique cmpfunc location from pb:sound.cpp (32 bytes, STRICT); CSound::StopMusic; calls: 0x23540"
+0x235e0,14,sound.cpp,anchored,pb:sound.cpp:CSound::IsPlayingMusic,strict,"[EVIDENCE] unique cmpfunc location from pb:sound.cpp (16 bytes, STRICT); CSound::IsPlayingMusic"
+0x235f0,49,sound.cpp,anchored,pb:sound.cpp:CSound::AdaptVolumeMusic,strict,"[EVIDENCE] unique cmpfunc location from pb:sound.cpp (64 bytes, STRICT); CSound::AdaptVolumeMusic; calls: 0x22c30,0x234f0"
+0x23630,13,sound.cpp,anchored,pb:sound.cpp:CSound::SetSuspendSkip,strict,"[EVIDENCE] unique cmpfunc location from pb:sound.cpp (16 bytes, STRICT); CSound::SetSuspendSkip"
+0x23640,66,text.cpp,anchored,pb:text.cpp:GetCharWidth,strict,[EVIDENCE] strict integrated code and relocation match at the text TU start; Windows ANSI macro emits GetCharWidthA.
+0x23690,76,text.cpp,anchored,sb2:text.cpp:DrawCharSingle,strict,"[EVIDENCE] unique cmpfunc location from sb2:text.cpp (80 bytes, RELOC-UNVERIFIED); DrawCharSingle; calls: 0x21e30; [EVIDENCE] integrated STRICT code and relocation match for ?DrawCharSingle@@YAXPAVCPixmap@@UtagPOINT@@HH@Z in src/text.cpp object."
+0x236e0,144,text.cpp,bracketed,pb:text.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x23770,34,text.cpp,anchored,sb2:text.cpp:DrawTextLeft,strict,"[EVIDENCE] unique cmpfunc location from sb2:text.cpp (48 bytes, RELOC-UNVERIFIED); DrawTextLeft; calls: 0x23770; [EVIDENCE] integrated STRICT code and relocation match for ?DrawTextLeft@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z in src/text.cpp object."
+0x237a0,48,text.cpp,anchored,pb:text.cpp:DrawText,strict,[EVIDENCE] strict integrated code and relocation match; Windows ANSI macro emits DrawTextA.
+0x237d0,177,text.cpp,anchored,pb:text.cpp:DrawTextCenter,strict,"[EVIDENCE] unique cmpfunc location from pb:text.cpp (192 bytes, RELOC-UNVERIFIED); DrawTextCenter; calls: 0x23860,0x23770; [EVIDENCE] integrated STRICT code and relocation match for ?DrawTextCenter@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z in src/text.cpp object."
+0x23890,44,text.cpp,anchored,pb:text.cpp:GetTextWidth,strict,"[EVIDENCE] unique cmpfunc location from pb:text.cpp (48 bytes, RELOC-UNVERIFIED); GetTextWidth; calls: 0x23610; [EVIDENCE] integrated STRICT code and relocation match for ?GetTextWidth@@YAHPADH@Z in src/text.cpp object."
+0x238e0,133,crt,anchored,vc5:libc:_strstr,similar,"[EVIDENCE] unique VC5 SP3 LIBC archive member strstr.obj has a byte match here with 4 relocation bytes masked; CRT ownership is confirmed, strict relocation proof remains open"
+0x23960,119,crt,anchored,vc5:libc:_fclose,similar,"[EVIDENCE] unique VC5 SP3 LIBC archive member fclose.obj has a byte match here with 16 relocation bytes masked; CRT ownership is confirmed, strict relocation proof remains open"
+0x239e0,316,crt,anchored,vc5:libc:_fread,similar,"[EVIDENCE] unique VC5 SP3 LIBC archive member fread.obj has a byte match here with 8 relocation bytes masked; CRT ownership is confirmed, strict relocation proof remains open"
+0x23b20,35,crt,anchored,vc5:libc:_fsopen,strict,[EVIDENCE] VC5 SP3 CRT FOPEN.C compiles STRICT at this entry as _fsopen; __getstream and __openfile relocations resolve exactly. First identified CRT function.
+0x23b50,21,crt,anchored,vc5:libc:fopen,strict,[EVIDENCE] VC5 SP3 CRT FOPEN.C compiles STRICT at this entry as fopen; its call binds to _fsopen at 0x23af0 and passes _SH_DENYNO (0x40).
+0x23b70,104,crt,anchored,vc5:libc:sprintf,strict,[EVIDENCE] VC5 SP3 CRT SPRINTF.C compiles STRICT at this entry as sprintf; both CRT helper relocations resolve exactly (docs/NETWAVE_TU.md).
+0x23be0,14,crt,bracketed,vc5:libc:unresolved-wrapper,none,[EVIDENCE] Located after the first verified LIBC member; this short wrapper calls 0x424480. Exact CRT source identity remains open.
+0x23bf0,326,crt,bracketed,vc5:libc:fread,none,[EVIDENCE] LIBC FREAD.C has the same buffered-copy/_read/_filbuf flow; standalone body differs by six bytes (docs/NETWAVE_TU.md).
+0x23d40,187,crt,bracketed,vc5:libc:_ftime,similar,[EVIDENCE] VC5 SP3 FTIME.C is the source family; code is relocation-unverified because _timezone lacks a unique reconstructed definition (docs/NETWAVE_TU.md).
+0x23e00,16,crt,bracketed,vc5:libc:unresolved-wrapper,none,[EVIDENCE] Located in the LIBC block; this short wrapper calls 0x4244f0. Exact CRT source identity remains open.
+0x23e10,45,crt,bracketed,vc5:/GX-exception-support,none,[EVIDENCE] VC5 /GX exception funclet restores ExceptionList before transferring to a handler (docs/NETWAVE_TU.md).
+0x23e50,7,crt,bracketed,vc5:/GX-exception-support,none,[HYPOTHESIS] Seven-byte tail-transfer thunk adjacent to the /GX helper cluster; exact role is open.
+0x23e60,86,crt,bracketed,vc5:/GX-exception-support,none,[EVIDENCE] SEH unwind helper uses RtlUnwind and ExceptionList (docs/NETWAVE_TU.md).
+0x23ec0,60,crt,anchored,vc5:libc:___CxxFrameHandler,similar,[EVIDENCE] VC5 CRT ___CxxFrameHandler; source comparison has four relocation bytes masked (docs/TOOLCHAIN.md).
+0x23f00,91,crt,bracketed,vc5:/GX-exception-support,none,[EVIDENCE] VC5 /GX exception-frame setup around __CallSettingFrame_12 (docs/NETWAVE_TU.md).
+0x23f60,42,crt,bracketed,vc5:/GX-exception-support,none,[EVIDENCE] VC5 /GX exception-handler adapter calls the internal frame handler (docs/NETWAVE_TU.md).
+0x23f90,202,crt,bracketed,vc5:/GX-exception-support,none,[EVIDENCE] VC5 /GX exception-frame setup and dispatch (docs/NETWAVE_TU.md).
+0x24060,124,crt,bracketed,vc5:/GX-exception-support,none,[EVIDENCE] VC5 /GX exception dispatch/unwind helper (docs/NETWAVE_TU.md).
+0x240f0,127,crt,bracketed,vc5:/GX-exception-support,none,[EVIDENCE] VC5 /GX exception-frame chain search over 0x14-byte records (docs/NETWAVE_TU.md).

@@ -104,7 +104,9 @@ directory holds:
 
 ## Targets
 
-These are fresh results from 2026-10-25, on commit `a4a2352`.
+These are fresh results from 2026-10-25, on commit `a4a2352`. The two rows marked 2026-11-11 are the
+Speedy Eggbert Demo and Valueware ([EGGBERT_DEMO.md](EGGBERT_DEMO.md), [EGGBERT_VALUE.md](EGGBERT_VALUE.md)),
+built on that day; `--all` then builds 16 targets.
 
 | Target | Compiler / linker | Source root + overlay | Resources | Output | Image, digest w/o timestamps |
 |---|---|---|---|---|---|
@@ -122,6 +124,8 @@ These are fresh results from 2026-10-25, on commit `a4a2352`.
 | sb2/blupi/de | RTM / RTM | `games/sb2/src` + `games/sb2/blupi` | `games/sb2/res/sb2-blupi-de.rc` | `…/sb2-blupi-de/Blupi.exe` | 589,824 B, `91b0908a5483…` |
 | sb2/blupi/fr | RTM / RTM | `games/sb2/src` + `games/sb2/blupi` | `games/sb2/res/sb2-blupi-fr.rc` | `…/sb2-blupi-fr/Blupi.exe` | 589,312 B, `e3e06462b1f0…` |
 | sb2/eggbert/en | SP3 / SP3 | `games/sb2/src` | `games/sb2/res/sb2-eggbert-en.rc` | `…/sb2-eggbert-en/Eggbert2.exe` | 602,624 B, `6014656da4cf…` |
+| sb1/eggbert/demo (added 2026-11-11) | SP3 / RTM | `src` + `games/sb1-eggbert-demo` | `games/sb1-eggbert-demo/res/sb1-eggbert-demo.rc` | `…/sb1-eggbert-demo/WCSUP.DLL` | 534,528 B, `2a26c4245e7e…` |
+| sb1/eggbert/value (added 2026-11-11) | SP3 / RTM | `src` + `games/sb1-eggbert-value` | `games/sb1-eggbert-value/res/sb1-eggbert-value.rc` | `…/sb1-eggbert-value/SpeedyEggbertSEValueware_v1.0_EN.exe` | 534,528 B, `391361178ad4…` |
 
 Every target's historical `sound.cpp` path was established, and no target was degraded. The
 component hashes, abbreviated:

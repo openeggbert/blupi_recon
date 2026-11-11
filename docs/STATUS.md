@@ -1,7 +1,10 @@
 # Status
 
 The single current status page for every historical executable and the SDL3 port, as of
-**2026-10-25** on branch `sb2-matching`. Each figure is marked **fresh** (re-run for this page) or
+**2026-10-25** on branch `sb2-matching`. The rows for the Speedy Eggbert Demo and Valueware were added on
+**2026-11-11** (branch `editions`), fresh on that day. The function-matching, certificate and relink figures of the 14 earlier targets were
+re-run on that day with identical results; the port section was not re-run.
+ Each figure is marked **fresh** (re-run for this page) or
 **doc** (taken from the cited document). Progress is reported per executable; no figure here is a
 combined metric. The previous SB1-only page is preserved as
 [research/SB1_STATUS_2026-10-19.md](research/SB1_STATUS_2026-10-19.md).
@@ -26,6 +29,8 @@ Fresh: `tools/target_coverage.py --target <t>` over the accepted manifests. The 
 | Speedy Blupi 1, German | `sb1/blupi/de` | 407 + 6 | 127,456 / 141,488 (90.1%) |
 | Speedy Blupi 1, French | `sb1/blupi/fr` | 407 + 6 | 127,456 / 141,488 (90.1%) |
 | Speedy Eggbert 1 (1999) | `sb1/eggbert/en`, `de`, `es`, `fr`, `it`, `pt` (each) | 403 + 6 | 123,088 / 141,328 (87.1%) |
+| Speedy Eggbert Demo (1999) | `sb1/eggbert/demo` | 404 + 6 | 122,448 / 141,280 (86.7%) |
+| Speedy Eggbert SE Valueware (1999) | `sb1/eggbert/value` | 406 + 6 | 123,232 / 141,536 (87.1%) |
 | Speedy Blupi 1 June 1998 demo (evidence only) | `sb1/blupi/demo` | 372 + 3 | 73,248 / 140,784 (52.0%) |
 | Speedy Blupi 2 (2001) | `sb2/blupi/en`, `de`, `fr` (each) | 452 + 5 | 122,240 / 173,072 (70.6%) |
 | Speedy Eggbert 2 (2004) | `sb2/eggbert/en` | 450 + 12 | 136,448 / 172,992 (78.9%) |
@@ -48,6 +53,8 @@ never counts as STRICT, and the byte status stays MISMATCH ([VERIFYING.md](VERIF
 | SB1 US | 0 (the 2 standalone certificates are below) | 0 | 14,032 B |
 | SB1 German, French | 2 each: ChangePhase, TreatEventBase | 14,000 | 32 B |
 | Eggbert 1 (each language) | 3: ChangePhase, TreatEventBase, WindowProc | 15,360 | 2,880 B |
+| Eggbert Demo | 4: ChangePhase, TreatEventBase, WindowProc, GetBlupiInfo | 15,456 | 3,376 B |
+| Valueware | 3: ChangePhase, TreatEventBase, WindowProc | 15,456 | 2,848 B |
 | SB1 demo | 0 | 0 | 67,536 B |
 | Blupi 2 (each language) | 9 | 50,800 | 32 B |
 | Eggbert 2 | 4 | 36,304 | 240 B |
@@ -60,6 +67,9 @@ never counts as STRICT, and the byte status stays MISMATCH ([VERIFYING.md](VERIF
 - **The 32-byte remainders** of SB1 German/French and Blupi 2 are that same linker output.
 - **Eggbert 1's remaining bytes** include DoInit (relocations verified, raw comparator
   RELOC-UNVERIFIED).
+- **The Eggbert Demo's and Valueware's remaining bytes** are DoInit in the same state, and in the
+  demo MockeryDetect, whose instruction order depends on the declaration count
+  ([EGGBERT_DEMO.md](EGGBERT_DEMO.md), [EGGBERT_VALUE.md](EGGBERT_VALUE.md)).
 - **Eggbert 2's 240 bytes** are CreateSoundBuffer (208 B, an `[OPEN]` sound.cpp line difference;
   docs/SB2.md) plus 32 bytes of thunks.
 
@@ -81,6 +91,8 @@ with each original.
 | SB1 US | 535,552 / 535,552 | 121,401 | `.rsrc` | 329,727 / 329,728, 0 | 131 / 412 |
 | SB1 German, French | 538,112 / 538,112 | 26,261 each | `.rsrc` | 329,715 / 329,728, 0 | 394 / 412 |
 | Eggbert 1 (en, de, es, it, pt; fr) | equal for each language | 26,625; fr 26,553 | none (`.rsrc` differs in timestamps only, doc) | 329,202 / 329,216, 0 | 390 / 408 |
+| Eggbert Demo | 534,528 / 534,528 | 96,755 | none (`.rsrc` differs in timestamps only, fresh) | 329,202 / 329,216, 0 | 158 / 409 |
+| Valueware | 534,528 / 534,528 | 26,367 | none (`.rsrc` differs in timestamps only, fresh) | 329,204 / 329,216, 0 | 392 / 411 |
 | SB1 demo | 533,504 / 534,016 | 185,717 | none | 307,822 / 328,704, +736 | 10 / 374 |
 | Blupi 2 (each language) | equal for each language | 47,503 | `.rdata` | 347,915 / 349,184, 0 | 339 / 456 |
 | Eggbert 2 | 602,624 / 602,624 | 164,336 | `.rsrc` | 347,487 / 363,520, 0 | 87 / 461 |
@@ -92,6 +104,8 @@ with each original.
   is 268 against 270 ([SB1_CLOSURE.md](SB1_CLOSURE.md), [BLOCKER_CHECKS.md](BLOCKER_CHECKS.md)).
 - **The original linker inputs are underdetermined,** and that limit applies to every target.
 - **SB1 demo:** it has no demo resource script, and its text is 32 bytes short. It is evidence only.
+- **Eggbert Demo:** MockeryDetect is 16 bytes longer than the original's, which moves every function
+  after it ([EGGBERT_DEMO.md](EGGBERT_DEMO.md)).
 
 **SB2 `.data` virtual size.** [EVIDENCE] The fresh relinks show the same `.data` virtual size as the
 originals for all four SB2 targets. docs/SB2.md round 20 had recorded +32. [OPEN] The cause of the
@@ -105,6 +119,8 @@ evidence only, not recovered source (SB1_CLOSURE.md).
 
 Fresh: consolidation stage 1, on commit `a4a2352`. Details are in [BUILDING.md](BUILDING.md).
 
+- **The Speedy Eggbert Demo and Valueware build too** (2026-11-11), each with its own resource script;
+  `--all` then builds 16 executables.
 - **All 14 executables build with `tools/build.py`,** using their historical compiler and linker.
   No original executable, oracle, certificate or research tool is read; `tests/test_build_boundary.py`
   enforces this.

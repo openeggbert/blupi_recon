@@ -33,6 +33,11 @@ same `src/`:
   includes use edition headers in every TU. Add only files with evidenced edition requirements; the
   port continues to compile `games/sb2/src/` unchanged. Never edit `src/` for SB2; SB2 source changes only from SB2 binary evidence. Run
   `tools/crossmap.py --target sb2/eggbert/en --audit` before `--accept`.
+- The Speedy Eggbert Demo and Speedy Eggbert SE Valueware (`sb1/eggbert/demo`, `sb1/eggbert/value`, 2026-11-11) are
+  the Eggbert 1 source built with the original `_DEMO` / `_VALUE` switch. They compile `src/` with `_EGAMES=1` plus the
+  whole-file overlays `games/sb1-eggbert-demo/` and `games/sb1-eggbert-value/`, where those arms are resolved into plain
+  code. Never set `_DEMO=1` for them: in `src/` that name also selects the June 1998 revision (docs/EGGBERT_DEMO.md,
+  docs/EGGBERT_VALUE.md). Change an overlay only from that executable's bytes; `src/` stays as it is.
 - Historical targets are matched independently (user policy, 2026-10-24). The matching reconstruction exists to
   reproduce each original executable, not to compile every edition from one source: Speedy Blupi 1, Speedy
   Eggbert 1, Speedy Blupi 2 and Speedy Eggbert 2 (and their language and demo builds) are optimized separately.
