@@ -1,0 +1,2821 @@
+{
+  "about": "Speedy Blupi Demo of June 1998 (docs/SB1_DEMO.md): its own source tree games/sb1-blupi-demo/src, an earlier revision of the SB1 source, verified against its own executable (targets.json sb1/blupi/demo, oracle/sb1-blupi-demo-tree). All addresses are the demo's own. tools/verify.py --target sb1/blupi/demo [--accept].",
+  "source_root": "games/sb1-blupi-demo/src",
+  "toolchain": {
+    "tree": "rtm",
+    "include_dirs": [
+      "C:\\tools\\dx5sdk\\INCLUDE"
+    ],
+    "defines": [
+      "WIN32",
+      "NDEBUG",
+      "_WINDOWS",
+      "nullptr=0"
+    ],
+    "flags": [
+      "/W3",
+      "/GX",
+      "/O2",
+      "/ML",
+      "/Gd",
+      "/Gy"
+    ]
+  },
+  "crt_data_evidence": {
+    "symbol": "__pgmptr",
+    "reference_source": "VC\\CRT\\SRC\\STDARGV.C::__setargv",
+    "definition_source": "VC\\CRT\\SRC\\CRT0DAT.C::_pgmptr",
+    "purpose": "bind __pgmptr only when the unique CRT code reference and its zero-filled definition resolve to the same oracle data address"
+  },
+  "translation_units": [
+    {
+      "source": "games/sb1-blupi-demo/src/button.cpp"
+    },
+    {
+      "source": "games/sb1-blupi-demo/src/ddutil.cpp"
+    },
+    {
+      "source": "games/sb1-blupi-demo/src/jauge.cpp"
+    },
+    {
+      "source": "games/sb1-blupi-demo/src/menu.cpp"
+    },
+    {
+      "source": "games/sb1-blupi-demo/src/misc.cpp"
+    },
+    {
+      "source": "games/sb1-blupi-demo/src/movie.cpp"
+    },
+    {
+      "source": "games/sb1-blupi-demo/src/network.cpp"
+    },
+    {
+      "source": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "source": "games/sb1-blupi-demo/src/sound.cpp",
+      "build_path": "F:\\Profil\\sound.cpp"
+    },
+    {
+      "source": "games/sb1-blupi-demo/src/text.cpp"
+    },
+    {
+      "source": "games/sb1-blupi-demo/src/blupi.cpp"
+    },
+    {
+      "source": "games/sb1-blupi-demo/src/decnet.cpp"
+    },
+    {
+      "source": "games/sb1-blupi-demo/src/decor.cpp"
+    },
+    {
+      "source": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "source": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "source": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "source": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "source": "games/sb1-blupi-demo/src/decblupi.cpp"
+    },
+    {
+      "source": "games/sb1-blupi-demo/src/dectables.cpp"
+    }
+  ],
+  "standalone_link": {
+    "image_base": "0x400000",
+    "section_alignment": 4096,
+    "object_order": [
+      "games/sb1-blupi-demo/src/blupi.cpp",
+      "games/sb1-blupi-demo/src/button.cpp",
+      "games/sb1-blupi-demo/src/ddutil.cpp",
+      "games/sb1-blupi-demo/src/decblock.cpp",
+      "games/sb1-blupi-demo/src/decdesign.cpp",
+      "games/sb1-blupi-demo/src/decblupi.cpp",
+      "games/sb1-blupi-demo/src/decnet.cpp",
+      "games/sb1-blupi-demo/src/decmove.cpp",
+      "games/sb1-blupi-demo/src/decor.cpp",
+      "games/sb1-blupi-demo/src/event.cpp",
+      "games/sb1-blupi-demo/src/jauge.cpp",
+      "games/sb1-blupi-demo/src/menu.cpp",
+      "games/sb1-blupi-demo/src/misc.cpp",
+      "games/sb1-blupi-demo/src/movie.cpp",
+      "games/sb1-blupi-demo/src/network.cpp",
+      "games/sb1-blupi-demo/src/dectables.cpp",
+      "games/sb1-blupi-demo/src/pixmap.cpp",
+      "games/sb1-blupi-demo/src/sound.cpp",
+      "games/sb1-blupi-demo/src/text.cpp"
+    ],
+    "provenance": "Ordinary-build settings inherited from the SB1 manifest (recon.json) when the June demo got its own tree on 2026-11-11; not a claim of original linker-input identity."
+  },
+  "accepted_functions": [
+    {
+      "symbol": "?GetNum@@YAHPAD@Z",
+      "rva": "0x00001000",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/blupi.cpp"
+    },
+    {
+      "symbol": "?ReadConfig@@YAHPAD@Z",
+      "rva": "0x00001030",
+      "size": 512,
+      "tu": "games/sb1-blupi-demo/src/blupi.cpp"
+    },
+    {
+      "symbol": "?UpdateFrame@@YAXXZ",
+      "rva": "0x00001230",
+      "size": 528,
+      "tu": "games/sb1-blupi-demo/src/blupi.cpp"
+    },
+    {
+      "symbol": "?SetDecor@@YAXXZ",
+      "rva": "0x00001440",
+      "size": 208,
+      "tu": "games/sb1-blupi-demo/src/blupi.cpp"
+    },
+    {
+      "symbol": "?RestoreGame@@YAHXZ",
+      "rva": "0x00001510",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/blupi.cpp"
+    },
+    {
+      "symbol": "?FlushGame@@YAHXZ",
+      "rva": "0x00001540",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/blupi.cpp"
+    },
+    {
+      "symbol": "?WindowProc@@YGJPAXIIJ@Z",
+      "rva": "0x00001560",
+      "size": 1360,
+      "tu": "games/sb1-blupi-demo/src/blupi.cpp"
+    },
+    {
+      "symbol": "?FinishObjects@@YAXXZ",
+      "rva": "0x00001ab0",
+      "size": 240,
+      "tu": "games/sb1-blupi-demo/src/blupi.cpp"
+    },
+    {
+      "symbol": "?TimerStep@@YGXIIKKK@Z",
+      "rva": "0x00001ba0",
+      "size": 64,
+      "tu": "games/sb1-blupi-demo/src/blupi.cpp"
+    },
+    {
+      "symbol": "?InitFail@@YAHPBDH@Z",
+      "rva": "0x00001be0",
+      "size": 208,
+      "tu": "games/sb1-blupi-demo/src/blupi.cpp"
+    },
+    {
+      "symbol": "?Benchmark@@YAHXZ",
+      "rva": "0x00001cb0",
+      "size": 208,
+      "tu": "games/sb1-blupi-demo/src/blupi.cpp"
+    },
+    {
+      "symbol": "_WinMain@16",
+      "rva": "0x00001d80",
+      "size": 192,
+      "tu": "games/sb1-blupi-demo/src/blupi.cpp"
+    },
+    {
+      "symbol": "?DoInit@@YAHPAXPADH@Z",
+      "rva": "0x00001e40",
+      "size": 2800,
+      "tu": "games/sb1-blupi-demo/src/blupi.cpp"
+    },
+    {
+      "symbol": "??0CButton@@QAE@XZ",
+      "rva": "0x00002930",
+      "size": 64,
+      "tu": "games/sb1-blupi-demo/src/button.cpp"
+    },
+    {
+      "symbol": "??1CButton@@QAE@XZ",
+      "rva": "0x00002970",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/button.cpp"
+    },
+    {
+      "symbol": "??1CJauge@@QAE@XZ",
+      "rva": "0x00002970",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/jauge.cpp",
+      "status": "folded",
+      "into": {
+        "symbol": "??1CButton@@QAE@XZ",
+        "rva": "0x00002970",
+        "tu": "games/sb1-blupi-demo/src/button.cpp"
+      }
+    },
+    {
+      "symbol": "??1CMenu@@QAE@XZ",
+      "rva": "0x00002970",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/menu.cpp",
+      "status": "folded",
+      "into": {
+        "symbol": "??1CButton@@QAE@XZ",
+        "rva": "0x00002970",
+        "tu": "games/sb1-blupi-demo/src/button.cpp"
+      }
+    },
+    {
+      "symbol": "?OutputDebug@@YAXPAD@Z",
+      "rva": "0x00002970",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/misc.cpp",
+      "status": "folded",
+      "into": {
+        "symbol": "??1CButton@@QAE@XZ",
+        "rva": "0x00002970",
+        "tu": "games/sb1-blupi-demo/src/button.cpp"
+      }
+    },
+    {
+      "symbol": "?Create@CButton@@QAEHPAXPAVCPixmap@@PAVCSound@@UtagPOINT@@HHI@Z",
+      "rva": "0x00002980",
+      "size": 176,
+      "tu": "games/sb1-blupi-demo/src/button.cpp"
+    },
+    {
+      "symbol": "?SetIconMenu@CButton@@QAEXPAHH@Z",
+      "rva": "0x00002a30",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/button.cpp"
+    },
+    {
+      "symbol": "?SetToolTips@CButton@@QAEXPAHH@Z",
+      "rva": "0x00002a60",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/button.cpp"
+    },
+    {
+      "symbol": "?Draw@CButton@@QAEXXZ",
+      "rva": "0x00002a90",
+      "size": 336,
+      "tu": "games/sb1-blupi-demo/src/button.cpp"
+    },
+    {
+      "symbol": "?GetState@CButton@@QAEHXZ",
+      "rva": "0x00002be0",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/button.cpp"
+    },
+    {
+      "symbol": "?SetState@CButton@@QAEXH@Z",
+      "rva": "0x00002bf0",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/button.cpp"
+    },
+    {
+      "symbol": "?GetMenu@CButton@@QAEHXZ",
+      "rva": "0x00002c20",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/button.cpp"
+    },
+    {
+      "symbol": "?SetMenu@CButton@@QAEXH@Z",
+      "rva": "0x00002c30",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/button.cpp"
+    },
+    {
+      "symbol": "?SetEnable@CButton@@QAEXH@Z",
+      "rva": "0x00002c60",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/button.cpp"
+    },
+    {
+      "symbol": "?SetDemo@CButton@@QAEXH@Z",
+      "rva": "0x00002c90",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/button.cpp"
+    },
+    {
+      "symbol": "?SetHide@CButton@@QAEXH@Z",
+      "rva": "0x00002cc0",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/button.cpp"
+    },
+    {
+      "symbol": "?TreatEvent@CButton@@QAEHIIJ@Z",
+      "rva": "0x00002ce0",
+      "size": 144,
+      "tu": "games/sb1-blupi-demo/src/button.cpp"
+    },
+    {
+      "symbol": "?MouseOnButton@CButton@@QAEHUtagPOINT@@@Z",
+      "rva": "0x00002d70",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/button.cpp"
+    },
+    {
+      "symbol": "?GetToolTips@CButton@@QAEHUtagPOINT@@@Z",
+      "rva": "0x00002d90",
+      "size": 240,
+      "tu": "games/sb1-blupi-demo/src/button.cpp"
+    },
+    {
+      "symbol": "?Detect@CButton@@IAEHUtagPOINT@@@Z",
+      "rva": "0x00002e80",
+      "size": 112,
+      "tu": "games/sb1-blupi-demo/src/button.cpp"
+    },
+    {
+      "symbol": "?MouseDown@CButton@@IAEHUtagPOINT@@@Z",
+      "rva": "0x00002ef0",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/button.cpp"
+    },
+    {
+      "symbol": "?MouseMove@CButton@@IAEHUtagPOINT@@@Z",
+      "rva": "0x00002f50",
+      "size": 208,
+      "tu": "games/sb1-blupi-demo/src/button.cpp"
+    },
+    {
+      "symbol": "?MouseUp@CButton@@IAEHUtagPOINT@@@Z",
+      "rva": "0x00003020",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/button.cpp"
+    },
+    {
+      "symbol": "_DDSetDebug",
+      "rva": "0x00003080",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/ddutil.cpp"
+    },
+    {
+      "symbol": "_DDLoadBitmap",
+      "rva": "0x00003090",
+      "size": 400,
+      "tu": "games/sb1-blupi-demo/src/ddutil.cpp"
+    },
+    {
+      "symbol": "_DDReLoadBitmap",
+      "rva": "0x00003220",
+      "size": 160,
+      "tu": "games/sb1-blupi-demo/src/ddutil.cpp"
+    },
+    {
+      "symbol": "_DDCopyBitmap",
+      "rva": "0x000032c0",
+      "size": 512,
+      "tu": "games/sb1-blupi-demo/src/ddutil.cpp"
+    },
+    {
+      "symbol": "_DDLoadPalette",
+      "rva": "0x000034c0",
+      "size": 608,
+      "tu": "games/sb1-blupi-demo/src/ddutil.cpp"
+    },
+    {
+      "symbol": "_DDColorMatch",
+      "rva": "0x00003720",
+      "size": 240,
+      "tu": "games/sb1-blupi-demo/src/ddutil.cpp"
+    },
+    {
+      "symbol": "_DDSetColorKey",
+      "rva": "0x00003810",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/ddutil.cpp"
+    },
+    {
+      "symbol": "_DDSetColorKey2",
+      "rva": "0x00003840",
+      "size": 64,
+      "tu": "games/sb1-blupi-demo/src/ddutil.cpp"
+    },
+    {
+      "symbol": "??0CDecor@@QAE@XZ",
+      "rva": "0x00003880",
+      "size": 160,
+      "tu": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "symbol": "??1CDecor@@QAE@XZ",
+      "rva": "0x00003920",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "symbol": "?Create@CDecor@@QAEXPAXPAVCSound@@PAVCPixmap@@PAVCNetwork@@@Z",
+      "rva": "0x00003940",
+      "size": 208,
+      "tu": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "symbol": "?LoadImages@CDecor@@QAEHXZ",
+      "rva": "0x00003a10",
+      "size": 112,
+      "tu": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "symbol": "?InitGamer@CDecor@@QAEXXZ",
+      "rva": "0x00003a80",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "symbol": "?InitDecor@CDecor@@QAEXXZ",
+      "rva": "0x00003aa0",
+      "size": 752,
+      "tu": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "symbol": "?SetTime@CDecor@@QAEXH@Z",
+      "rva": "0x00003d90",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "symbol": "?GetTime@CDecor@@QAEHXZ",
+      "rva": "0x00003da0",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "symbol": "?PlayPrepare@CDecor@@QAEXH@Z",
+      "rva": "0x00003db0",
+      "size": 704,
+      "tu": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "symbol": "?BuildPrepare@CDecor@@QAEXXZ",
+      "rva": "0x00004070",
+      "size": 112,
+      "tu": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "symbol": "?IsTerminated@CDecor@@QAEHXZ",
+      "rva": "0x000040e0",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "symbol": "?MoveStep@CDecor@@QAEXH@Z",
+      "rva": "0x000040f0",
+      "size": 272,
+      "tu": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "symbol": "?GetBlupiChannelActual@CDecor@@QAEHXZ",
+      "rva": "0x00004200",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "symbol": "?GetBlupiChannelStandard@CDecor@@QAEHXZ",
+      "rva": "0x00004230",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "symbol": "?GetIconPerso@CDecor@@QAEHXZ",
+      "rva": "0x00004250",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "symbol": "?Build@CDecor@@QAEXUtagRECT@@UtagPOINT@@@Z",
+      "rva": "0x00004270",
+      "size": 3872,
+      "tu": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "symbol": "?DrawInfo@CDecor@@QAEXXZ",
+      "rva": "0x00005190",
+      "size": 1008,
+      "tu": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "symbol": "?DecorNextAction@CDecor@@QAE?AUtagPOINT@@XZ",
+      "rva": "0x00005580",
+      "size": 224,
+      "tu": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "symbol": "?KeyChange@CDecor@@QAEXH@Z",
+      "rva": "0x00005660",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "symbol": "?SetJoystickEnable@CDecor@@QAEXH@Z",
+      "rva": "0x00005670",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "symbol": "?SetDemoPlay@CDecor@@QAEXH@Z",
+      "rva": "0x00005680",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "symbol": "?PlaySoundA@CDecor@@QAEXHUtagPOINT@@H@Z",
+      "rva": "0x000056e0",
+      "size": 128,
+      "tu": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "symbol": "?StopSound@CDecor@@QAEXH@Z",
+      "rva": "0x00005760",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "symbol": "?AdaptMotorVehicleSound@CDecor@@QAEXUtagPOINT@@@Z",
+      "rva": "0x000057b0",
+      "size": 128,
+      "tu": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "symbol": "?ChangePhase@CDecor@@QAEXH@Z",
+      "rva": "0x00005830",
+      "size": 208,
+      "tu": "games/sb1-blupi-demo/src/decblock.cpp"
+    },
+    {
+      "symbol": "?ScreenPosToCelPos@CDecor@@QAE?AUtagPOINT@@U2@@Z",
+      "rva": "0x00005900",
+      "size": 144,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetCelHiliFromScreenPos@CDecor@@QAEXUtagPOINT@@@Z",
+      "rva": "0x00005990",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetIconLiftAndStuff@CDecor@@QAEXHH@Z",
+      "rva": "0x000059c0",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?DeleteCel@CDecor@@QAEXUtagPOINT@@@Z",
+      "rva": "0x00005a20",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?PlaceDecor@@YAXPAH00HHH@Z",
+      "rva": "0x00005a80",
+      "size": 128,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?PlaceDecor1@CDecor@@QAEXUtagPOINT@@HHH@Z",
+      "rva": "0x00005b00",
+      "size": 608,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?PlaceDecor2@CDecor@@QAEXUtagPOINT@@HHH@Z",
+      "rva": "0x00005d60",
+      "size": 880,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?PlaceDecor3@CDecor@@QAEXUtagPOINT@@HHH@Z",
+      "rva": "0x000060d0",
+      "size": 832,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?PlaceDecor4@CDecor@@QAEXUtagPOINT@@HHH@Z",
+      "rva": "0x00006410",
+      "size": 3632,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?PlaceDecor5@CDecor@@QAEXUtagPOINT@@HHH@Z",
+      "rva": "0x00007240",
+      "size": 1984,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?PlaceDecor6@CDecor@@QAEXUtagPOINT@@HHH@Z",
+      "rva": "0x00007a00",
+      "size": 2080,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?PlaceDecor7@CDecor@@QAEXUtagPOINT@@HHH@Z",
+      "rva": "0x00008220",
+      "size": 480,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?GetMissionTitle@CDecor@@QAEPADXZ",
+      "rva": "0x00008400",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetMissionTitle@CDecor@@QAEXPAD@Z",
+      "rva": "0x00008410",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?GetRegion@CDecor@@QAEHXZ",
+      "rva": "0x00008440",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetRegion@CDecor@@QAEXH@Z",
+      "rva": "0x00008450",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?GetMusic@CDecor@@QAEHXZ",
+      "rva": "0x00008460",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetMusic@CDecor@@QAEXH@Z",
+      "rva": "0x00008470",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?GetDim@CDecor@@QAE?AUtagPOINT@@XZ",
+      "rva": "0x00008480",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetDim@CDecor@@QAEXUtagPOINT@@@Z",
+      "rva": "0x000084a0",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?GetNbVies@CDecor@@QAEHXZ",
+      "rva": "0x000084c0",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetNbVies@CDecor@@QAEXH@Z",
+      "rva": "0x000084d0",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?GetPause@CDecor@@QAEHXZ",
+      "rva": "0x000084e0",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?ChangePause@CDecor@@QAEXH@Z",
+      "rva": "0x000084f0",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?GetDoors@CDecor@@QAEXPAF@Z",
+      "rva": "0x00008500",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetDoors@CDecor@@QAEXPAF@Z",
+      "rva": "0x00008530",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetAllMissions@CDecor@@QAEXH@Z",
+      "rva": "0x00008560",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?CheatAction@CDecor@@QAEXH@Z",
+      "rva": "0x00008580",
+      "size": 1696,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?GetSuperBlupi@CDecor@@QAEHXZ",
+      "rva": "0x00008c20",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetSuperBlupi@CDecor@@QAEXH@Z",
+      "rva": "0x00008c30",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?GetDrawSecret@CDecor@@QAEHXZ",
+      "rva": "0x00008c40",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetDrawSecret@CDecor@@QAEXH@Z",
+      "rva": "0x00008c50",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?GetNetPacked@CDecor@@QAEHXZ",
+      "rva": "0x00008c60",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetNetPacked@CDecor@@QAEXH@Z",
+      "rva": "0x00008c70",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?GetNetMovePredict@CDecor@@QAEHXZ",
+      "rva": "0x00008c80",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetNetMovePredict@CDecor@@QAEXH@Z",
+      "rva": "0x00008c90",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?GetNetDebug@CDecor@@QAEHXZ",
+      "rva": "0x00008ca0",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetNetDebug@CDecor@@QAEXH@Z",
+      "rva": "0x00008cb0",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?OutputNetDebug@CDecor@@QAEXPAD@Z",
+      "rva": "0x00008cd0",
+      "size": 112,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetMulti@CDecor@@QAEXH@Z",
+      "rva": "0x00008d40",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetTeam@CDecor@@QAEXH@Z",
+      "rva": "0x00008d50",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?BlupiSearchIcon@CDecor@@QAEXXZ",
+      "rva": "0x00008d60",
+      "size": 1024,
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp"
+    },
+    {
+      "symbol": "?BlupiStep@CDecor@@QAEXXZ",
+      "rva": "0x00009160",
+      "size": 25248,
+      "tu": "games/sb1-blupi-demo/src/decblupi.cpp"
+    },
+    {
+      "symbol": "?GetPosDecor@CDecor@@QAE?AUtagPOINT@@U2@@Z",
+      "rva": "0x0000f400",
+      "size": 112,
+      "tu": "games/sb1-blupi-demo/src/decblupi.cpp"
+    },
+    {
+      "symbol": "?BlupiAddFifo@CDecor@@QAEXUtagPOINT@@@Z",
+      "rva": "0x0000f470",
+      "size": 144,
+      "tu": "games/sb1-blupi-demo/src/decblupi.cpp"
+    },
+    {
+      "symbol": "?DecorDetect@CDecor@@QAEHUtagRECT@@H@Z",
+      "rva": "0x0000f500",
+      "size": 640,
+      "tu": "games/sb1-blupi-demo/src/decblupi.cpp"
+    },
+    {
+      "symbol": "?TestPath@CDecor@@QAEHUtagRECT@@UtagPOINT@@PAU3@@Z",
+      "rva": "0x0000f780",
+      "size": 848,
+      "tu": "games/sb1-blupi-demo/src/decblupi.cpp"
+    },
+    {
+      "symbol": "?MoveObjectPollution@CDecor@@QAEXXZ",
+      "rva": "0x0000fad0",
+      "size": 448,
+      "tu": "games/sb1-blupi-demo/src/decblupi.cpp"
+    },
+    {
+      "symbol": "?MoveObjectPlouf@CDecor@@QAEXUtagPOINT@@@Z",
+      "rva": "0x0000fc90",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/decblupi.cpp"
+    },
+    {
+      "symbol": "?MoveObjectTiplouf@CDecor@@QAEXUtagPOINT@@@Z",
+      "rva": "0x0000fce0",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/decblupi.cpp"
+    },
+    {
+      "symbol": "?MoveObjectBlup@CDecor@@QAEXUtagPOINT@@@Z",
+      "rva": "0x0000fd40",
+      "size": 272,
+      "tu": "games/sb1-blupi-demo/src/decblupi.cpp"
+    },
+    {
+      "symbol": "?IsWorld@CDecor@@QAEHUtagPOINT@@@Z",
+      "rva": "0x0000fe50",
+      "size": 192,
+      "tu": "games/sb1-blupi-demo/src/decblupi.cpp"
+    },
+    {
+      "symbol": "?GetTypeBarre@CDecor@@QAEHUtagPOINT@@@Z",
+      "rva": "0x0000ff10",
+      "size": 256,
+      "tu": "games/sb1-blupi-demo/src/decblupi.cpp"
+    },
+    {
+      "symbol": "?IsLave@CDecor@@QAEHUtagPOINT@@@Z",
+      "rva": "0x00010010",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/decblupi.cpp"
+    },
+    {
+      "symbol": "?IsRessort@CDecor@@QAEHUtagPOINT@@@Z",
+      "rva": "0x00010070",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/decblupi.cpp"
+    },
+    {
+      "symbol": "?IsSurfWater@CDecor@@QAEHUtagPOINT@@@Z",
+      "rva": "0x000100d0",
+      "size": 128,
+      "tu": "games/sb1-blupi-demo/src/decblupi.cpp"
+    },
+    {
+      "symbol": "?IsDeepWater@CDecor@@QAEHUtagPOINT@@@Z",
+      "rva": "0x00010150",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/decblupi.cpp",
+      "withdrawal_history": [
+        {
+          "reason": "Removing a duplicate animation-selector draft body that the original did not have from decblupi.cpp changed IsDeepWater's emitted coordinate order (decblupi.cpp TU context). Same class as the earlier GetBlupiInfo withdrawal: preceding decblupi bodies are still incomplete; restore by completing them, never by keeping the non-original duplicate.",
+          "evidence": "src/PROVENANCE.md (follow-up 21); docs/SENIOR_SOL_DECDESIGN.md",
+          "date": "2026-10-17"
+        }
+      ]
+    },
+    {
+      "symbol": "?IsOutWater@CDecor@@QAEHUtagPOINT@@@Z",
+      "rva": "0x000101a0",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/decblupi.cpp"
+    },
+    {
+      "symbol": "?IsPassIcon@CDecor@@QAEHH@Z",
+      "rva": "0x000101f0",
+      "size": 64,
+      "tu": "games/sb1-blupi-demo/src/decblupi.cpp"
+    },
+    {
+      "symbol": "?IsBlocIcon@CDecor@@QAEHH@Z",
+      "rva": "0x00010230",
+      "size": 64,
+      "tu": "games/sb1-blupi-demo/src/decblupi.cpp"
+    },
+    {
+      "symbol": "?SearchDistRight@CDecor@@QAEHUtagPOINT@@0H@Z",
+      "rva": "0x00010270",
+      "size": 208,
+      "tu": "games/sb1-blupi-demo/src/decblupi.cpp"
+    },
+    {
+      "symbol": "?IsVentillo@CDecor@@QAEHUtagPOINT@@@Z",
+      "rva": "0x00010340",
+      "size": 496,
+      "tu": "games/sb1-blupi-demo/src/decblupi.cpp"
+    },
+    {
+      "symbol": "?NetStopCloud@CDecor@@QAEXH@Z",
+      "rva": "0x00010530",
+      "size": 64,
+      "tu": "games/sb1-blupi-demo/src/decnet.cpp"
+    },
+    {
+      "symbol": "?ObjectStart@CDecor@@QAEHUtagPOINT@@HHH@Z",
+      "rva": "0x00010570",
+      "size": 496,
+      "tu": "games/sb1-blupi-demo/src/decnet.cpp"
+    },
+    {
+      "symbol": "?ObjectDelete@CDecor@@QAEHUtagPOINT@@HH@Z",
+      "rva": "0x00010760",
+      "size": 112,
+      "tu": "games/sb1-blupi-demo/src/decnet.cpp"
+    },
+    {
+      "symbol": "?ModifDecor@CDecor@@QAEXUtagPOINT@@HH@Z",
+      "rva": "0x000107d0",
+      "size": 112,
+      "tu": "games/sb1-blupi-demo/src/decnet.cpp"
+    },
+    {
+      "symbol": "?NetPlaySound@CDecor@@QAEXFUtagPOINT@@@Z",
+      "rva": "0x00010840",
+      "size": 64,
+      "tu": "games/sb1-blupi-demo/src/decnet.cpp"
+    },
+    {
+      "symbol": "?NetStopSound@CDecor@@QAEXF@Z",
+      "rva": "0x00010880",
+      "size": 64,
+      "tu": "games/sb1-blupi-demo/src/decnet.cpp"
+    },
+    {
+      "symbol": "?NetDataFlush@CDecor@@QAEXXZ",
+      "rva": "0x000108c0",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?NetSendBarePacket@CDecor@@QAEXEH@Z",
+      "rva": "0x00010920",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?TreatNetData@CDecor@@QAEXXZ",
+      "rva": "0x00010950",
+      "size": 1552,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?DoNetSmooth@CDecor@@QAEXH@Z",
+      "rva": "0x00010f60",
+      "size": 192,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?NetAdjustToLift@CDecor@@QAEXXZ",
+      "rva": "0x00011020",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?NetAscenseurSynchro@CDecor@@QAEXHF@Z",
+      "rva": "0x00011070",
+      "size": 272,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?NetPlayerCollide@CDecor@@QAEXUtagPOINT@@PAH@Z",
+      "rva": "0x00011180",
+      "size": 224,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?NetMessageIndexFlush@CDecor@@QAEXXZ",
+      "rva": "0x00011260",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?NetMessagePush@CDecor@@QAEHPAUNetMessage@@@Z",
+      "rva": "0x00011280",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?NetMessagePop@CDecor@@QAEHPAUNetMessage@@@Z",
+      "rva": "0x000112e0",
+      "size": 112,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?NotifFlush@CDecor@@QAEXXZ",
+      "rva": "0x00011350",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?NotifPop@CDecor@@QAEXXZ",
+      "rva": "0x00011370",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?NotifPush@CDecor@@QAEXPAD@Z",
+      "rva": "0x000113d0",
+      "size": 144,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?NotifStep@CDecor@@QAEXXZ",
+      "rva": "0x00011460",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?MoveObjectStep@CDecor@@QAEXXZ",
+      "rva": "0x00011480",
+      "size": 560,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?MoveObjectStepLine@CDecor@@QAEXH@Z",
+      "rva": "0x000116b0",
+      "size": 960,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?MoveObjectStepIcon@CDecor@@QAEXH@Z",
+      "rva": "0x00011a70",
+      "size": 4176,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?AscenseurDetect@CDecor@@QAEHUtagRECT@@UtagPOINT@@1@Z",
+      "rva": "0x00012ac0",
+      "size": 336,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?AscenseurVertigo@CDecor@@QAEXHPAH0@Z",
+      "rva": "0x00012c10",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?AscenseurSynchro@CDecor@@QAEXH@Z",
+      "rva": "0x00012c70",
+      "size": 64,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?UpdateCaisse@CDecor@@QAEXXZ",
+      "rva": "0x00012cb0",
+      "size": 64,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?TestPushCaisse@CDecor@@QAEHHUtagPOINT@@H@Z",
+      "rva": "0x00012cf0",
+      "size": 224,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?TestPushOneCaisse@CDecor@@QAEHHUtagPOINT@@H@Z",
+      "rva": "0x00012dd0",
+      "size": 240,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?SearchLinkCaisse@CDecor@@QAEXHH@Z",
+      "rva": "0x00012ec0",
+      "size": 464,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?AddLinkCaisse@CDecor@@QAEHH@Z",
+      "rva": "0x00013090",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?CaisseInFront@CDecor@@QAEHXZ",
+      "rva": "0x000130e0",
+      "size": 128,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?CaisseGetMove@CDecor@@QAEHH@Z",
+      "rva": "0x00013160",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?BlupiElectro@CDecor@@QAEHUtagPOINT@@@Z",
+      "rva": "0x000133d0",
+      "size": 160,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?MoveObjectDetect@CDecor@@QAEHUtagPOINT@@PAH@Z",
+      "rva": "0x00013470",
+      "size": 544,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?MoveChargeDetect@CDecor@@QAEHUtagPOINT@@@Z",
+      "rva": "0x00013690",
+      "size": 160,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?MovePersoDetect@CDecor@@QAEHUtagPOINT@@@Z",
+      "rva": "0x00013730",
+      "size": 192,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?MoveBalleDetect@CDecor@@QAEHUtagPOINT@@@Z",
+      "rva": "0x000137f0",
+      "size": 208,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?MoveObjectDelete@CDecor@@QAEXUtagPOINT@@@Z",
+      "rva": "0x000138c0",
+      "size": 128,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?MoveObjectFree@CDecor@@QAEHXZ",
+      "rva": "0x00013940",
+      "size": 64,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?SortGetType@@YAHH@Z",
+      "rva": "0x00013980",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?MoveObjectSort@CDecor@@QAEXXZ",
+      "rva": "0x000139b0",
+      "size": 240,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp",
+      "withdrawal_history": [
+        {
+          "reason": "Removing the stale duplicate MoveObjectPollution body from decmove.cpp (the function belongs to decblupi.cpp at 0xfc10; two definitions could not have linked) shifted decmove.cpp TU context and MoveObjectSort became MISMATCH. Restore by finding the genuine decmove.cpp context (missing/extra declarations or bodies), never by keeping the duplicate.",
+          "evidence": "supervisor integration of sol-decblupi (docs/SENIOR_SOL_DECBLUPI.md)",
+          "date": "2026-10-17"
+        }
+      ]
+    },
+    {
+      "symbol": "?MoveObjectPriority@CDecor@@QAEXH@Z",
+      "rva": "0x00013aa0",
+      "size": 160,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?MoveObjectSearch@CDecor@@QAEHUtagPOINT@@H@Z",
+      "rva": "0x00013b40",
+      "size": 160,
+      "tu": "games/sb1-blupi-demo/src/decmove.cpp"
+    },
+    {
+      "symbol": "?VoyageGetPosVie@CDecor@@QAE?AUtagPOINT@@H@Z",
+      "rva": "0x00013be0",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/decor.cpp"
+    },
+    {
+      "symbol": "?VoyageInit@CDecor@@QAEXUtagPOINT@@0HH@Z",
+      "rva": "0x00013c00",
+      "size": 384,
+      "tu": "games/sb1-blupi-demo/src/decor.cpp"
+    },
+    {
+      "symbol": "?VoyageStep@CDecor@@QAEXXZ",
+      "rva": "0x00013d80",
+      "size": 352,
+      "tu": "games/sb1-blupi-demo/src/decor.cpp"
+    },
+    {
+      "symbol": "?VoyageDraw@CDecor@@QAEXXZ",
+      "rva": "0x00013ee0",
+      "size": 112,
+      "tu": "games/sb1-blupi-demo/src/decor.cpp"
+    },
+    {
+      "symbol": "?IsRightBorder@CDecor@@QAEHHHHH@Z",
+      "rva": "0x00013f50",
+      "size": 784,
+      "tu": "games/sb1-blupi-demo/src/decor.cpp"
+    },
+    {
+      "symbol": "?AdaptMidBorder@CDecor@@QAEXHH@Z",
+      "rva": "0x00014260",
+      "size": 256,
+      "tu": "games/sb1-blupi-demo/src/decor.cpp"
+    },
+    {
+      "symbol": "?AdaptBorder@CDecor@@QAEXUtagPOINT@@@Z",
+      "rva": "0x00014360",
+      "size": 128,
+      "tu": "games/sb1-blupi-demo/src/decor.cpp"
+    },
+    {
+      "symbol": "?DrawMap@CDecor@@QAEHHH@Z",
+      "rva": "0x000143e0",
+      "size": 816,
+      "tu": "games/sb1-blupi-demo/src/decor.cpp"
+    },
+    {
+      "symbol": "?GetMissionPath@CDecor@@QAEXPADHHH@Z",
+      "rva": "0x00014710",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/decor.cpp"
+    },
+    {
+      "symbol": "?Write@CDecor@@QAEHHHH@Z",
+      "rva": "0x00014770",
+      "size": 480,
+      "tu": "games/sb1-blupi-demo/src/decor.cpp"
+    },
+    {
+      "symbol": "?Read@CDecor@@QAEHHHH@Z",
+      "rva": "0x00014950",
+      "size": 560,
+      "tu": "games/sb1-blupi-demo/src/decor.cpp"
+    },
+    {
+      "symbol": "?DeleteMission@CDecor@@QAEHHHH@Z",
+      "rva": "0x00014b80",
+      "size": 64,
+      "tu": "games/sb1-blupi-demo/src/decor.cpp"
+    },
+    {
+      "symbol": "?CurrentWrite@CDecor@@QAEHHH@Z",
+      "rva": "0x00014bc0",
+      "size": 1584,
+      "tu": "games/sb1-blupi-demo/src/decor.cpp"
+    },
+    {
+      "symbol": "?CurrentRead@CDecor@@QAEHHHPAH0@Z",
+      "rva": "0x000151f0",
+      "size": 1568,
+      "tu": "games/sb1-blupi-demo/src/decor.cpp"
+    },
+    {
+      "symbol": "?FileExist@CDecor@@QAEHHHPAD@Z",
+      "rva": "0x00015810",
+      "size": 544,
+      "tu": "games/sb1-blupi-demo/src/decor.cpp"
+    },
+    {
+      "symbol": "?SearchWorld@CDecor@@QAEHHPAUtagPOINT@@0@Z",
+      "rva": "0x00015a30",
+      "size": 464,
+      "tu": "games/sb1-blupi-demo/src/decor.cpp"
+    },
+    {
+      "symbol": "?SearchDoor@CDecor@@QAEHHPAUtagPOINT@@@Z",
+      "rva": "0x00015c00",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/decor.cpp"
+    },
+    {
+      "symbol": "?AdaptDoors@CDecor@@QAEXHH@Z",
+      "rva": "0x00015c50",
+      "size": 848,
+      "tu": "games/sb1-blupi-demo/src/decor.cpp"
+    },
+    {
+      "symbol": "?OpenDoorsWin@CDecor@@QAEXXZ",
+      "rva": "0x00015fa0",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/decor.cpp"
+    },
+    {
+      "symbol": "?OpenGoldsWin@CDecor@@QAEXXZ",
+      "rva": "0x00015fc0",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/decor.cpp"
+    },
+    {
+      "symbol": "?DoorsLost@CDecor@@QAEXXZ",
+      "rva": "0x00015ff0",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/decor.cpp"
+    },
+    {
+      "symbol": "??0CEvent@@QAE@XZ",
+      "rva": "0x00016040",
+      "size": 320,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "??1CEvent@@QAE@XZ",
+      "rva": "0x00016180",
+      "size": 128,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?OutputNetDebug@CEvent@@QAEXPBD@Z",
+      "rva": "0x00016200",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?GetMousePos@CEvent@@QAE?AUtagPOINT@@XZ",
+      "rva": "0x00016260",
+      "size": 64,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?SetFullScreen@CEvent@@QAEXH@Z",
+      "rva": "0x000162a0",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?SetMouseType@CEvent@@QAEXH@Z",
+      "rva": "0x000162b0",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?Create@CEvent@@QAEXPAX0PAVCPixmap@@PAVCDecor@@PAVCSound@@PAVCNetwork@@PAVCMovie@@@Z",
+      "rva": "0x000162c0",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?GetButtonIndex@CEvent@@QAEHH@Z",
+      "rva": "0x00016320",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?GetState@CEvent@@QAEHH@Z",
+      "rva": "0x00016370",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?SetState@CEvent@@QAEXHH@Z",
+      "rva": "0x000163a0",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?SetEnable@CEvent@@QAEXHH@Z",
+      "rva": "0x000163d0",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?SetDemo@CEvent@@QAEXHH@Z",
+      "rva": "0x00016400",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?SetHide@CEvent@@QAEXHH@Z",
+      "rva": "0x00016430",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?GetMenu@CEvent@@QAEHH@Z",
+      "rva": "0x00016460",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?SetMenu@CEvent@@QAEXHH@Z",
+      "rva": "0x00016490",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?SetIconMenu@CEvent@@QAEXHPAHH@Z",
+      "rva": "0x000164c0",
+      "size": 64,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?RestoreGame@CEvent@@QAEXXZ",
+      "rva": "0x00016500",
+      "size": 64,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?FlushInput@CEvent@@QAEXXZ",
+      "rva": "0x00016540",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?ReadInput@CEvent@@QAEXXZ",
+      "rva": "0x00016560",
+      "size": 480,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?NetCreate@CEvent@@IAEHH@Z",
+      "rva": "0x00016740",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?NetEnumSessions@CEvent@@IAEHXZ",
+      "rva": "0x00016770",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?CreateButtons@CEvent@@IAEHXZ",
+      "rva": "0x000167a0",
+      "size": 272,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?NetAdjustLobbyButtons@CEvent@@IAEXXZ",
+      "rva": "0x000168b0",
+      "size": 448,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?ChangePause@CEvent@@QAEXHH@Z",
+      "rva": "0x00016a70",
+      "size": 128,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?NetSendLobby@CEvent@@QAEXXZ",
+      "rva": "0x00016af0",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?NetSearchPlayer@CEvent@@IAEHK@Z",
+      "rva": "0x00016b40",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?NetStartPlay@CEvent@@IAEXXZ",
+      "rva": "0x00016b70",
+      "size": 240,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?NetSendBarePacket@CEvent@@IAEXHF@Z",
+      "rva": "0x00016c60",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?NetDraw@CEvent@@IAEXXZ",
+      "rva": "0x00016c90",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?AddCheatCode@@YAXPAD0@Z",
+      "rva": "0x00016cc0",
+      "size": 112,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?DrawTextCenter@CEvent@@IAEXHHHH@Z",
+      "rva": "0x00016d30",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?DrawButtons@CEvent@@QAEHXZ",
+      "rva": "0x00016d80",
+      "size": 8032,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?MousePosToSprite@CEvent@@QAEHUtagPOINT@@@Z",
+      "rva": "0x00018ce0",
+      "size": 128,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?MouseSprite@CEvent@@QAEXUtagPOINT@@@Z",
+      "rva": "0x00018d60",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?WaitMouse@CEvent@@QAEXH@Z",
+      "rva": "0x00018db0",
+      "size": 112,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?HideMouse@CEvent@@QAEXH@Z",
+      "rva": "0x00018e20",
+      "size": 128,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?DisableMouse@CEvent@@QAEXH@Z",
+      "rva": "0x00018ea0",
+      "size": 112,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?EventButtons@CEvent@@IAEHIIJ@Z",
+      "rva": "0x00018f10",
+      "size": 544,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?MouseOnButton@CEvent@@IAEHUtagPOINT@@@Z",
+      "rva": "0x00019130",
+      "size": 160,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?SearchPhase@CEvent@@IAEHI@Z",
+      "rva": "0x000191d0",
+      "size": 64,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?GetWorld@CEvent@@QAEHXZ",
+      "rva": "0x00019210",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?IsPrivate@CEvent@@QAEHXZ",
+      "rva": "0x00019240",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?IsMulti@CEvent@@QAEHXZ",
+      "rva": "0x00019250",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?GetWorldGroup@CEvent@@QAEXXZ",
+      "rva": "0x00019260",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?SetMission@CEvent@@QAEXH@Z",
+      "rva": "0x000192b0",
+      "size": 64,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?GetPhase@CEvent@@QAEIXZ",
+      "rva": "0x0001ad10",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?TryInsert@CEvent@@QAEXXZ",
+      "rva": "0x0001ad20",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?MovieToStart@CEvent@@QAEXXZ",
+      "rva": "0x0001ad40",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?ReadAll@CEvent@@QAEXXZ",
+      "rva": "0x0001ad90",
+      "size": 160,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?CurrentRead@CEvent@@IAEHH@Z",
+      "rva": "0x0001ae30",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?CurrentWrite@CEvent@@IAEHH@Z",
+      "rva": "0x0001ae90",
+      "size": 112,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?BuildUp@CEvent@@IAEHUtagPOINT@@H@Z",
+      "rva": "0x0001af00",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?MouseRelease@CEvent@@IAEXXZ",
+      "rva": "0x0001af10",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?MouseCapture@CEvent@@IAEXXZ",
+      "rva": "0x0001af30",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?IsMouseRelease@CEvent@@QAEHXZ",
+      "rva": "0x0001af50",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?AddUserExportPath@CEvent@@SAXPAD0@Z",
+      "rva": "0x0001af60",
+      "size": 192,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?CopyMission@CEvent@@SAHPAD0@Z",
+      "rva": "0x0001b020",
+      "size": 208,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?ChangeButtons@CEvent@@IAEXH@Z",
+      "rva": "0x0001b0f0",
+      "size": 2864,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?BuildDown@CEvent@@IAEHUtagPOINT@@HH@Z",
+      "rva": "0x0001bc20",
+      "size": 800,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?BuildMove@CEvent@@IAEHUtagPOINT@@H@Z",
+      "rva": "0x0001bf40",
+      "size": 64,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?StartMovie@CEvent@@QAEHPAD@Z",
+      "rva": "0x0001bf80",
+      "size": 352,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?StopMovie@CEvent@@QAEXXZ",
+      "rva": "0x0001c0e0",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?IsMovie@CEvent@@QAEHXZ",
+      "rva": "0x0001c140",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?WriteInfo@CEvent@@IAEHH@Z",
+      "rva": "0x0001c150",
+      "size": 416,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?ReadInfo@CEvent@@IAEHH@Z",
+      "rva": "0x0001c2f0",
+      "size": 480,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?ClearGamer@CEvent@@QAEHH@Z",
+      "rva": "0x0001c4d0",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?SetNbVies@CEvent@@QAEXH@Z",
+      "rva": "0x0001c520",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?GetSpeed@CEvent@@QAEHXZ",
+      "rva": "0x0001c530",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?SetSpeed@CEvent@@QAEXH@Z",
+      "rva": "0x0001c540",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?DemoRecStart@CEvent@@IAEXXZ",
+      "rva": "0x0001c560",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?DemoRecStop@CEvent@@IAEXXZ",
+      "rva": "0x0001c5c0",
+      "size": 240,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?DemoPlayStop@CEvent@@IAEXXZ",
+      "rva": "0x0001c880",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?DemoStep@CEvent@@QAEXXZ",
+      "rva": "0x0001c8e0",
+      "size": 192,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?DemoRecEvent@CEvent@@IAEXXZ",
+      "rva": "0x0001c9a0",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?ChatFlush@CEvent@@IAEXXZ",
+      "rva": "0x0001ca00",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?ChatPop@CEvent@@IAEXXZ",
+      "rva": "0x0001ca20",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?ChatPush@CEvent@@IAEXPAD@Z",
+      "rva": "0x0001ca70",
+      "size": 128,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?ChatSend@CEvent@@IAEXXZ",
+      "rva": "0x0001caf0",
+      "size": 352,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?PutTextInputBox@CEvent@@IAEXUtagPOINT@@@Z",
+      "rva": "0x0001cc50",
+      "size": 400,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?TextInputDelete@CEvent@@IAEHXZ",
+      "rva": "0x0001cde0",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?TreatTextInput@CEvent@@IAEHIIJ@Z",
+      "rva": "0x0001ce40",
+      "size": 592,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?GetLastMousePos@CEvent@@QAE?AUtagPOINT@@XZ",
+      "rva": "0x0001d090",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?TreatEvent@CEvent@@QAEHIIJ@Z",
+      "rva": "0x0001d0b0",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "??0CJauge@@QAE@XZ",
+      "rva": "0x0001ec20",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/jauge.cpp"
+    },
+    {
+      "symbol": "?Create@CJauge@@QAEHPAXPAVCPixmap@@PAVCSound@@UtagPOINT@@HH@Z",
+      "rva": "0x0001ec40",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/jauge.cpp"
+    },
+    {
+      "symbol": "?Draw@CJauge@@QAEXXZ",
+      "rva": "0x0001eca0",
+      "size": 256,
+      "tu": "games/sb1-blupi-demo/src/jauge.cpp"
+    },
+    {
+      "symbol": "?GetLevel@CJauge@@QAEHXZ",
+      "rva": "0x0001eda0",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/jauge.cpp"
+    },
+    {
+      "symbol": "?SetLevel@CJauge@@QAEXH@Z",
+      "rva": "0x0001edb0",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/jauge.cpp"
+    },
+    {
+      "symbol": "?GetType@CJauge@@QAEHXZ",
+      "rva": "0x0001ede0",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/jauge.cpp"
+    },
+    {
+      "symbol": "?SetType@CJauge@@QAEXH@Z",
+      "rva": "0x0001edf0",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/jauge.cpp"
+    },
+    {
+      "symbol": "?SetHide@CJauge@@QAEXH@Z",
+      "rva": "0x0001ee10",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/jauge.cpp"
+    },
+    {
+      "symbol": "??0CMenu@@QAE@XZ",
+      "rva": "0x0001ee30",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/menu.cpp"
+    },
+    {
+      "symbol": "?Delete@CMenu@@QAEXXZ",
+      "rva": "0x0001ee50",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/menu.cpp"
+    },
+    {
+      "symbol": "?TreatEvent@CMenu@@QAEHIIJ@Z",
+      "rva": "0x0001ee70",
+      "size": 144,
+      "tu": "games/sb1-blupi-demo/src/menu.cpp"
+    },
+    {
+      "symbol": "?Detect@CMenu@@IAEHUtagPOINT@@@Z",
+      "rva": "0x0001ef00",
+      "size": 112,
+      "tu": "games/sb1-blupi-demo/src/menu.cpp"
+    },
+    {
+      "symbol": "?MouseDown@CMenu@@IAEHUtagPOINT@@@Z",
+      "rva": "0x0001ef70",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/menu.cpp"
+    },
+    {
+      "symbol": "?MouseMove@CMenu@@IAEHUtagPOINT@@@Z",
+      "rva": "0x0001ef80",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/menu.cpp"
+    },
+    {
+      "symbol": "?MouseUp@CMenu@@IAEHUtagPOINT@@@Z",
+      "rva": "0x0001efe0",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/menu.cpp"
+    },
+    {
+      "symbol": "?InitHInstance@@YAXPAX@Z",
+      "rva": "0x0001f010",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/misc.cpp"
+    },
+    {
+      "symbol": "?LoadStringA@@YAXIPADH@Z",
+      "rva": "0x0001f020",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/misc.cpp"
+    },
+    {
+      "symbol": "?ChangeSprite@@YAXH@Z",
+      "rva": "0x0001f040",
+      "size": 288,
+      "tu": "games/sb1-blupi-demo/src/misc.cpp"
+    },
+    {
+      "symbol": "?ConvLongToPos@@YA?AUtagPOINT@@J@Z",
+      "rva": "0x0001f160",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/misc.cpp"
+    },
+    {
+      "symbol": "?InitRandom@@YAXXZ",
+      "rva": "0x0001f180",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/misc.cpp"
+    },
+    {
+      "symbol": "?GetCurrentDir@@YAXPADH@Z",
+      "rva": "0x0001f190",
+      "size": 176,
+      "tu": "games/sb1-blupi-demo/src/misc.cpp"
+    },
+    {
+      "symbol": "?AddCDPath@@YAXPAD@Z",
+      "rva": "0x0001f240",
+      "size": 160,
+      "tu": "games/sb1-blupi-demo/src/misc.cpp"
+    },
+    {
+      "symbol": "?AddUserPath@@YAXPAD@Z",
+      "rva": "0x0001f2e0",
+      "size": 304,
+      "tu": "games/sb1-blupi-demo/src/misc.cpp"
+    },
+    {
+      "symbol": "?TraceErrorDD@@YAXJPADH@Z",
+      "rva": "0x0001f410",
+      "size": 2320,
+      "tu": "games/sb1-blupi-demo/src/misc.cpp"
+    },
+    {
+      "symbol": "?TraceErrorDS@@YAXJPADH@Z",
+      "rva": "0x0001fd20",
+      "size": 432,
+      "tu": "games/sb1-blupi-demo/src/misc.cpp"
+    },
+    {
+      "symbol": "?initAVI@CMovie@@IAEHXZ",
+      "rva": "0x0001fed0",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/movie.cpp"
+    },
+    {
+      "symbol": "?termAVI@CMovie@@IAEXXZ",
+      "rva": "0x0001ff20",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/movie.cpp"
+    },
+    {
+      "symbol": "?positionMovie@CMovie@@IAEXPAXUtagRECT@@@Z",
+      "rva": "0x0001ff50",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/movie.cpp"
+    },
+    {
+      "symbol": "?fileCloseMovie@CMovie@@IAEXPAX@Z",
+      "rva": "0x0001ff80",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/movie.cpp"
+    },
+    {
+      "symbol": "?fileOpenMovie@CMovie@@IAEHPAXUtagRECT@@PAD@Z",
+      "rva": "0x0001ffd0",
+      "size": 368,
+      "tu": "games/sb1-blupi-demo/src/movie.cpp"
+    },
+    {
+      "symbol": "?playMovie@CMovie@@IAEXPAXH@Z",
+      "rva": "0x00020140",
+      "size": 128,
+      "tu": "games/sb1-blupi-demo/src/movie.cpp"
+    },
+    {
+      "symbol": "??0CMovie@@QAE@XZ",
+      "rva": "0x000201c0",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/movie.cpp"
+    },
+    {
+      "symbol": "??1CMovie@@QAE@XZ",
+      "rva": "0x000201d0",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/movie.cpp"
+    },
+    {
+      "symbol": "?Create@CMovie@@QAEHXZ",
+      "rva": "0x000201e0",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/movie.cpp"
+    },
+    {
+      "symbol": "?GetEnable@CMovie@@QAEHXZ",
+      "rva": "0x00020210",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/movie.cpp"
+    },
+    {
+      "symbol": "?IsExist@CMovie@@QAEHPAD@Z",
+      "rva": "0x00020220",
+      "size": 176,
+      "tu": "games/sb1-blupi-demo/src/movie.cpp"
+    },
+    {
+      "symbol": "?Play@CMovie@@QAEHPAXUtagRECT@@PAD@Z",
+      "rva": "0x000202d0",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/movie.cpp"
+    },
+    {
+      "symbol": "?Stop@CMovie@@QAEXPAX@Z",
+      "rva": "0x00020330",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/movie.cpp"
+    },
+    {
+      "symbol": "?TraceErrorDP@@YAXJ@Z",
+      "rva": "0x00020350",
+      "size": 928,
+      "tu": "games/sb1-blupi-demo/src/network.cpp"
+    },
+    {
+      "symbol": "??0CNetwork@@QAE@XZ",
+      "rva": "0x000206f0",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/network.cpp"
+    },
+    {
+      "symbol": "??1CNetwork@@QAE@XZ",
+      "rva": "0x00020710",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/network.cpp"
+    },
+    {
+      "symbol": "?EnumProvidersCallback@@YGHPAU_GUID@@PADKKPAUNamedGUIDList@@@Z",
+      "rva": "0x00020740",
+      "size": 112,
+      "tu": "games/sb1-blupi-demo/src/network.cpp"
+    },
+    {
+      "symbol": "?EnumProviders@CNetwork@@QAEHXZ",
+      "rva": "0x000207b0",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/network.cpp"
+    },
+    {
+      "symbol": "?GetProviderName@CNetwork@@QAEPADH@Z",
+      "rva": "0x00020800",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/network.cpp"
+    },
+    {
+      "symbol": "?CreateProvider@CNetwork@@QAEHH@Z",
+      "rva": "0x00020830",
+      "size": 112,
+      "tu": "games/sb1-blupi-demo/src/network.cpp"
+    },
+    {
+      "symbol": "?FreeProviderList@CNetwork@@QAEXXZ",
+      "rva": "0x000208a0",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/network.cpp"
+    },
+    {
+      "symbol": "?EnumSessionsCallback@@YGHPAUDPSESSIONDESC2@@PAKKPAUNamedGUIDList@@@Z",
+      "rva": "0x000208d0",
+      "size": 128,
+      "tu": "games/sb1-blupi-demo/src/network.cpp"
+    },
+    {
+      "symbol": "?EnumSessions@CNetwork@@QAEHXZ",
+      "rva": "0x00020950",
+      "size": 176,
+      "tu": "games/sb1-blupi-demo/src/network.cpp"
+    },
+    {
+      "symbol": "?GetHide@CJauge@@QAEHXZ",
+      "rva": "0x00020a00",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/jauge.cpp"
+    },
+    {
+      "symbol": "?GetNbSessions@CNetwork@@QAEHXZ",
+      "rva": "0x00020a00",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/network.cpp",
+      "status": "folded",
+      "into": {
+        "symbol": "?GetHide@CJauge@@QAEHXZ",
+        "rva": "0x00020a00",
+        "tu": "games/sb1-blupi-demo/src/jauge.cpp"
+      }
+    },
+    {
+      "symbol": "?GetSessionName@CNetwork@@QAEPADH@Z",
+      "rva": "0x00020a10",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/network.cpp"
+    },
+    {
+      "symbol": "?JoinSession@CNetwork@@QAEHHPAD@Z",
+      "rva": "0x00020a40",
+      "size": 240,
+      "tu": "games/sb1-blupi-demo/src/network.cpp"
+    },
+    {
+      "symbol": "?FreeSessionList@CNetwork@@QAEXXZ",
+      "rva": "0x00020b30",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/network.cpp"
+    },
+    {
+      "symbol": "?CreateSession@CNetwork@@QAEHPAD0@Z",
+      "rva": "0x00020b60",
+      "size": 240,
+      "tu": "games/sb1-blupi-demo/src/network.cpp"
+    },
+    {
+      "symbol": "?Send@CNetwork@@QAEHPAXKK@Z",
+      "rva": "0x00020c50",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/network.cpp"
+    },
+    {
+      "symbol": "?Receive@CNetwork@@QAEHPAXKPAK@Z",
+      "rva": "0x00020ca0",
+      "size": 208,
+      "tu": "games/sb1-blupi-demo/src/network.cpp"
+    },
+    {
+      "symbol": "?Close@CNetwork@@QAEHXZ",
+      "rva": "0x00020d70",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/network.cpp"
+    },
+    {
+      "symbol": "?FreeUnknownList@CNetwork@@QAEXXZ",
+      "rva": "0x00020d90",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/network.cpp"
+    },
+    {
+      "symbol": "?IsHost@CNetwork@@QAEHXZ",
+      "rva": "0x00020dc0",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/network.cpp"
+    },
+    {
+      "symbol": "??0CPixmap@@QAE@XZ",
+      "rva": "0x00020dd0",
+      "size": 144,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "??1CPixmap@@QAE@XZ",
+      "rva": "0x00020e60",
+      "size": 160,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?SetDebug@CPixmap@@QAEXH@Z",
+      "rva": "0x00020f00",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?Create@CPixmap@@QAEHPAXUtagPOINT@@HH@Z",
+      "rva": "0x00020f20",
+      "size": 832,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp",
+      "note": "[EVIDENCE] June 1998 demo true-color-free Create API; all fixups verified."
+    },
+    {
+      "symbol": "?Flush@CPixmap@@QAEHXZ",
+      "rva": "0x00021260",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?Restore@CPixmap@@QAEHXZ",
+      "rva": "0x00021270",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?InitSysPalette@CPixmap@@QAEHXZ",
+      "rva": "0x00021280",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?RestoreAll@CPixmap@@IAEJXZ",
+      "rva": "0x000212e0",
+      "size": 176,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?BltFast@CPixmap@@IAEJHHUtagPOINT@@UtagRECT@@H@Z",
+      "rva": "0x00021390",
+      "size": 240,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?BltFast@CPixmap@@IAEJPAUIDirectDrawSurface@@HUtagPOINT@@UtagRECT@@H@Z",
+      "rva": "0x00021480",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?DrawMap@CPixmap@@QAEHHUtagRECT@@0@Z",
+      "rva": "0x000214e0",
+      "size": 112,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?SavePalette@CPixmap@@QAEHXZ",
+      "rva": "0x00021550",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?RestorePalette@CPixmap@@QAEHXZ",
+      "rva": "0x00021580",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?Cache@CPixmap@@QAEHHPADUtagPOINT@@1H@Z",
+      "rva": "0x000215b0",
+      "size": 400,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?Flush@CPixmap@@QAEXH@Z",
+      "rva": "0x00021740",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?SetTransparent@CPixmap@@QAEXHK@Z",
+      "rva": "0x00021770",
+      "size": 64,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?SetTransparent2@CPixmap@@QAEXHKK@Z",
+      "rva": "0x000217b0",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?SetClipping@CPixmap@@QAEXUtagRECT@@@Z",
+      "rva": "0x00021800",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?GetClipping@CPixmap@@QAE?AUtagRECT@@XZ",
+      "rva": "0x00021830",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?DrawIcon@CPixmap@@QAEHHHHUtagPOINT@@HH@Z",
+      "rva": "0x00021b70",
+      "size": 720,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?DrawPart@CPixmap@@QAEHHHUtagPOINT@@UtagRECT@@HH@Z",
+      "rva": "0x00021e40",
+      "size": 192,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?DrawImage@CPixmap@@QAEHHHUtagRECT@@H@Z",
+      "rva": "0x00021f00",
+      "size": 128,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?Display@CPixmap@@QAEHXZ",
+      "rva": "0x00021f80",
+      "size": 160,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?SetMousePosSprite@CPixmap@@QAEXUtagPOINT@@HH@Z",
+      "rva": "0x00022020",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?SetMouseSprite@CPixmap@@QAEXHH@Z",
+      "rva": "0x00022070",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?MouseShow@CPixmap@@QAEXH@Z",
+      "rva": "0x000220a0",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?MouseUpdate@CPixmap@@IAEXXZ",
+      "rva": "0x000220b0",
+      "size": 336,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?MouseQuickDraw@CPixmap@@IAEHUtagRECT@@@Z",
+      "rva": "0x00022200",
+      "size": 192,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?MouseInvalidate@CPixmap@@QAEXXZ",
+      "rva": "0x000222c0",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?MouseBackClear@CPixmap@@QAEXXZ",
+      "rva": "0x000222d0",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?MouseBackDraw@CPixmap@@QAEXXZ",
+      "rva": "0x000222f0",
+      "size": 272,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?MouseBackSave@CPixmap@@IAEXXZ",
+      "rva": "0x00022400",
+      "size": 256,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?MouseBackRestore@CPixmap@@IAEXXZ",
+      "rva": "0x00022500",
+      "size": 208,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?MouseRectSprite@CPixmap@@IAEXPAUtagRECT@@PAUtagPOINT@@@Z",
+      "rva": "0x000225d0",
+      "size": 128,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?MouseHotSpot@CPixmap@@IAEXXZ",
+      "rva": "0x00022650",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?CreateSoundBuffer@CSound@@QAEHHKKKKH@Z",
+      "rva": "0x00022680",
+      "size": 208,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?ReadData@CSound@@QAEHPAUIDirectSoundBuffer@@PAU_iobuf@@KK@Z",
+      "rva": "0x00022750",
+      "size": 304,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?CreateBufferFromWaveFile@CSound@@QAEHHPAD@Z",
+      "rva": "0x00022880",
+      "size": 240,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?InitMidiVolume@@YAXH@Z",
+      "rva": "0x00022970",
+      "size": 128,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "??0CSound@@QAE@XZ",
+      "rva": "0x000229f0",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "??1CSound@@QAE@XZ",
+      "rva": "0x00022a50",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?Create@CSound@@QAEHPAX@Z",
+      "rva": "0x00022aa0",
+      "size": 96,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?GetNbProviders@CNetwork@@QAEHXZ",
+      "rva": "0x00022b00",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/network.cpp",
+      "status": "folded",
+      "into": {
+        "symbol": "?GetEnable@CSound@@QAEHXZ",
+        "rva": "0x00022b00",
+        "tu": "games/sb1-blupi-demo/src/sound.cpp"
+      }
+    },
+    {
+      "symbol": "?GetEnable@CSound@@QAEHXZ",
+      "rva": "0x00022b00",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?SetState@CSound@@QAEXH@Z",
+      "rva": "0x00022b10",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?SetAudioVolume@CSound@@QAEXH@Z",
+      "rva": "0x00022b20",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?GetAudioVolume@CSound@@QAEHXZ",
+      "rva": "0x00022b30",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?SetMidiVolume@CSound@@QAEXH@Z",
+      "rva": "0x00022b50",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?GetMidiVolume@CSound@@QAEHXZ",
+      "rva": "0x00022b60",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?CacheAll@CSound@@QAEXXZ",
+      "rva": "0x00022b80",
+      "size": 64,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?Cache@CSound@@QAEHHPAD@Z",
+      "rva": "0x00022bc0",
+      "size": 64,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?Flush@CSound@@QAEXH@Z",
+      "rva": "0x00022c00",
+      "size": 64,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?PlaySoundDS@CSound@@QAEHHHHH@Z",
+      "rva": "0x00022c40",
+      "size": 192,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?PlaySoundDS@CSound@@QAEHHHH@Z",
+      "rva": "0x00022d00",
+      "size": 144,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?StopSound@CSound@@QAEHH@Z",
+      "rva": "0x00022d90",
+      "size": 112,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?PlayImage@CSound@@QAEHHUtagPOINT@@HH@Z",
+      "rva": "0x00022e00",
+      "size": 352,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?Play@CSound@@QAEHHHH@Z",
+      "rva": "0x00022f60",
+      "size": 288,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?PlayMusic@CSound@@QAEHPAXPAD@Z",
+      "rva": "0x00023080",
+      "size": 432,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?RestartMusic@CSound@@QAEHXZ",
+      "rva": "0x00023230",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?SuspendMusic@CSound@@QAEXXZ",
+      "rva": "0x00023280",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?StopMusic@CSound@@QAEXXZ",
+      "rva": "0x000232d0",
+      "size": 32,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?IsPlayingMusic@CSound@@QAEHXZ",
+      "rva": "0x000232f0",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?AdaptVolumeMusic@CSound@@QAEXXZ",
+      "rva": "0x00023300",
+      "size": 64,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?SetSuspendSkip@CSound@@QAEXH@Z",
+      "rva": "0x00023340",
+      "size": 16,
+      "tu": "games/sb1-blupi-demo/src/sound.cpp"
+    },
+    {
+      "symbol": "?GetCharWidthA@@YAHDH@Z",
+      "rva": "0x00023350",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/text.cpp"
+    },
+    {
+      "symbol": "?DrawCharSingle@@YAXPAVCPixmap@@UtagPOINT@@HH@Z",
+      "rva": "0x000233a0",
+      "size": 80,
+      "tu": "games/sb1-blupi-demo/src/text.cpp"
+    },
+    {
+      "symbol": "?DrawChar@@YAXPAVCPixmap@@PAUtagPOINT@@EH@Z",
+      "rva": "0x000233f0",
+      "size": 144,
+      "tu": "games/sb1-blupi-demo/src/text.cpp"
+    },
+    {
+      "symbol": "?DrawTextLeft@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z",
+      "rva": "0x00023480",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/text.cpp"
+    },
+    {
+      "symbol": "?DrawTextA@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z",
+      "rva": "0x000234b0",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/text.cpp"
+    },
+    {
+      "symbol": "?DrawTextCenter@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z",
+      "rva": "0x000234e0",
+      "size": 192,
+      "tu": "games/sb1-blupi-demo/src/text.cpp"
+    },
+    {
+      "symbol": "?GetTextWidth@@YAHPADH@Z",
+      "rva": "0x000235a0",
+      "size": 48,
+      "tu": "games/sb1-blupi-demo/src/text.cpp"
+    }
+  ],
+  "symbol_mappings": [
+    {
+      "symbol": "$L33192",
+      "va": "0x00402d50",
+      "evidence": "UI switch-table target recorded from static oracle disassembly in docs/UI_CLUSTER.md"
+    },
+    {
+      "symbol": "?MouseDown@CButton@@IAEHUtagPOINT@@@Z",
+      "va": "0x00402ef0",
+      "evidence": "oracle CButton::MouseDown entry in docs/UI_CLUSTER.md"
+    },
+    {
+      "symbol": "$L33075",
+      "va": "0x00402d2a",
+      "evidence": "UI switch-table target recorded from static oracle disassembly in docs/UI_CLUSTER.md"
+    },
+    {
+      "symbol": "$L33073",
+      "va": "0x00402d14",
+      "evidence": "UI switch-table target recorded from static oracle disassembly in docs/UI_CLUSTER.md"
+    },
+    {
+      "symbol": "$L33077",
+      "va": "0x00402d40",
+      "evidence": "UI switch-table target recorded from static oracle disassembly in docs/UI_CLUSTER.md"
+    },
+    {
+      "symbol": "$L33067",
+      "va": "0x00402d49",
+      "evidence": "UI switch-table target recorded from static oracle disassembly in docs/UI_CLUSTER.md"
+    },
+    {
+      "symbol": "$L33272",
+      "va": "0x0041eee8",
+      "evidence": "menu switch-table target recorded from static oracle disassembly in docs/UI_CLUSTER.md"
+    },
+    {
+      "symbol": "$L33203",
+      "va": "0x0041eeb3",
+      "evidence": "menu switch-table target recorded from static oracle disassembly in docs/UI_CLUSTER.md"
+    },
+    {
+      "symbol": "$L33201",
+      "va": "0x0041ee9d",
+      "evidence": "menu switch-table target recorded from static oracle disassembly in docs/UI_CLUSTER.md"
+    },
+    {
+      "symbol": "$L33205",
+      "va": "0x0041eec9",
+      "evidence": "menu switch-table target recorded from static oracle disassembly in docs/UI_CLUSTER.md"
+    },
+    {
+      "symbol": "$L33206",
+      "va": "0x0041eedf",
+      "evidence": "menu switch-table target recorded from static oracle disassembly in docs/UI_CLUSTER.md"
+    },
+    {
+      "symbol": "$L34875",
+      "va": "0x00402d50",
+      "evidence": "UI switch case target, independently confirmed at the same oracle RVA as its earlier VC5 local-label mapping"
+    },
+    {
+      "symbol": "$L34705",
+      "va": "0x00402d2a",
+      "evidence": "UI switch case target, independently confirmed at the same oracle RVA as its earlier VC5 local-label mapping"
+    },
+    {
+      "symbol": "$L34703",
+      "va": "0x00402d14",
+      "evidence": "UI switch case target, independently confirmed at the same oracle RVA as its earlier VC5 local-label mapping"
+    },
+    {
+      "symbol": "$L34707",
+      "va": "0x00402d40",
+      "evidence": "UI switch case target, independently confirmed at the same oracle RVA as its earlier VC5 local-label mapping"
+    },
+    {
+      "symbol": "$L34697",
+      "va": "0x00402d49",
+      "evidence": "UI switch case target, independently confirmed at the same oracle RVA as its earlier VC5 local-label mapping"
+    },
+    {
+      "symbol": "$L34955",
+      "va": "0x0041eee8",
+      "evidence": "UI switch case target, independently confirmed at the same oracle RVA as its earlier VC5 local-label mapping"
+    },
+    {
+      "symbol": "$L34833",
+      "va": "0x0041eeb3",
+      "evidence": "UI switch case target, independently confirmed at the same oracle RVA as its earlier VC5 local-label mapping"
+    },
+    {
+      "symbol": "$L34831",
+      "va": "0x0041ee9d",
+      "evidence": "UI switch case target, independently confirmed at the same oracle RVA as its earlier VC5 local-label mapping"
+    },
+    {
+      "symbol": "$L34835",
+      "va": "0x0041eec9",
+      "evidence": "UI switch case target, independently confirmed at the same oracle RVA as its earlier VC5 local-label mapping"
+    },
+    {
+      "symbol": "$L34836",
+      "va": "0x0041eedf",
+      "evidence": "UI switch case target, independently confirmed at the same oracle RVA as its earlier VC5 local-label mapping"
+    },
+    {
+      "symbol": "_IID_IDirectPlay2A",
+      "va": "0x0042c010",
+      "evidence": "DirectPlay IID data target verified in the network candidate comparison; docs/NETWAVE_TU.md"
+    },
+    {
+      "symbol": "?table_icon_object@@3PAFA",
+      "va": "0x00478808",
+      "evidence": "Target atlas base established from strict pixmap code references and oracle pseudocode; table contents remain open (docs/CORE_CLUSTER.md)"
+    },
+    {
+      "symbol": "?table_icon_element@@3PAFA",
+      "va": "0x00479398",
+      "evidence": "Target atlas base established from strict pixmap code references and oracle pseudocode; table contents remain open (docs/CORE_CLUSTER.md)"
+    },
+    {
+      "symbol": "?table_icon_blupi@@3PAFA",
+      "va": "0x00477a60",
+      "evidence": "Target atlas base established from strict pixmap code references and oracle pseudocode; table contents remain open (docs/CORE_CLUSTER.md)"
+    },
+    {
+      "symbol": "?table_icon_explo@@3PAFA",
+      "va": "0x00479c60",
+      "evidence": "Target atlas base established from strict pixmap code references and oracle pseudocode; table contents remain open (docs/CORE_CLUSTER.md)"
+    }
+  ],
+  "forced_locations": [
+    {
+      "symbol": "?SetCelHiliFromScreenPos@CDecor@@QAEXUtagPOINT@@@Z",
+      "rva": "0x00005990",
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp",
+      "evidence": "[EVIDENCE] forced comparison is code- and relocation-strict; worker candidate and oracle map place this method in decdesign.cpp"
+    },
+    {
+      "symbol": "?DeleteCel@CDecor@@QAEXUtagPOINT@@@Z",
+      "rva": "0x00005a20",
+      "tu": "games/sb1-blupi-demo/src/decdesign.cpp",
+      "evidence": "[EVIDENCE] forced comparison is code- and relocation-strict; worker candidate and oracle map place this method in decdesign.cpp"
+    },
+    {
+      "symbol": "?GetState@CEvent@@QAEHH@Z",
+      "rva": "0x00016370",
+      "tu": "games/sb1-blupi-demo/src/event.cpp",
+      "evidence": "[EVIDENCE] repeated identical accessor body; event candidate table and forced comparison prove target"
+    },
+    {
+      "symbol": "?SetState@CEvent@@QAEXHH@Z",
+      "rva": "0x000163a0",
+      "tu": "games/sb1-blupi-demo/src/event.cpp",
+      "evidence": "[EVIDENCE] repeated identical setter body; event candidate table and forced comparison prove target"
+    },
+    {
+      "symbol": "?SetEnable@CEvent@@QAEXHH@Z",
+      "rva": "0x000163d0",
+      "tu": "games/sb1-blupi-demo/src/event.cpp",
+      "evidence": "[EVIDENCE] repeated identical setter body; event candidate table and forced comparison prove target"
+    },
+    {
+      "symbol": "?SetHide@CEvent@@QAEXHH@Z",
+      "rva": "0x00016430",
+      "tu": "games/sb1-blupi-demo/src/event.cpp",
+      "evidence": "[EVIDENCE] repeated identical setter body; event candidate table and forced comparison prove target"
+    },
+    {
+      "symbol": "?GetMenu@CEvent@@QAEHH@Z",
+      "rva": "0x00016460",
+      "tu": "games/sb1-blupi-demo/src/event.cpp",
+      "evidence": "[EVIDENCE] repeated identical accessor body; event candidate table and forced comparison prove target"
+    },
+    {
+      "symbol": "?SetMenu@CEvent@@QAEXHH@Z",
+      "rva": "0x00016490",
+      "tu": "games/sb1-blupi-demo/src/event.cpp",
+      "evidence": "[EVIDENCE] repeated identical setter body; event candidate table and forced comparison prove target"
+    }
+  ],
+  "promotion_exclusions": [
+    {
+      "symbol": "?PlayDown@CEvent@@IAEHUtagPOINT@@H@Z",
+      "reason": "[OPEN] identical short body aliases BuildUp at 0x1b030; count the target body once under BuildUp"
+    },
+    {
+      "symbol": "?PlayMove@CEvent@@IAEHUtagPOINT@@H@Z",
+      "reason": "[OPEN] identical short body aliases BuildUp at 0x1b030; count the target body once under BuildUp"
+    },
+    {
+      "symbol": "?PlayUp@CEvent@@IAEHUtagPOINT@@H@Z",
+      "reason": "[OPEN] identical short body aliases BuildUp at 0x1b030; count the target body once under BuildUp"
+    },
+    {
+      "symbol": "?ObjectDelete@CDecor@@QAEHUtagPOINT@@HH@Z",
+      "reason": "[EVIDENCE] RVA 0x108a0 is owned and accepted under decnet.cpp; the identical decmove.cpp candidate is a duplicate source copy, not a second target function."
+    },
+    {
+      "symbol": "?DrawMap@CEvent@@QAEXXZ",
+      "reason": "[EVIDENCE] Same 48-byte body and target RVA 0x16e80 as CEvent::NetDraw; accept the shared code once under NetDraw while source identity remains ambiguous."
+    }
+  ]
+}

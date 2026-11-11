@@ -4,6 +4,13 @@
 must name the unresolved retail problem it addresses, the evidence expected, how it would change the retail
 reconstruction, what would falsify it and when to stop; matching unrelated demo code is out of scope.
 
+[POLICY 2026-11-09, owner decision] The June demo becomes a completion target: it is matched for its own sake,
+to the level the retail editions have. The policy of 2026-10-24 above is kept as a record and no longer limits
+demo work. Since 2026-11-11 the target has its own source tree, `games/sb1-blupi-demo/`
+([its README](../games/sb1-blupi-demo/README.md)); the `_DEMO` arms in `src/` stay as they are but no target
+compiles them any more. The sections below this line were written before that date and describe the earlier,
+evidence-only configuration, except where a 2026-11-11 heading says otherwise.
+
 [EVIDENCE] `sb1/blupi/demo` is the tenth SB1 target, an earlier source revision rather than a retail
 language. The static oracle is `assets/downloads/openeggbert/Speedy_Blupi_Demo/exe/Blupi.exe`
 (owner-approved openeggbert download, see docs/ORACLE.md), 533,504 bytes, SHA-256
