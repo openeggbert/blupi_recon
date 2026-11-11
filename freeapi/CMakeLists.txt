@@ -163,6 +163,17 @@ target_compile_options(${BLUPI_EXE} PRIVATE
     $<$<CXX_COMPILER_ID:GNU>:-finput-charset=CP1252;-fexec-charset=CP1252;-fpermissive>
     $<$<CXX_COMPILER_ID:Clang>:-fms-extensions;-Wno-c++11-narrowing>)
 
+if(WIN32)
+    # Windows (cmake/mingw-w64-x86_64.cmake, tools/build_windows.sh): a GUI program that sets
+    # its defaults from the folder it sits in (windows/entry.cpp), and needs no MinGW DLLs.
+    # SDL3 and SDL3_image stay DLLs (deps/CMakeLists.txt says why).
+    target_sources(${BLUPI_EXE} PRIVATE windows/entry.cpp)
+    set_source_files_properties(windows/entry.cpp PROPERTIES COMPILE_OPTIONS "-DBLUPI_MSVC_CRT_IMPLEMENTATION")
+    target_link_libraries(${BLUPI_EXE} PRIVATE SDL3::SDL3)
+    set_target_properties(${BLUPI_EXE} PROPERTIES WIN32_EXECUTABLE ON)
+    target_link_options(${BLUPI_EXE} PRIVATE -static)
+endif()
+
 option(BLUPI_FREEAPI_PRESENTATION_TESTS "Build native coordinate/presentation regression" OFF)
 if(BLUPI_FREEAPI_PRESENTATION_TESTS AND NOT EMSCRIPTEN)
     add_executable(blupi_presentation_test tests/presentation.cpp)

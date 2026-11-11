@@ -13,7 +13,8 @@ Speedy Blupi 1 also the player file written to `DATA`, and 8-bit as well as 16-b
 Speedy Blupi 1's choose-player screen and Speedy Blupi 2's title are pixel-identical to the SDL3
 port's, which is itself frame-identical to the rebuilt original (`../port/docs/ORACLE.md`); only
 the cursor differed, through the timing of the scripted mouse.
-The web build adds all four English editions (see below). The historical source,
+The web build adds all four English editions (see below). Windows x64 packages, cross-compiled with MinGW-w64,
+show Speedy Eggbert 1 and 2 with 4x images (see "Windows"). The historical source,
 matching tools and SDL3 port are unchanged.
 
 ## Requirements
@@ -516,8 +517,103 @@ and Free Direct's join and session-list fixes (`../../free-direct/docs/directpla
 Decisions 28-30).
 
 [OPEN] A server on the Internet with players on different connections; latency and packet-loss
-behaviour; four players; the Eggbert editions; a native game instance playing with a browser one
+behaviour; four players; Speedy Eggbert 2 (Speedy Eggbert 1 played through the Windows server,
+see "Windows"); a native game instance playing with a browser one
 (the native side is tested at the protocol level only).
+
+## Windows
+
+Windows x64 builds, cross-compiled on Linux with MinGW-w64 GCC (POSIX threads, Debian's
+`g++-mingw-w64-x86-64-posix`). Each game is packaged with its data next to the executable:
+
+```bash
+bash freeapi/tools/build_windows.sh                       # Speedy Eggbert 1 and 2 with 4x images, server
+bash freeapi/tools/build_windows.sh sb1-blupi sb2-blupi   # any of the four games
+```
+
+The script builds SDL once, then each game, packs it, and builds the Free Direct server. Its
+defaults can be changed with these variables:
+
+| Variable | Default |
+|---|---|
+| `BLUPI_WINDOWS_DATA_ROOT` | `/rv/tmp/speedy-blupi-games` (the installations of the web table above) |
+| `BLUPI_WINDOWS_HIRES_ROOT` | `../speedyblupi-hd/games`, packs in `<installation>/<k>x` |
+| `BLUPI_WINDOWS_HIRES_SCALE` | `4`; `0` packs no images |
+| `BLUPI_WINDOWS_FULLSCREEN` | `1`, written into the package's `DATA/config.def` |
+| `BLUPI_WINDOWS_SOUNDFONT` | GeneralUser GS from `../free-eggbert/assets/soundfont` |
+| `FREE_DIRECT_ENET_SOURCE_DIR`, `FREE_DIRECT_IXWEBSOCKET_SOURCE_DIR` | `~/deps/enet`, `~/deps/IXWebSocket-v11.4.6` |
+
+The output is in `build/freeapi-windows/packages/`, as folders and as zip files:
+
+| Package | Contents |
+|---|---|
+| `SpeedyEggbert1-Windows-x64-4x` | `SpeedyEggbert1.exe`, game data, 4x images (zip 184 MB) |
+| `SpeedyEggbert2-Windows-x64-4x` | `SpeedyEggbert2.exe`, game data, 4x images (zip 396 MB) |
+| `FreeDirectServer-Windows-x64` | `free-direct-server.exe`, `start-server.bat` (zip 1 MB) |
+
+A game package holds:
+- the executable, `SDL3.dll` and `SDL3_image.dll`;
+- the game's `DATA` (official levels, recorded demos, `config.def`), `IMAGE08`, `IMAGE16` and
+  `SOUND`;
+- `hires/IMAGE08`, `hires/IMAGE16` (the image pack);
+- `soundfont/default.sf2`, `README.txt` (for players), `COPYING.txt` and `licenses/`.
+
+As for the web package, the installations are only read and their executables are neither
+packaged nor run. Images and sounds are hard-linked into the package folder; `DATA` is copied,
+because the game writes its players and saved games there. A package folder is recreated on
+every run.
+
+How it is built:
+- **Toolchain.** `cmake/mingw-w64-x86_64.cmake`. `deps/CMakeLists.txt` builds the web build's
+  pinned SDL3 3.4.0, SDL3_image 3.4.0 (BMP; PNG through stb_image) and SDL3_mixer 3.2.0 from its
+  verified source archives.
+- **SDL as DLLs.** Free API defines Win32 functions under their own names. A static SDL imports
+  21 of the same functions from the system (`TranslateMessage`, `GetCursorPos`, ...). That pulls
+  the import libraries' definitions into the executable, and linking fails on the duplicates.
+- **The executable.** A GUI program, linked with `-static`, so it needs no MinGW DLLs. It imports
+  only `SDL3.dll`, `SDL3_image.dll` and system DLLs.
+- **`windows/entry.cpp`.** The Windows counterpart of `web/entry.cpp`; it runs before the
+  original `WinMain`:
+  - It changes to the executable's folder, as a shortcut's "Start in" does: the games open
+    `data\config.def` relative to it.
+  - With a `hires` folder there, it measures the pack's scale against the game's own images.
+    It then sets `FREE_API_IMAGE_OVERLAY=hires`, `FREE_API_IMAGE_SCALE`,
+    `FREE_DIRECT_BACKING_SCALE`, `FREE_API_HIGH_PIXEL_DENSITY=1`, and the largest
+    `FREE_API_WINDOW_SCALE` that fits the primary display.
+  - It adds `-nocd`.
+  - Variables already set in the environment win. Without `DATA` it shows a message box.
+- **Multiplayer.** ENet (local network) and IXWebSocket (Free Direct server), without TLS: there
+  is no OpenSSL for MinGW here. The games connect to `ws://` servers.
+- **Compatibility libraries.** Free API, `plan.md` TASK-BR-17..19:
+  - `free_api_win32_host.h` gives the system's Winsock headers (through ENet and IXWebSocket)
+    the Win32 type names they expect from `windows.h`;
+  - on Windows hosts, paths keep their drive letter and `GetCurrentDirectoryA` returns the real
+    working directory: Speedy Eggbert 1 builds its music path from its own folder
+    (`src/sound.cpp:643`), and with the drive letter stripped no music loaded;
+  - a scaled window is centred.
+
+  Free Direct and the server needed no change.
+
+[EVIDENCE, 2026-11-11] The packaged executables, under Wine 10.0 on a virtual 1920×1080 display.
+They play the same through Wine as any program; SDL's Linux variables must be unset first,
+because `SDL_VIDEODRIVER=x11` stops SDL for Windows.
+- **Speedy Eggbert 1.**
+  - The title and the recorded demo at 4x (back buffer 2560×1920): in full screen letterboxed
+    at 1440×1080, and in a 1280×960 window.
+  - MIDI music from `sound\music003.blp` with the bundled SoundFont.
+- **Speedy Eggbert 2.** The title in full screen at 4x, 20 frames per second (the game's 50 ms
+  timer).
+- **Internet multiplayer.** Two Speedy Eggbert 1 instances through `free-direct-server.exe`,
+  also under Wine:
+  - the host creates a room and a game;
+  - the client joins the room with its ID, sees the game, joins the lobby;
+  - both get ready, the host starts, and both play;
+  - the host sees the client's Eggbert, and data flows both ways.
+- **Local network.** Provider FreeDirect: the client found the host's game by broadcast, joined it
+  at the host's network address (192.168.x), and both played.
+
+[OPEN] Real Windows 10/11 and real graphics and audio drivers; two separate machines; Speedy
+Eggbert 2 multiplayer; high-DPI displays; Windows Firewall prompts.
 
 ## What fills which gap
 
