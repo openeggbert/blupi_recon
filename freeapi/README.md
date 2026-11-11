@@ -20,7 +20,10 @@ matching tools and SDL3 port are unchanged.
 
 Sibling checkouts `../../free-api` and `../../free-direct` with their blupi_recon support,
 CMake ≥ 3.23, Ninja, GCC with C++20, and the SDL3, SDL3_image and SDL3_mixer
-development files (Free API's `FREE_API_USE_SYSTEM_SDL3`).
+development files (Free API's `FREE_API_USE_SYSTEM_SDL3`). For multiplayer in native builds,
+also ENet (`-DFREE_DIRECT_ENET_SOURCE_DIR`, local network) and IXWebSocket with OpenSSL
+(`-DFREE_DIRECT_IXWEBSOCKET_SOURCE_DIR`, Free Direct server); without them the build warns and
+leaves that provider out.
 
 ## Build
 
@@ -310,10 +313,11 @@ runtime/data, and did not reload indefinitely. Reports are `build/freeapi-web/bu
   checks the format, game identity and paths, restores the files and flushes them. Game assets
   load automatically again after a page reload; no local files need to be selected.
 
-Known scope: AVI movies and CD audio are unavailable, as in the native Free API build. Browser
-multiplayer is unavailable: the default Free Direct loopback transport does not connect separate
-WASM instances. The web UI is intended for a keyboard and mouse. Long campaign play, editor
-coverage and other browser engines still need separate verification.
+Known scope: AVI movies and CD audio are unavailable, as in the native Free API build.
+Multiplayer works through a Free Direct server (see "Internet multiplayer" below); native builds
+also play on the local network. The web UI is
+intended for a keyboard and mouse. Long campaign play, editor coverage and other browser engines
+still need separate verification.
 
 ### Vehicle engine loops
 
@@ -441,6 +445,80 @@ passed, using the prototype's `_EGAMES=1` selection to check native-build compat
 [OPEN] These bounded checks do not certify complete campaign/editor coverage, MIDI playback
 quality, other browser engines or pixel equality with a historical executable.
 
+## Local-network multiplayer
+
+Native builds offer the provider **FreeDirect**: Free Direct's ENet backend, which finds games on
+the local network by UDP broadcast and connects to the chosen one. As on the original, one player
+creates a game and the others pick it from the list; no addresses are typed.
+
+- Needs ENet: configure with `-DFREE_DIRECT_ENET_SOURCE_DIR=/path/to/enet` (an
+  [ENet](https://github.com/lsalzman/enet) checkout), or install libenet; without either the build
+  warns and the provider only reaches its own process. `BLUPI_NET_LAN=OFF` leaves it out.
+- The machines must share a network segment and let UDP 51321 (game) and 51323 (discovery)
+  through their firewalls. Opening or refreshing the game list waits one second for answers
+  (`FREE_DIRECT_ENET_DISCOVERY_MS`). `FREE_DIRECT_ENET_HOST_ADDRESS=<host>[:port]` joins a host
+  that discovery cannot reach.
+- Browsers have no UDP; on the web, and across the Internet, use a Free Direct server (below),
+  which also works inside a local network.
+
+[EVIDENCE, 2026-11-11] Two native Speedy Blupi 1 instances, and then two Speedy Blupi 2 instances,
+on one Linux machine, driven through the games' screens on virtual displays (Xvfb, xdotool):
+the client lists the host's game, joins it at the host's network address (192.168.x, not
+loopback), both get ready, the host starts, and both send and receive game data while playing
+(`../../free-direct/docs/directplay-design.md` Decision 31, which also records what failed before:
+an empty game list and no address to join). [OPEN] Two separate machines.
+
+## Internet multiplayer
+
+The games' multiplayer, through a [Free Direct server](../../free-direct/docs/free-direct-server.md)
+(`free-direct-server`), natively and in the browser, and the two together. The historical source
+is unchanged: its provider list shows **FreeDirect server**, and choosing it opens a dialog for
+the server's address or URL, port, password (if the server has one) and room. Creating a room
+shows its secret ID (in the browser also as a link) for the other players; inside the room the
+game's own session list, create, join and lobby work as on a LAN. Players need no open ports.
+
+- **Web**: always built in. Pages served over `https://` (GitHub Pages) can only reach a `wss://`
+  server, i.e. one with a TLS certificate; a plain `ws://` server works from `http://` pages and
+  `localhost`. URL parameters `server`, `port` and `room` prefill the dialog.
+- **Native**: needs IXWebSocket (and OpenSSL for `wss://`). Configure with
+  `-DFREE_DIRECT_IXWEBSOCKET_SOURCE_DIR=/path/to/IXWebSocket` (v11.4.6 is tested); without it the
+  build warns and has no server provider. `BLUPI_NET_SERVER=OFF` leaves it out on purpose.
+  `FREE_DIRECT_SERVER`, `FREE_DIRECT_SERVER_PORT`, `FREE_DIRECT_SERVER_PASSWORD` and
+  `FREE_DIRECT_ROOM` prefill the dialog; with a server and a room (`new` creates one) it is skipped.
+- A room only admits the same game, edition and string table: `FREE_DIRECT_RELAY_COMPAT` is
+  `blupi_recon/<game>-<edition>/<rc name>/1`.
+
+Running a server for testing:
+
+```bash
+cmake -S ../free-direct/server -B ../free-direct/build-probe/standalone-server \
+      -DFREE_DIRECT_IXWEBSOCKET_SOURCE_DIR=$HOME/deps/IXWebSocket-v11.4.6
+cmake --build ../free-direct/build-probe/standalone-server
+../free-direct/build-probe/standalone-server/free-direct-server --port 51325
+```
+
+**Browser check** (`tools/net_web.mjs`, Node 22+, Chrome): starts a local server with a
+password and two independent browsers. The host creates a room and a game; the client types the
+server, port, password and room ID into the real dialog, joins, both get ready, the host starts,
+and the host walks. With `--native-probe` (Free Direct's `relay_directplay_tests`), a native Free
+Direct process also finds the browser host's game and is admitted to it.
+
+```bash
+node freeapi/tools/net_web.mjs --server <free-direct-server> --game sb1-blupi \
+     --native-probe ../free-direct/build-probe/tests/relay_directplay_tests
+```
+
+[EVIDENCE, 2026-11-11] `sb1-blupi` and `sb2-blupi`: both browsers reach the lobby with two
+players and the play phase; each sees the other's Blupi (screenshots in `build/freeapi-web/net`);
+the native probe was admitted as DPID 1. It also exercised two fixes this needed:
+Free API's `TranslateMessage` now produces `WM_CHAR`, without which no game name could be typed,
+and Free Direct's join and session-list fixes (`../../free-direct/docs/directplay-design.md`
+Decisions 28-30).
+
+[OPEN] A server on the Internet with players on different connections; latency and packet-loss
+behaviour; four players; the Eggbert editions; a native game instance playing with a browser one
+(the native side is tested at the protocol level only).
+
 ## What fills which gap
 
 - `compat/msvc_crt.h` (forced include, this build only): the VC5 `rand`/`srand` generator, so
@@ -459,5 +537,6 @@ quality, other browser engines or pixel equality with a historical executable.
   `DirectPlayEnumerate` and two `DPERR_*` names. Its `plan.md`, phase BR.
 
 Known differences from the original: no AVI movies and no CD audio (both declined, as on a PC
-without them), multiplayer only between Free Direct programs, and 8-bit colour converted through
+without them), multiplayer only between Free Direct programs (over a Free Direct server, not the
+original DirectPlay protocol), and 8-bit colour converted through
 GDI's nearest palette entry.
