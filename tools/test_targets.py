@@ -240,7 +240,9 @@ class TargetEquivalenceTests(unittest.TestCase):
             target = targets.load(name)
             entries = equiv.declarations(target, target.manifest())
             if name.startswith('sb1/'):
-                expected = 0 if target.primary or name == 'sb1/blupi/demo' else 3 if '/eggbert/' in name else 2
+                # The Speedy Eggbert Demo also certifies GetBlupiInfo (docs/EGGBERT_DEMO.md).
+                expected = (0 if target.primary or name == 'sb1/blupi/demo' else 4 if name == 'sb1/eggbert/demo'
+                            else 3 if '/eggbert/' in name else 2)
             else:
                 expected = 4 if name == 'sb2/eggbert/en' else 9
             self.assertEqual(len(entries), expected)
@@ -535,9 +537,12 @@ class SB1EquivalenceTests(unittest.TestCase):
             t = targets.load(name)
             entries = equiv.declarations(t,t.manifest())
             self.assertFalse(any(e['name']=='DoInit' for e in entries))
-            self.assertEqual(len(entries),0 if t.primary or name == 'sb1/blupi/demo' else 3 if '/eggbert/' in name else 2)
+            self.assertEqual(len(entries),0 if t.primary or name == 'sb1/blupi/demo' else 4 if name == 'sb1/eggbert/demo'
+                             else 3 if '/eggbert/' in name else 2)
             for entry in entries:
-                self.assertEqual(entry['proof_method'],'sb1-local')
+                # GetBlupiInfo in the Speedy Eggbert Demo is a general region proof, not an SB1-specific one.
+                general = (name, entry['name']) == ('sb1/eggbert/demo', 'GetBlupiInfo')
+                self.assertEqual(entry.get('proof_method'), None if general else 'sb1-local')
                 self.assertTrue(entry['certificate'].startswith('evidence/equivalence/'+t.slug+'/'))
 
 

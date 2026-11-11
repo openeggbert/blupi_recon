@@ -12,3 +12,9 @@ oracle/functions.csv -text
 oracle/sb2-eggbert-en/functions.csv -text
 # Vendored ENet (port/third_party/enet/README.md): upstream bytes unchanged.
 port/third_party/enet/** -text
+# Edition overlays and their inventories (editions campaign): raw bytes, as src/ and the pinned inventories.
+games/sb1-eggbert-demo/** -text
+games/sb1-eggbert-value/** -text
+games/sb1-blupi-demo/** -text
+oracle/sb1-eggbert-demo/** -text
+oracle/sb1-eggbert-value/** -text

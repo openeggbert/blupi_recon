@@ -17,6 +17,13 @@ oracle/<target>/:
                               (tools/targets.py); the data shifts come from
                               aligning the initialised .rdata and .data bytes.
 
+With --via TARGET the functions are located through an intermediate target
+that is closer to the new one (an edition built from the same source revision):
+the source target's functions are followed through the intermediate's own
+address map and then searched from the intermediate's executable. The inventory
+rows are then the intermediate's (they carry its audited corrections), and the
+address map still translates the source target's addresses.
+
 Static reads of both executables only.
 """
 from __future__ import annotations
@@ -225,6 +232,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--target", required=True)
     ap.add_argument("--from", dest="source", default=None, help="source target (default: the primary)")
+    ap.add_argument("--via", default=None, help="intermediate target with its own inventory and address map")
     args = ap.parse_args()
     reg = targets.registry()
     src_name = args.source or reg["default"]
@@ -234,7 +242,21 @@ def main() -> int:
     rows = list(csv.DictReader(open(src_oracle / "functions.csv", encoding="utf-8-sig")))
     tu_rows = list(csv.DictReader(open(src_oracle / "tu_map.csv", encoding="utf-8-sig")))
 
-    mapped = locate_functions(src_pe, dst_pe, rows)
+    if args.via:
+        via_spec = reg["targets"][args.via]
+        via_pe = pefile.PE(str(ROOT / via_spec["exe"]))
+        via_oracle = ROOT / via_spec["oracle"]
+        via_map = json.loads((via_oracle / "address_map.json").read_text(encoding="utf-8"))
+        if via_map["from"] != src_name:
+            raise SystemExit(f"{args.via}'s address map starts at {via_map['from']}, not at {src_name}")
+        via_rows = list(csv.DictReader(open(via_oracle / "functions.csv", encoding="utf-8-sig")))
+        via_tu_rows = list(csv.DictReader(open(via_oracle / "tu_map.csv", encoding="utf-8-sig")))
+        step = locate_functions(via_pe, dst_pe, via_rows)        # intermediate RVA -> target RVA
+        to_via = {int(s, 16) - BASE: int(d, 16) - BASE for s, d, _ in via_map["functions"]}
+        known = {int(r["rva"], 16) for r in rows}
+        mapped = {s: step[v] for s, v in to_via.items() if v in step and s in known}
+    else:
+        mapped = locate_functions(src_pe, dst_pe, rows)
     # Functions the search could not place (bodies too short to be unique, or
     # shared by identical-code folding, which the linkers resolve differently)
     # take the address the located code calls them at, by majority.
@@ -275,8 +297,15 @@ def main() -> int:
                     r["end"] = "0x%x" % (mapped[rva] + int(r["size"]))
                 w.writerow(r)
 
-    write("functions.csv", rows)
-    write("tu_map.csv", tu_rows)
+    if args.via:
+        # the intermediate's rows, at the target's addresses
+        inventory, mapped = mapped, step
+        write("functions.csv", via_rows)
+        write("tu_map.csv", via_tu_rows)
+        mapped = inventory
+    else:
+        write("functions.csv", rows)
+        write("tu_map.csv", tu_rows)
     code = segments([(BASE + s, BASE + d) for s, d in mapped.items()])
     data = align_data(src_pe, dst_pe)
     sizes = {int(r["rva"], 16): int(r["size"]) for r in rows}
@@ -285,6 +314,8 @@ def main() -> int:
             "data_points": data_points,
             "code": [["0x%x" % a, "0x%x" % b, s] for a, b, s in code],
             "data": [["0x%x" % a, "0x%x" % b, s] for a, b, s in data]}
+    if args.via:
+        amap["via"] = args.via
     (out / "address_map.json").write_text(json.dumps(amap, indent=1) + "\n", encoding="utf-8")
     game = [r for r in rows if r["kind"] == "game"]
     print(f"{args.target}: {sum(int(r['rva'], 16) in mapped for r in game)}/{len(game)} game functions, "

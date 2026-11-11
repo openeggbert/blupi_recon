@@ -245,7 +245,11 @@ def main():
     import targets
     target = targets.load(args.target)
     target.check_exe()
-    if args.target.startswith("sb1/"):
+    if args.target.startswith("sb1/") and target.source_overlays:
+        # An edition overlay keeps its own script; the staged tree (tools/source_tree.py) puts it beside src/res.
+        out = ROOT / target.source_overlays[-1] / "res"
+        asset_prefix = ""
+    elif args.target.startswith("sb1/"):
         out = ROOT / "src/res"
         asset_prefix = ""
     elif args.target.startswith("sb2/"):
