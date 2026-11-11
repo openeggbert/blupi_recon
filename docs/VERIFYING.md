@@ -83,7 +83,7 @@ Every change to source, manifests, the registry or the matching tools must pass 
    - `.pyenv/python.exe tools/test_targets.py`, which `discover` does not find
    - `port/tools/check_fidelity.py --check`
 
-The whole set for all 14 targets runs one target at a time:
+The whole set for all targets (16 since 2026-11-11) runs one target at a time:
 
 ```bash
 .pyenv/python.exe tools/regression_gate.py run before

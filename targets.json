@@ -2385,9 +2385,7 @@
       "manifest": "games/sb1-blupi-demo/recon.json",
       "oracle": "oracle/sb1-blupi-demo-tree",
       "defines": [],
-      "game_text_end": "0x235f0",
-      "resource_script": "games/sb1-blupi-demo/src/res/blupi.rc",
-      "resource_note": "PARTIAL: the retail SB1 script; the June demo's own resources are not reconstructed (docs/SB1_DEMO.md). Evidence-only target."
+      "game_text_end": "0x235f0"
     },
     "sb1/eggbert/demo": {
       "exe": "assets/downloads/eggbert_demo/WCSUP.DLL",

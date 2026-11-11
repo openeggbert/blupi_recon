@@ -2079,14 +2079,14 @@ BOOL CEvent::ChangePhase(UINT phase)
 		phase = WM_PHASE_BUILD;
 	}
 
-	if ((m_phase == WM_PHASE_PLAY || phase != WM_PHASE_PLAY) &&
+	if (!m_bDemoPlay &&
+		(phase != WM_PHASE_PLAY || m_phase == WM_PHASE_PLAY) &&
 		phase != WM_PHASE_STOP &&
 		phase != WM_PHASE_SETUPp &&
 		phase != WM_PHASE_HELP &&
 		phase != WM_PHASE_GAMEREAD &&
 		phase != WM_PHASE_GAMEREADp &&
-		phase != WM_PHASE_GAMEWRITE &&
-		!m_bDemoPlay)
+		phase != WM_PHASE_GAMEWRITE)
 	{
 		m_pSound->StopMusic();
 	}
@@ -2243,7 +2243,7 @@ BOOL CEvent::ChangePhase(UINT phase)
 	HideMouse(FALSE);
 	WaitMouse(TRUE);
 
-	if (phase == WM_PHASE_PLAY || phase == WM_PHASE_GAMER)
+	if (phase == WM_PHASE_GAMER || phase == WM_PHASE_PLAY)
 	{
 		OutputNetDebug("CEvent::ChangePhase [WriteInfo]\r\n");
 		WriteInfo(m_gamer);
@@ -2258,36 +2258,21 @@ BOOL CEvent::ChangePhase(UINT phase)
 	}
 	
 	int oldPhase = m_phase;
-	m_phase = phase;
 	m_index = index;
+	m_phase = phase;
 
-	if (table[m_index].backName[0] != '\0')
+	strcpy(str, table[m_index].backName);
+	if (str[0] != '\0')
 	{
-		bEnable = FALSE;
-		if (!bEnable)
+		if (table[m_index].bCDrom) AddCDPath(str);
+		totalDim.x = LXIMAGE;
+		totalDim.y = LYIMAGE;
+		iconDim.x = 0;
+		iconDim.y = 0;
+		if (!m_pPixmap->Cache(0, str, totalDim, iconDim, FALSE))
 		{
-			sprintf(str, table[m_index].backName, 8);
-			if (str[0] != '\0')
-			{
-				if (table[m_index].bCDrom) AddCDPath(str);
-				totalDim.x = LXIMAGE;
-				totalDim.y = LYIMAGE;
-				iconDim.x = 0;
-				iconDim.y = 0;
-				bEnable = m_pPixmap->Cache(0, str, totalDim, iconDim, FALSE);
-			}
-			if (!bEnable)
-			{
-				OutputNetDebug("CEvent::ChangePhase [Cache error]\r\n");
-				WaitMouse(FALSE);
-#if _EGAMES // Version 1.1 returns to the title after a background-load failure.
-				return ChangePhase(WM_PHASE_INIT);
-#else
-				m_tryInsertCount = 40;
-				m_tryPhase = m_phase;
-				return ChangePhase(WM_PHASE_INSERT);
-#endif
-			}
+			PostMessage(m_hWnd, WM_CLOSE, 0, 0);
+			return TRUE;
 		}
 	}
 
@@ -2308,16 +2293,8 @@ BOOL CEvent::ChangePhase(UINT phase)
 		}
 		else
 		{
-#if _EGAMES // Version 1.1 handles mission-read failure like background-load failure.
-			OutputNetDebug("CEvent::ChangePhase [Cache error]\r\n");
-			WaitMouse(FALSE);
-			return ChangePhase(WM_PHASE_INIT);
-#else
-OutputNetDebug("CEvent::ChangePhase [Read error]\r\n");
-			m_tryInsertCount = 40;
-			m_tryPhase = m_phase;
-			return ChangePhase(WM_PHASE_INSERT);
-#endif
+			PostMessage(m_hWnd, WM_CLOSE, 0, 0);
+			return TRUE;
 		}
 	}
 
@@ -2351,9 +2328,8 @@ OutputNetDebug("CEvent::ChangePhase [Read error]\r\n");
 		}
 		else
 		{
-			m_tryInsertCount = 40;
-			m_tryPhase = m_phase;
-			return ChangePhase(WM_PHASE_INSERT);
+			PostMessage(m_hWnd, WM_CLOSE, 0, 0);
+			return TRUE;
 		}
 	}
 
@@ -2751,6 +2727,8 @@ OutputNetDebug("CEvent::ChangePhase [Read error]\r\n");
 	}
 	if (m_phase == WM_PHASE_SETUP || m_phase == WM_PHASE_SETUPp)
 	{
+		SetDemo(WM_BUTTON5, TRUE);
+		SetDemo(WM_BUTTON6, TRUE);
 		m_nbJoy = 0;
 		JOYCAPS joyCaps;
 		num = joyGetNumDevs();
@@ -3699,6 +3677,7 @@ BOOL CEvent::DemoPlayStart()
 	memset(m_pDemoBuffer, 0, MAXDEMO * sizeof(DemoEvent));
 
 	sprintf(filename, "data\\demo%.3d.blp", m_demoNumber + 200);
+	AddCDPath(filename);
 	file = fopen(filename, "rb");
 	if (file == NULL) return FALSE;
 
@@ -3713,8 +3692,8 @@ BOOL CEvent::DemoPlayStart()
 	fclose(file);
 
 	mission = m_demoNumber + 200;
-	m_bPrivate = TRUE;
 	m_private = mission;
+	m_bPrivate = TRUE;
 
 	if (!m_pDecor->Read(m_gamer, mission, FALSE))
 	{
@@ -4211,14 +4190,7 @@ BOOL CEvent::TreatEventBase(UINT message, WPARAM wParam, LPARAM lParam)
 					if (cheat_code[m_rankCheat][m_posCheat] == 0)
 					{
 						bEnable = FALSE;
-						if (m_rankCheat == 0)
-						{
-							if (m_bBuildOfficialMissions)
-								m_bBuildOfficialMissions = FALSE;
-							else
-								m_bBuildOfficialMissions = TRUE;
-							bEnable = m_bBuildOfficialMissions;
-						}
+
 						if (m_rankCheat == 1)
 						{
 							m_bAllMissions = !m_bAllMissions;
@@ -4348,12 +4320,6 @@ BOOL CEvent::TreatEventBase(UINT message, WPARAM wParam, LPARAM lParam)
 				if (!m_bPrivate && !m_bMulti)
 				{
 					if (m_mission == 1) return ChangePhase(WM_PHASE_GAMER);
-					if (m_mission % 10 == 0 && m_mission != 10)
-					{
-						SetMission(1);
-						m_phase = WM_PHASE_PLAY;
-						return ChangePhase(WM_PHASE_PLAY);
-					}
 				}
 			}
 			else if (m_phase != WM_PHASE_GAMEREAD && m_phase != WM_PHASE_GAMEREADp &&
@@ -4619,11 +4585,6 @@ BOOL CEvent::TreatEventBase(UINT message, WPARAM wParam, LPARAM lParam)
     case WM_PHASE_DOPLAY:
         m_bPrivate = FALSE;
         m_mission = 1;
-        if (!CheckWorld1()) {
-            m_tryInsertCount = 40;
-            m_tryPhase = WM_PHASE_PLAY;
-            return ChangePhase(WM_PHASE_INSERT);
-        }
         if (ChangePhase(WM_PHASE_PLAY)) return TRUE;
         break;
     case WM_PHASE_PRIVATE:

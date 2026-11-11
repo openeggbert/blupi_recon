@@ -1749,6 +1749,12 @@
       "tu": "games/sb1-blupi-demo/src/event.cpp"
     },
     {
+      "symbol": "?DemoPlayStart@CEvent@@IAEHXZ",
+      "rva": "0x0001c6b0",
+      "size": 464,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
       "symbol": "?DemoPlayStop@CEvent@@IAEXXZ",
       "rva": "0x0001c880",
       "size": 96,
@@ -1818,6 +1824,12 @@
       "symbol": "?TreatEvent@CEvent@@QAEHIIJ@Z",
       "rva": "0x0001d0b0",
       "size": 96,
+      "tu": "games/sb1-blupi-demo/src/event.cpp"
+    },
+    {
+      "symbol": "?TreatEventBase@CEvent@@QAEHIIJ@Z",
+      "rva": "0x0001d110",
+      "size": 6928,
       "tu": "games/sb1-blupi-demo/src/event.cpp"
     },
     {

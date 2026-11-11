@@ -73,7 +73,7 @@ never counts toward acceptance. Inside the Codex sandbox the mapping is denied.
 .pyenv/python.exe tools/check_clean_build.py --compare build/standalone
 ```
 
-- `--all` builds the 14 targets one after another.
+- `--all` builds every target (16 since 2026-11-11) one after another.
 - `--list` prints each target's configuration.
 - `--plan` resolves inputs and hashes the toolchain without compiling.
 - `check_clean_build.py` runs the clean-checkout test.
@@ -119,7 +119,7 @@ built on that day; `--all` then builds 16 targets.
 | sb1/eggbert/fr | SP3 / RTM | `src` | `src/res/sb1-eggbert-fr.rc` | `…/sb1-eggbert-fr/EGAMES.EXE` | 537,088 B, `478c849704cc…` |
 | sb1/eggbert/it | SP3 / RTM | `src` | `src/res/sb1-eggbert-it.rc` | `…/sb1-eggbert-it/EGAMES.EXE` | 536,576 B, `09e374d42562…` |
 | sb1/eggbert/pt | SP3 / RTM | `src` | `src/res/sb1-eggbert-pt.rc` | `…/sb1-eggbert-pt/EGAMES.EXE` | 536,576 B, `04669c836830…` |
-| sb1/blupi/demo (evidence only) | RTM / RTM | `src` (`_DEMO`) | `src/res/blupi.rc`, **PARTIAL** | `…/sb1-blupi-demo/Blupi.exe` | 534,016 B, `8c747a876493…` |
+| sb1/blupi/demo (own tree since 2026-11-11) | RTM / RTM | `games/sb1-blupi-demo/src` | `games/sb1-blupi-demo/src/res/sb1-blupi-demo.rc` | `…/sb1-blupi-demo/Blupi.exe` | 533,504 B, `8e389c19ff81…` |
 | sb2/blupi/en | RTM / RTM | `games/sb2/src` + `games/sb2/blupi` | `games/sb2/res/sb2-blupi-en.rc` | `…/sb2-blupi-en/BLUPI.EXE` | 587,264 B, `9fb816dc9659…` |
 | sb2/blupi/de | RTM / RTM | `games/sb2/src` + `games/sb2/blupi` | `games/sb2/res/sb2-blupi-de.rc` | `…/sb2-blupi-de/Blupi.exe` | 589,824 B, `91b0908a5483…` |
 | sb2/blupi/fr | RTM / RTM | `games/sb2/src` + `games/sb2/blupi` | `games/sb2/res/sb2-blupi-fr.rc` | `…/sb2-blupi-fr/Blupi.exe` | 589,312 B, `e3e06462b1f0…` |
@@ -153,9 +153,9 @@ environment, shared with `tools/relink.py`; `build.json` records the DLLs actual
   kept for all SB1 targets.
 - **Blupi 2's overlay** is staged by `tools/source_tree.py`, so that quoted includes resolve to the
   edition's headers. The logical TU names stay in `games/sb2/src/`.
-- **The SB1 June demo** builds with the **retail** SB1 resource script. Its resource section is
-  therefore not the demo's own. `build.json` marks it PARTIAL, and the target stays evidence-only
-  (docs/SB1_DEMO.md).
+- **The SB1 June demo** has its own source tree and resource script since 2026-11-11
+  (docs/SB1_DEMO.md). Before, it built `src/` with `_DEMO=1` and the retail resource script, marked
+  PARTIAL.
 
 ## Reproducibility
 
@@ -196,4 +196,3 @@ afterwards.
 - **The toolchain roots are fixed under `C:\tools`.** There is no override yet.
 - **The compile locks live in each checkout's `build/locks`.** Two checkouts building at once are not
   serialized against each other, so build one at a time.
-- **The demo's resources** are partial (see above).

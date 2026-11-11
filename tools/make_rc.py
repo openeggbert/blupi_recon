@@ -245,9 +245,15 @@ def main():
     import targets
     target = targets.load(args.target)
     target.check_exe()
+    import json
+    source_root = json.loads(target.manifest_path.read_text(encoding="utf-8")).get("source_root", "src")
     if args.target.startswith("sb1/") and target.source_overlays:
         # An edition overlay keeps its own script; the staged tree (tools/source_tree.py) puts it beside src/res.
         out = ROOT / target.source_overlays[-1] / "res"
+        asset_prefix = ""
+    elif args.target.startswith("sb1/") and source_root != "src":
+        # A target with its own SB1 tree (the June 1998 demo) keeps its script and cursors in that tree.
+        out = ROOT / source_root / "res"
         asset_prefix = ""
     elif args.target.startswith("sb1/"):
         out = ROOT / "src/res"

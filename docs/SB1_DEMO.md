@@ -17,6 +17,63 @@ language. The static oracle is `assets/downloads/openeggbert/Speedy_Blupi_Demo/e
 `06faf60adf7585ade95dbeeeedcf0fc5e58decb46ef08d8e0adf111f34053fd7`, registered at that path in
 `targets.json`. It is never executed.
 
+## Completion work (2026-11-11)
+
+[EVIDENCE] All figures in this section were measured on 2026-11-11 (VC5 RTM compiler and LINK 5.00.7022,
+DirectX 5 SDK), with `tools/verify.py --target sb1/blupi/demo` and `tools/target_coverage.py`.
+
+| | Before (2026-10-25) | After |
+|---|---:|---:|
+| Accepted STRICT + FOLDED | 372 + 3, 73,248 bytes (52.0 %) | **406 + 5, 132,672 bytes (94.2 %)** |
+| Emitted by the verifier | 89,296 | 132,672 |
+| Resources | the retail script, PARTIAL | the demo's own script |
+| Ordinary build | 534,016 bytes | 533,504 bytes, the original's size |
+
+**Own tree.** The target compiles `games/sb1-blupi-demo/src/` with its own manifest
+`games/sb1-blupi-demo/recon.json` and inventory `oracle/sb1-blupi-demo-tree/`. The tree was seeded
+from `src/` with every `_DEMO` arm resolved into demo code. Before any change it reproduced the earlier
+result exactly: 89,296 bytes emitted, and every function had the same status as in the run on the
+unchanged base.
+
+**What the June demo differs in** ([EVIDENCE], each read from the executable's bytes):
+
+| Where | June demo |
+|---|---|
+| `Phase` (event.h) and the screen table | Image names are plain `image\x.blp` in a 20-character field, there is no `bLocked` field, the setup screens have two more buttons (movies on/off), and the insert-CD screen's button leads to quitting. All 38 table entries were checked against the executable's data. |
+| `CEvent::ChangePhase` | The background name is copied with `strcpy`, not formatted. A failed background load, a failed mission read and a failed CD test all close the program (`PostMessage(WM_CLOSE)`). The two movie buttons are in demo state on the setup screens. The music guard tests `m_bDemoPlay` first. |
+| `CEvent::DrawButtons` | `Version 0.8`; the win screens show the demo's closing texts (199, 290-296); the setup screens show the movie setting (yes/no); the save-slot numbers are drawn through `pos`. |
+| `CEvent::TreatEventBase` | No cheat 0, no Escape shortcut from a world hub, no CD check before playing. |
+| `CEvent::DemoPlayStart` | The demo files are read from the CD path. |
+| `CDecor::BlupiStep` | Bubbles every 100 frames (at 0 and 38) instead of every 70; winning mission 40 ends the game; two explosions do not shake the screen. |
+| `CDecor::MoveObjectStep` | Two explosions do not shake the screen. |
+| `table_blupi`, `table_mirror` (decblock.cpp) | One animation of 30 instead of 32 frames; five icons are their own mirror image. |
+
+**What remains** (8,112 bytes, 5.8 %):
+
+- [EVIDENCE] **`ChangePhase`** (6,688 bytes): 1,922 of its 1,956 instructions are equal. The rest is
+  register allocation: the compiler keeps the constants 0 and `WM_PHASE_PLAY` in `edi` and `ebx` the
+  other way round than the original. It is the same kind of residue as the retail guard residue that
+  has only equivalence certificates. The compiler-tracing tools (`tools/c2trace`) need a VC6 tree,
+  which this environment does not have.
+- [EVIDENCE] **`QuickIcon`** (784 bytes, 8 bytes differ) and **`GetBlupiInfo`** (80 bytes, 2 bytes
+  differ): the order of two operands. Five equivalent spellings of `QuickIcon`'s lines compile
+  identically, so this is the declaration-count effect of [SYMBOL_ORDER.md](SYMBOL_ORDER.md).
+  Diagnostic probes (never source) make `GetBlupiInfo` match with 4 to 7 more declarations before
+  it; `QuickIcon` did not flip within 70.
+- [EVIDENCE] **`MockeryDetect`** (528 bytes): the same declaration-count effect as in the Speedy
+  Eggbert Demo ([EGGBERT_DEMO.md](EGGBERT_DEMO.md)).
+- **32 bytes** of DirectX import thunks and padding, as in every target.
+- [OPEN] **No equivalence certificates.** `tools/equivalence_target.py` binds a retail pixmap getter
+  (`GetTrueColorBack`) for every SB1 target, and the June pixmap class has none. Changing the checker
+  would change the hash pinned in every existing certificate, so it was left as it is.
+
+**Whole image** ([EVIDENCE], relink of the verified objects): same file size, same import order
+(128 imports), `.rsrc` equal except the 71 resource-directory timestamps, and `.data`
+initialized content equal except 19 pointers into code that the relink places differently. [OPEN]
+`.data` is 32 bytes larger in virtual size, and `.text` 32 bytes larger: the folded destructor copy
+that LINK keeps and `ChangePhase` (16 bytes longer) move the code after them.
+
+
 ## Target and toolchain
 
 [EVIDENCE, 2026-10-25] Two fresh figures with different denominators:

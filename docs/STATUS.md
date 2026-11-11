@@ -31,15 +31,14 @@ Fresh: `tools/target_coverage.py --target <t>` over the accepted manifests. The 
 | Speedy Eggbert 1 (1999) | `sb1/eggbert/en`, `de`, `es`, `fr`, `it`, `pt` (each) | 403 + 6 | 123,088 / 141,328 (87.1%) |
 | Speedy Eggbert Demo (1999) | `sb1/eggbert/demo` | 404 + 6 | 122,448 / 141,280 (86.7%) |
 | Speedy Eggbert SE Valueware (1999) | `sb1/eggbert/value` | 406 + 6 | 123,232 / 141,536 (87.1%) |
-| Speedy Blupi 1 June 1998 demo (evidence only) | `sb1/blupi/demo` | 372 + 3 | 73,248 / 140,784 (52.0%) |
+| Speedy Blupi 1 June 1998 demo | `sb1/blupi/demo` (own tree since 2026-11-11) | 406 + 5 | 132,672 / 140,784 (94.2%) |
 | Speedy Blupi 2 (2001) | `sb2/blupi/en`, `de`, `fr` (each) | 452 + 5 | 122,240 / 173,072 (70.6%) |
 | Speedy Eggbert 2 (2004) | `sb2/eggbert/en` | 450 + 12 | 136,448 / 172,992 (78.9%) |
 
 Notes:
 
-- **The demo's verifier figure is higher.** Fresh, the verifier emits 89,296 STRICT bytes for the
-  demo. Its demo-only bodies are not promoted into accepted records, because the target is
-  evidence only (docs/SB1_DEMO.md).
+- **The June demo is a completion target since 2026-11-11** (owner decision of 2026-11-09). It has its
+  own source tree, and the verifier emits the same 132,672 bytes it accepts (docs/SB1_DEMO.md).
 - **Earlier pages give the primary as "411 STRICT".** That is the verifier's emitted-record sum,
   which counts repeated bodies; there are 407 unique accepted records.
 
@@ -55,7 +54,7 @@ never counts as STRICT, and the byte status stays MISMATCH ([VERIFYING.md](VERIF
 | Eggbert 1 (each language) | 3: ChangePhase, TreatEventBase, WindowProc | 15,360 | 2,880 B |
 | Eggbert Demo | 4: ChangePhase, TreatEventBase, WindowProc, GetBlupiInfo | 15,456 | 3,376 B |
 | Valueware | 3: ChangePhase, TreatEventBase, WindowProc | 15,456 | 2,848 B |
-| SB1 demo | 0 | 0 | 67,536 B |
+| SB1 demo | 0 | 0 | 8,112 B |
 | Blupi 2 (each language) | 9 | 50,800 | 32 B |
 | Eggbert 2 | 4 | 36,304 | 240 B |
 
@@ -93,7 +92,7 @@ with each original.
 | Eggbert 1 (en, de, es, it, pt; fr) | equal for each language | 26,625; fr 26,553 | none (`.rsrc` differs in timestamps only, doc) | 329,202 / 329,216, 0 | 390 / 408 |
 | Eggbert Demo | 534,528 / 534,528 | 96,755 | none (`.rsrc` differs in timestamps only, fresh) | 329,202 / 329,216, 0 | 158 / 409 |
 | Valueware | 534,528 / 534,528 | 26,367 | none (`.rsrc` differs in timestamps only, fresh) | 329,204 / 329,216, 0 | 392 / 411 |
-| SB1 demo | 533,504 / 534,016 | 185,717 | none | 307,822 / 328,704, +736 | 10 / 374 |
+| SB1 demo (2026-11-11, fresh) | 533,504 / 533,504 | 135,793 | none (`.rsrc` differs in timestamps only) | 328,685 / 328,704, +32 | 90 / 410 |
 | Blupi 2 (each language) | equal for each language | 47,503 | `.rdata` | 347,915 / 349,184, 0 | 339 / 456 |
 | Eggbert 2 | 602,624 / 602,624 | 164,336 | `.rsrc` | 347,487 / 363,520, 0 | 87 / 461 |
 
@@ -103,7 +102,9 @@ with each original.
   empty function (an ICF survivor), plus the CRT filter survivor and the import order. Its Rich count
   is 268 against 270 ([SB1_CLOSURE.md](SB1_CLOSURE.md), [BLOCKER_CHECKS.md](BLOCKER_CHECKS.md)).
 - **The original linker inputs are underdetermined,** and that limit applies to every target.
-- **SB1 demo:** it has no demo resource script, and its text is 32 bytes short. It is evidence only.
+- **SB1 demo:** its own resource script since 2026-11-11; `.rsrc` differs in the directory timestamps
+  only. LINK keeps a different copy of a folded destructor and `ChangePhase` is 16 bytes longer, which
+  moves the code after them (docs/SB1_DEMO.md).
 - **Eggbert Demo:** MockeryDetect is 16 bytes longer than the original's, which moves every function
   after it ([EGGBERT_DEMO.md](EGGBERT_DEMO.md)).
 
@@ -129,7 +130,8 @@ Fresh: consolidation stage 1, on commit `a4a2352`. Details are in [BUILDING.md](
   - Every image equals an independent build apart from its PE and resource-directory timestamps.
   - Every toolchain component matched `toolchains.json`.
   - Every historical `__FILE__` path was established.
-- **The SB1 demo builds with the retail resource script.** It is labelled PARTIAL.
+- **The SB1 demo builds with its own resource script** since 2026-11-11; before, it used the retail
+  script and was labelled PARTIAL.
 
 ## 5. SDL3 port
 

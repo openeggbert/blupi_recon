@@ -5,10 +5,10 @@ This repository reconstructs the C++ source of Epsitec's **Speedy Blupi 1** (199
 goal is source that the historical Visual C++ 5 toolchain compiles back into the original machine
 code. The same sources also drive a native SDL3 port for Windows, Linux and Android.
 
-- **Historical matching.** There are 14 executables (SB1 US/German/French, Eggbert 1 in six
-  languages, the June 1998 SB1 demo as an evidence-only target, Blupi 2 English/German/French and
-  Eggbert 2). Each is matched independently and verified byte by byte against its original:
-  STRICT, FOLDED, or a separately certified EQUIVALENT tier.
+- **Historical matching.** There are 16 executables: SB1 US/German/French, Eggbert 1 in six
+  languages, the 1999 Speedy Eggbert Demo and Valueware, the June 1998 SB1 demo (with its own source
+  tree), Blupi 2 English/German/French and Eggbert 2. Each is matched independently and verified
+  byte by byte against its original: STRICT, FOLDED, or a separately certified EQUIVALENT tier.
 - **Ordinary builds.** Every executable builds from its reconstructed source with its historical
   compiler and linker. No original executable or reverse-engineering tool is needed.
 - **SDL3 port.** [port/README.md](port/README.md): the faithful 640×480 games, plus optional
