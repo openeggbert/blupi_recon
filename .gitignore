@@ -12,3 +12,4 @@ __pycache__/
 *.lib
 .pyenv/
 to_delete/
+.idea/

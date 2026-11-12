@@ -5,6 +5,10 @@ no modernization, no renderer changes in matching source.
 The native SDL3 port lives only in `port/` and has its own rules in `port/AGENTS.md`. It compiles `src/` unchanged; never edit `src/` for the port, and never let
 port work change the matching build or its acceptance status.
 
+The Free API build (`freeapi/`, freeapi/README.md) compiles `src/` and `games/sb2/src/` unchanged against the
+sibling Free API and Free Direct checkouts. What it lacks is fixed there or in `freeapi/compat/`, never in
+`src/` or `games/*/src/`.
+
 Targets (`targets.json`, `tools/targets.py`, docs/MULTI_GAME.md): every build of the game is a matching
 target `game/edition/language`. `sb1/blupi/us` (BLUPI.EXE) is the primary one; every acceptance number
 refers to it, and tools default to it. Other targets are verified with `tools/verify.py --target` on the
