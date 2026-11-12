@@ -256,6 +256,7 @@ BOOL CNetwork::CreateProvider(int i) {
     Note(note); return TRUE;
 }
 const std::string& PortNetworkRoomFile() { return native::Configuration().roomFile; }
+unsigned PortNetworkServerPort() { return native::DefaultServerPort(native::SecurePage()); }
 // The server screen's OK (address_screen.cpp): connects to the server unless already connected to
 // it, then enters the room (an empty room creates one; its ID goes to created). An error message
 // in English, or NULL.

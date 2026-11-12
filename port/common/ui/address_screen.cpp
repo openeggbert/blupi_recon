@@ -31,6 +31,7 @@
 bool PortNetworkSetAddress(const char* text);   // common/net/cnetwork.cpp
 const char* PortNetworkSetServer(const char* server, const char* room, std::string* created);
 const std::string& PortNetworkRoomFile();
+unsigned PortNetworkServerPort();   // the port a plain address gets (443 on an https:// page)
 
 namespace
 {
@@ -319,7 +320,11 @@ void DrawServer()
 	Text(0x78, kRoomY - 20, 9033, "Room (empty for a new one):", FONTWHITE);
 	std::string room = s_room + (s_focus == 1 ? "_" : "");
 	DrawTextLeft(s_pixmap, POINT{0x78 + 20, kRoomY}, &room[0], FONTWHITE);
-	Text(0x78, 0xe6, 9034, "A name or a number, with :port if it is not 51325.", FONTLITTLE);
+	// The text is a language pack's: its "{port}" is replaced, it is never a format string.
+	std::string hint = PortLanguageText(9034, "A name or a number, with :port if it is not {port}.");
+	const size_t at = hint.find("{port}");
+	if (at != std::string::npos) hint.replace(at, 6, std::to_string(PortNetworkServerPort()));
+	DrawTextLeft(s_pixmap, POINT{0x78, 0xe6}, &hint[0], FONTLITTLE);
 	Text(0x78, 0xfa, 9035, "To join friends, type the ID of the room they created.", FONTLITTLE);
 	if (!s_error.empty())
 	{

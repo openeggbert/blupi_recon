@@ -1,4 +1,4 @@
-# Speedy Blupi SDL3 port 1.5.0
+# Speedy Blupi SDL3 port 1.5.1
 
 The native port of **Speedy Blupi** (Epsitec, 1998) and **Speedy Blupi 2** (2001), and of their
 eGames editions **Speedy Eggbert** and **Speedy Eggbert 2**, for Windows, Linux, Android and web
@@ -6,7 +6,8 @@ browsers. It is
 built from this repository's reconstruction of the original programs' source, compiled unchanged with
 a modern compiler, plus a small platform layer on SDL3.
 
-Version 1.5 plays multiplayer through a Free Direct server, without open ports and also in the browser,
+Version 1.5.1 gives the web page a server to play on, fds.openeggbert.com. Version 1.5 plays
+multiplayer through a Free Direct server, without open ports and also in the browser,
 where it can be played at https://openeggbert.github.io/blupi_recon/. Version 1.4 runs all five programs
 in a web browser as well. Version 1.3 added the Speedy Eggbert Demo, Speedy Eggbert SE Valueware and the June 1998 Speedy Blupi
 Demo as programs of their own, internet games from the game's own multiplayer screens, the gamepad as
@@ -16,11 +17,23 @@ Blupi 2 and Speedy Eggbert 2, and the original multiplayer of all four games.
 **The original games' files are not included.** You need your own copy of the game: the CD or the
 installed game. On the first start the port asks for its folder and remembers it.
 
+## New in 1.5.1
+
+- **The web page has a server:** its multiplayer screen offers `fds.openeggbert.com` until you have used
+  another server, so a browser game needs nothing typed but OK. Desktop, Android and browser players
+  share its rooms.
+- **A plain server name on an `https://` page means port 443** (`wss://`), where a TLS proxy serves it;
+  1.5.0 used 51325 there too. The desktop and Android programs still use 51325 (`ws://`), and the server
+  screen's hint names the port that applies.
+- **Running a server for all of them:** `port/docs/FREE_DIRECT_SERVER.md`, with the systemd service and the
+  nginx configuration for `wss://`.
+- `--net-server-default ADDRESS`: the server screen's server when none is remembered (the web page uses it).
+
 ## New in 1.5
 
 - **Multiplayer through a Free Direct server:** the multiplayer provider list has a third entry,
   "Internet through a Free Direct server". Every player connects out to a
-  [free-direct-server](https://github.com/openeggbert/free-direct/blob/main/docs/free-direct-server.md),
+  [free-direct-server](https://github.com/openeggbert/free-direct/blob/hires-images/docs/free-direct-server.md),
   which anyone can run, so nobody needs an open port. Type the server's address and leave the room empty:
   the game creates a room and shows its ID (also on the clipboard). The other players choose the same
   server and type that ID; the games in the room are then listed as on a local network. Windows, Linux,
@@ -103,10 +116,10 @@ installed game. On the first start the port asks for its folder and remembers it
 
 | File | For |
 |---|---|
-| `speedy-blupi-sdl3-1.5.0-windows-x64.zip` | 64-bit Windows 10 or 11: `blupi-sdl3`, `blupi2-sdl3`, `eggbert-demo-sdl3`, `eggbert-value-sdl3`, `blupi-demo-sdl3`, `SDL3.dll` |
-| `speedy-blupi-sdl3-1.5.0-linux-x86_64.tar.gz` | x86-64 Linux with glibc 2.38 or newer (Debian 13, Ubuntu 24.04, Fedora 39 and later), X11 or Wayland: the same five programs |
-| `speedy-blupi-sdl3-1.5.0-android.apk` | Android 7.0 or newer (arm64-v8a, x86_64): Speedy Blupi and Speedy Blupi 2 |
-| `speedy-blupi-sdl3-1.5.0-web.zip` | a web browser: the five programs as WebAssembly, the page, `serve.py`; also at https://openeggbert.github.io/blupi_recon/ |
+| `speedy-blupi-sdl3-1.5.1-windows-x64.zip` | 64-bit Windows 10 or 11: `blupi-sdl3`, `blupi2-sdl3`, `eggbert-demo-sdl3`, `eggbert-value-sdl3`, `blupi-demo-sdl3`, `SDL3.dll` |
+| `speedy-blupi-sdl3-1.5.1-linux-x86_64.tar.gz` | x86-64 Linux with glibc 2.38 or newer (Debian 13, Ubuntu 24.04, Fedora 39 and later), X11 or Wayland: the same five programs |
+| `speedy-blupi-sdl3-1.5.1-android.apk` | Android 7.0 or newer (arm64-v8a, x86_64): Speedy Blupi and Speedy Blupi 2 |
+| `speedy-blupi-sdl3-1.5.1-web.zip` | a web browser: the five programs as WebAssembly, the page, `serve.py`; also at https://openeggbert.github.io/blupi_recon/ |
 | `SHA256SUMS.txt` | checksums |
 
 All packages are built on Debian 13 from the release tag: Linux natively (it needs glibc 2.38; 1.2.0's,
@@ -118,7 +131,7 @@ package with Emscripten.
   `eggbert-value-sdl3` or `blupi-demo-sdl3`. The Windows executables are not code-signed, so
   SmartScreen may ask for confirmation ("More info", "Run anyway").
 - **Android:** install the APK. It is signed with a new key: uninstall 1.2.0 or older first (that also
-  removes the games you imported; import them again). It updates 1.4.0 in place.
+  removes the games you imported; import them again). It updates 1.4.0 and 1.5.0 in place.
   Choose a game folder to import; the app copies it into its own storage. It tells the two games apart,
   and after a second import it asks which game to start.
 
@@ -157,8 +170,8 @@ package with Emscripten.
   through a Free Direct server on one machine, also between a browser and Linux) and was played between
   real devices for both games, but has had little real-world play beyond that. Also:
   - an Android player who switches away from the game is likely to drop out of a session;
-  - there is no public Free Direct server: someone in the group runs one (and, for browsers on
-    `https://` pages, gives it a TLS certificate).
+  - fds.openeggbert.com is the one public Free Direct server so far; any group can run its own
+    (port/docs/FREE_DIRECT_SERVER.md).
 - **Android:** the 1.5.0 APK was built but not run (no device or emulator was available). A player's own
   language file goes into a `languages` folder inside the game folder before importing it. Gamepads and
   running in the background have had little testing. The 1.3 and 1.5 additions (the address and server

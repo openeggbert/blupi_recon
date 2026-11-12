@@ -118,6 +118,13 @@ uninstall the debug build first, which also removes its imported game data.
 6. Tag `port-v<version>` on the release commit and publish a GitHub release with the three
    packages, `SHA256SUMS.txt` and the notes from `docs/RELEASE_NOTES.md`.
 
+## 1.5.1
+
+As 1.5.0, all four packages from one commit on the Debian 13 host. The change is small (the port a
+plain server name gets on an `https://` page, the web page's default server, `--net-server-default`),
+so the Linux package ran the whole suite and the Windows build its network, launcher and golden
+subset under Wine.
+
 ## 1.5.0
 
 All four packages from one commit on the Debian 13 host, with the Linux steps above, and the web
