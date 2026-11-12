@@ -13,3 +13,4 @@ __pycache__/
 .pyenv/
 to_delete/
 .idea/
+/build*/

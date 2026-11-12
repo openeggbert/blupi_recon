@@ -21,6 +21,7 @@
 #                     the edition programs' data for their tests (port/docs/EDITIONS.md; optional)
 #   BLUPI_TEST_DATA_EGGBERT, BLUPI2_DATA, BLUPI2_TEST_DATA_BLUPI, BLUPI2_TEST_DATA_VARIANTS
 #                     further editions for their tests, as in linux_check.sh (default: assets/, if present)
+#   BLUPI_TEST_RELAY_SERVER  a free-direct-server for the relay multiplayer tests (optional)
 #
 # Needs what linux_check.sh needs, and the development files of SDL's
 # backends, which decide what the SDL build supports (Ubuntu: libx11-dev
@@ -88,7 +89,8 @@ cmake -S "$WORK/port" -B "$B" -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DBLUPI_TEST_DATA_EGGBERT_DEMO="${BLUPI_TEST_DATA_EGGBERT_DEMO:-}" \
     -DBLUPI_TEST_DATA_EGGBERT_VALUE="${BLUPI_TEST_DATA_EGGBERT_VALUE:-}" \
     -DBLUPI_TEST_DATA_BLUPI_DEMO="${BLUPI_TEST_DATA_BLUPI_DEMO:-}" \
-    -DBLUPI2_TEST_DATA_VARIANTS="$VARIANTS2_TEST"
+    -DBLUPI2_TEST_DATA_VARIANTS="$VARIANTS2_TEST" \
+    -DBLUPI_TEST_RELAY_SERVER="${BLUPI_TEST_RELAY_SERVER:-}"
 cmake --build "$B" -j 4
 # The provenance map check needs the complete repository: run it on the real tree
 # (port/docs/FIDELITY.md) and exclude it from the partial copy's ctest run, as linux_check.sh does.

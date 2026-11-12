@@ -15,6 +15,8 @@
 #   BLUPI_DATA, BLUPI2_DATA, BLUPI2_TEST_DATA_BLUPI, BLUPI_TEST_DATA_EGGBERT,
 #   BLUPI_TEST_DATA_EGGBERT_DEMO, BLUPI_TEST_DATA_EGGBERT_VALUE, BLUPI_TEST_DATA_BLUPI_DEMO
 #                        game data for the tests, as for linux_release.sh (each optional)
+#   BLUPI_TEST_RELAY_SERVER  a free-direct-server for the relay multiplayer tests (optional; a Linux
+#                        server serves the Windows programs under Wine)
 #
 # Needs MinGW-w64 with POSIX threads (g++-mingw-w64-x86-64-posix), Wine (wine64), CMake, Ninja,
 # Python 3 and ccache. The test run uses its own Wine prefix inside the work directory.
@@ -74,7 +76,8 @@ cmake -S "$REPO/port" -B "$B" -G Ninja -DCMAKE_TOOLCHAIN_FILE="$TOOLCHAIN" \
     -DBLUPI_TEST_DATA_EGGBERT="${BLUPI_TEST_DATA_EGGBERT:-}" \
     -DBLUPI_TEST_DATA_EGGBERT_DEMO="${BLUPI_TEST_DATA_EGGBERT_DEMO:-}" \
     -DBLUPI_TEST_DATA_EGGBERT_VALUE="${BLUPI_TEST_DATA_EGGBERT_VALUE:-}" \
-    -DBLUPI_TEST_DATA_BLUPI_DEMO="${BLUPI_TEST_DATA_BLUPI_DEMO:-}"
+    -DBLUPI_TEST_DATA_BLUPI_DEMO="${BLUPI_TEST_DATA_BLUPI_DEMO:-}" \
+    -DBLUPI_TEST_RELAY_SERVER="${BLUPI_TEST_RELAY_SERVER:-}"
 cmake --build "$B" -j 4
 
 if [ "${BLUPI_WINDOWS_TESTS:-1}" != 0 ]; then
