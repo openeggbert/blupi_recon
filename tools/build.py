@@ -8,7 +8,8 @@
 Inputs are the target's entry in targets.json, the build sections of its manifest, its source tree
 (plus overlays), its resource script and the pinned historical toolchain (toolchains.json). The original
 executable, oracle inventories, certificates and research tools are never read
-(tests/test_build_boundary.py). A linked image is a build result only: tools/verify.py and tools/relink.py
+(tests/test_build_boundary.py); the fixed link clock (targets.json build_time) runs LINK and CVTRES
+through tools/histlink.py, whose debugger core is tools/c2trace/c2dbg.py (docs/BUILDING.md). A linked image is a build result only: tools/verify.py and tools/relink.py
 compare against the original; behaviour is tested separately (docs/RUNTIME.md, port/). The output is never
 executed. relink.py imports this module's compile/link helpers, so verification links the same way.
 """
