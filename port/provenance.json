@@ -27,7 +27,9 @@
     "sb2/eggbert/en"
   ],
   "excluded_targets": {
-    "sb1/blupi/demo": "June 1998 demo unsupported by the retail SDL3 catalog; F454 records follow-up."
+    "sb1/blupi/demo": "June 1998 demo unsupported by the retail SDL3 catalog; F454 records follow-up.",
+    "sb1/eggbert/demo": "Speedy Eggbert Demo (eGames 1999) unsupported by the retail SDL3 catalog; F473 records follow-up.",
+    "sb1/eggbert/value": "Speedy Eggbert SE Valueware (eGames 1999) unsupported by the retail SDL3 catalog; F474 records follow-up."
   },
   "dependency_groups": {
     "common_contracts": [
@@ -179,6 +181,7 @@
   },
   "not_relevant": {
     ".github/workflows/fidelity.yml": "Fidelity gate infrastructure; requires human tooling review, no historical gameplay counterpart.",
+    "AGENTS.md": "Contributor policy/documentation only; human review of fidelity obligations remains required.",
     "README.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "docs/ALLOCATOR.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "docs/ANCESTRY_PLANETBLUPI.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
@@ -200,6 +203,9 @@
     "docs/DECOMP_PILOT.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "docs/DECOR_TU.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "docs/EGGBERT.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
+    "docs/EGGBERT_DEMO.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
+    "docs/EGGBERT_RU.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
+    "docs/EGGBERT_VALUE.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "docs/ENGINE_PROBE.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "docs/EVENT_TU.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "docs/EXTERNAL_RESEARCH.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
@@ -257,6 +263,10 @@
     "docs/experiments/FIFO_LIBORDER.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "docs/research/README.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "docs/research/SB1_STATUS_2026-10-19.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
+    "games/sb1-blupi-demo/README.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
+    "games/sb1-eggbert-demo/README.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
+    "games/sb1-eggbert-ru/README.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
+    "games/sb1-eggbert-value/README.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "port/AGENTS.md": "Contributor policy/documentation only; human review of fidelity obligations remains required.",
     "port/README.md": "Contributor policy/documentation only; human review of fidelity obligations remains required.",
     "port/android/app/src/main/AndroidManifest.xml": "Android platform glue with no historical counterpart: network permissions and the Wi-Fi multicast lock for LAN discovery (port/docs/MULTIPLAYER.md); the SDL activity and launcher manifest.",
@@ -279,6 +289,56 @@
   },
   "reviewed_files": {
     ".github/workflows/fidelity.yml": "9bc65b9ac4718df5443e692ffd0d3aae8b27b434ad8e52ff96f2457a520b020f",
+    "games/sb1-blupi-demo/src/blupi.cpp": "bd02b7b92b16147c6271fbba974b60cf275af177e2413a3428b7969c4a80521e",
+    "games/sb1-blupi-demo/src/button.cpp": "e2d8121d0159193ee77a9efbb74343ceb2bdeec885969cc98ce9a967f975c98d",
+    "games/sb1-blupi-demo/src/button.h": "877688d9799f774d6c02ca56606455d56831579d79b9ed051cf1096858e416c6",
+    "games/sb1-blupi-demo/src/ddutil.cpp": "3acea7967f927e082dc544a53559189981cba9533188a39d68bfc10dfdd76e25",
+    "games/sb1-blupi-demo/src/ddutil.h": "3ea96c8589493fa9b956b11b4241bd85a02d72d4f199ff90bcc45b740da57c10",
+    "games/sb1-blupi-demo/src/decblock.cpp": "0514e968ced5212d5e74f66c63cd3041010797606eff1b69e4cdb3f242afd169",
+    "games/sb1-blupi-demo/src/decblupi.cpp": "f3111faf3fbd589cc2437b9160b8e84f30ebca408692d795a33c6af8f02ceba9",
+    "games/sb1-blupi-demo/src/decdesign.cpp": "b69911104107238f10db6a0c46af7d7a885d1ae69da89c4a4f2147e0a93cecf7",
+    "games/sb1-blupi-demo/src/decmove.cpp": "a0958309cefafe360e1a5d85de05f2bf4aa2f02b3c5a760f865e585ba1b9a1b7",
+    "games/sb1-blupi-demo/src/decnet.cpp": "e85bc3608bf887616fc5e06d5d3c5b30cf0601fcf1fab0bd76ca7ebfa20e55b1",
+    "games/sb1-blupi-demo/src/decor.cpp": "08aff2009737ceaf22e0c386c75b9fd9d859e996c185e9e2bcda7a684cbfece6",
+    "games/sb1-blupi-demo/src/decor.h": "c6bbfd0c7de9cc5144c9143c3c4d19e5c89e366900909361ecd24afd5934e163",
+    "games/sb1-blupi-demo/src/dectables.cpp": "d0ebf76a33090922a8c282dbe681677ac08de2aeb5aff18f8a16b4cfe133d200",
+    "games/sb1-blupi-demo/src/dectables.h": "79a019dba35cfa79aef8742853cceba795c46c78aeaeb3ecaf4ba8113e24d608",
+    "games/sb1-blupi-demo/src/def.h": "5e365a85cc0ec41d49beb03c9fea37bf912d39c6236832125919a3a651f291f1",
+    "games/sb1-blupi-demo/src/design_tables.h": "903659506c5b8dd2f150448c5c44c65abd0d6e0d98aaea2f57584f9f980b4f9e",
+    "games/sb1-blupi-demo/src/event.cpp": "15a122f5d342fdc994a42780d649b29fda31f4eb11e97bde18256f79f9bd434a",
+    "games/sb1-blupi-demo/src/event.h": "c8096d25c3d28400a3e91488d59ec6c5e75d8643fd0bb494b078884f976b6501",
+    "games/sb1-blupi-demo/src/jauge.cpp": "2584f25c964eaf231928c8136d01374820bca44d7f18f8f5a0807fd58976df5c",
+    "games/sb1-blupi-demo/src/jauge.h": "8963e1a8b61f1a9689df220076c115d0d7d44d0ed5e96558ad513d2bc65075cf",
+    "games/sb1-blupi-demo/src/menu.cpp": "69f278c83ee32077980173a8a404ad0f50367620fe458b2b8140ef870512f800",
+    "games/sb1-blupi-demo/src/menu.h": "96aa7b69068d7dd0baf93c1f34186423a311a1087b6ff4a05962ccea1a653141",
+    "games/sb1-blupi-demo/src/misc.cpp": "90f5ee74c9f3dce30d2bfc1500a977645db9c67ba2a5c8487a76375c4b384cba",
+    "games/sb1-blupi-demo/src/misc.h": "0dcf53cfcfc985d19a44dd7d1b17e7370e8dc0e5ec5330cf971f346083a53efb",
+    "games/sb1-blupi-demo/src/movie.cpp": "8f80c1c5cd163657293d8e7cd074a1393e8999d267e9736cfcb1bbab2d0293b5",
+    "games/sb1-blupi-demo/src/movie.h": "8dfea7c002d74ca18a24d56a34177c3afd1875c3901b901c8f1c846df85d6330",
+    "games/sb1-blupi-demo/src/network.cpp": "6c82fe980e5213f3b0e6f7ad04af9ad91a9cb402a57fc01f64cb887f4505bbca",
+    "games/sb1-blupi-demo/src/network.h": "b9027365d49a1fc9d1a879f4ee643f9686f2648fe45303e0c030ec68e0ca2c70",
+    "games/sb1-blupi-demo/src/obstacle.h": "1410e64139546eff837d1a0ee366d5f4c7d7fccd07c853451f29003bcd084725",
+    "games/sb1-blupi-demo/src/pixmap.cpp": "55e8cca47be803131ed1870ebd3258be7f0508069d233dc6d29b0e7480ec1a94",
+    "games/sb1-blupi-demo/src/pixmap.h": "ef2f4bf39402d014f94b85211d6ecb52bd31f6f7c676cd4c1e724f2c2b8165ab",
+    "games/sb1-blupi-demo/src/pixtables.h": "1d472e04fca45845308c76bf22e010bd079d3dc6837b6720db5569c90d97d570",
+    "games/sb1-blupi-demo/src/res/sb1-blupi-demo.rc": "a8d11bf1aeb37cace277b3e4aeb09b70aecf95b56ff92f755d22b83012a40ccc",
+    "games/sb1-blupi-demo/src/resource.h": "b18996f70e3fbb92e93e44a52a2548e29f5280598901392c6298c1b2877f070f",
+    "games/sb1-blupi-demo/src/sound.cpp": "bf95f4bd72cbb875a50045c282cce9c3c95d9a17940c75002a6672dc971b33c3",
+    "games/sb1-blupi-demo/src/sound.h": "a1619abc17ced86e668c51a09d3f1c9f2f9e4fb3a6ed00843eb26a5ce65a98f9",
+    "games/sb1-blupi-demo/src/text.cpp": "5907a0416b0c5a0f91c82f078be027890c8da1e916279b94cf6d0349df077326",
+    "games/sb1-blupi-demo/src/text.h": "aeb0b33c5615b70e70a67621d0b124ee34e986597ddab40c00b5b45d0294d3f0",
+    "games/sb1-blupi-demo/src/texttables.h": "31e799b15ab5c5e724ff96b87f831c40fae3161538e631b4971ccc1f586343f0",
+    "games/sb1-blupi-demo/src/wave.h": "6a633e098262a84f53387feda19df52fdb76a0c3c804d5e9f97a56610970a992",
+    "games/sb1-eggbert-demo/blupi.cpp": "2c6f34d398223fe994a8ed877c2a2ac34521d0c0bbfe427bff69198fbc5d9440",
+    "games/sb1-eggbert-demo/decblock.cpp": "8967259819f31eed834448f2e090b93e8525accd252534ec394882dad8020d4a",
+    "games/sb1-eggbert-demo/decblupi.cpp": "3f92127d0799e8a0530bc3acbda9202a2614f3176f770abb8b8cab555081326f",
+    "games/sb1-eggbert-demo/decor.cpp": "63bc95e399393171d57aa70ba9917a41d40dd2e66da547c31201eb0a69d69adc",
+    "games/sb1-eggbert-demo/event.cpp": "be10c1bf06db47adc94f526ded797b6d7e0d5dae973d797904b797c8635ea989",
+    "games/sb1-eggbert-demo/res/sb1-eggbert-demo.rc": "ba805d880911f9a72d7feaf5872c543638fdb446d421c67af7dc908e18dc3091",
+    "games/sb1-eggbert-value/decblupi.cpp": "b5e90d15343b47ec08835d9ec7ded1040a8d0cc76884b29748a8e1f20f3b18d3",
+    "games/sb1-eggbert-value/decor.cpp": "5f826a2500439194b1d0c9c7d5d5ae647d9fbe2257ef748069a9bed73ed0a32f",
+    "games/sb1-eggbert-value/event.cpp": "3fce91765ede05e8db0cf952e70062e3363520217136536b7c39d5bd2cb198bc",
+    "games/sb1-eggbert-value/res/sb1-eggbert-value.rc": "799f0bc8171be72e510b5c356a08f6ef4b2d2c1125e6a9e63d48e3a9ce57631e",
     "games/sb2/blupi/decblupi.cpp": "95c43e1dfb7edf9417fe48b22af88b4de0520b4af63122af7289c84f3fd81acc",
     "games/sb2/blupi/decmove.cpp": "4969e8aa019dd0bbbbe63e82b2aa02e58d8ffc3a308e18873f427c954933a46f",
     "games/sb2/blupi/decor.h": "7e7ab78bcd5e217885225ec68d3602238e442522a175df31d442ebb77bf03cd6",
@@ -483,7 +543,7 @@
     "src/text.h": "aeb0b33c5615b70e70a67621d0b124ee34e986597ddab40c00b5b45d0294d3f0",
     "src/texttables.h": "31e799b15ab5c5e724ff96b87f831c40fae3161538e631b4971ccc1f586343f0",
     "src/wave.h": "6a633e098262a84f53387feda19df52fdb76a0c3c804d5e9f97a56610970a992",
-    "targets.json": "c08f49e33d57740b1b5a7d84e821ee9d28d4c55b82984e20635d96ca2fee3664"
+    "targets.json": "85fd6e0f8fb56522b742a2029acacc332fc65cc87860b5b5901a7c62b33123cd"
   },
   "edges": [
     {
@@ -568,13 +628,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -660,13 +719,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -751,13 +809,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -842,13 +899,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -933,13 +989,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -1024,13 +1079,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -1115,13 +1169,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -1206,13 +1259,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -1297,13 +1349,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -1389,13 +1440,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -1480,13 +1530,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -1572,13 +1621,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -1654,13 +1702,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -1737,13 +1784,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -1819,13 +1865,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -1901,13 +1946,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -1983,13 +2027,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -2065,13 +2108,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -2147,13 +2189,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -2229,13 +2270,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -2312,13 +2352,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -2394,13 +2433,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -2477,13 +2515,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -2580,13 +2617,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -2676,13 +2712,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -2767,13 +2802,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -2866,13 +2900,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -2960,13 +2993,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -3060,13 +3092,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -3169,13 +3200,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -3260,13 +3290,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -3371,13 +3400,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -3462,13 +3490,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -3586,14 +3613,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "update port: the CNetwork adapter and validator moved to port/common/net (cnetwork.cpp, game_protocol.*), shared with SB2; SB1 keeps its protocol id, content fingerprint and rules (net_protocol corpus unchanged for SB1). Previous review (6adbe386dd) otherwise stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb1/game/network.cpp",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Windows: net_protocol, net_transport, net_sb1_two/four_instances, golden tour/options pass."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -3752,17 +3777,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "update port: the CNetwork adapter and validator moved to port/common/net (cnetwork.cpp, game_protocol.*), shared with SB2; SB1 keeps its protocol id, content fingerprint and rules (net_protocol corpus unchanged for SB1). Previous review (6adbe386dd) otherwise stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb1/game/network.cpp",
-          "port/games/sb1/game/network_port.h",
-          "port/games/sb1/game/network_protocol.cpp",
-          "port/games/sb1/game/network_protocol.h",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Windows: net_protocol, net_transport, net_sb1_two/four_instances, golden tour/options pass."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -3891,13 +3911,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -3994,13 +4013,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -4125,13 +4143,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -4224,13 +4241,12 @@
         "Directly test CPixmap::IsIconPixel if retained as a supported API; do not infer its contract from active cursor captures."
       ],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -4322,13 +4338,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       },
       "split_from": "F099"
     },
@@ -4437,13 +4452,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       },
       "split_from": "F099"
     },
@@ -4537,13 +4551,12 @@
         "Directly test CPixmap::BuildIconMask if retained as a supported API; do not infer its contract from active cursor captures."
       ],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -4659,13 +4672,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       },
       "split_from": "F105"
     },
@@ -4755,13 +4767,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -4869,13 +4880,12 @@
         "Resolve or explicitly classify failed-ReadData retained-buffer ownership, real device creation/failure propagation and historical COM/external device lifetime; do not infer these from successful offline loading/cleanup."
       ],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -4970,13 +4980,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -5101,13 +5110,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -5198,13 +5206,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -5541,13 +5548,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -5623,13 +5629,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -5714,14 +5719,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action for this edge: SB2 main configures the network audit (--net-test-sync) and pumps the session each tick, as SB1 main does. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt",
-          "port/games/sb2/game/main.cpp"
+          "targets.json"
         ],
-        "evidence_scope": "SB2 goldens unchanged; network hooks exercised by net_sb2_*."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -5802,14 +5805,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action for this edge: SB2 main configures the network audit (--net-test-sync) and pumps the session each tick, as SB1 main does. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt",
-          "port/games/sb2/game/main.cpp"
+          "targets.json"
         ],
-        "evidence_scope": "SB2 goldens unchanged; network hooks exercised by net_sb2_*."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -5885,14 +5886,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action for this edge: SB2 main configures the network audit (--net-test-sync) and pumps the session each tick, as SB1 main does. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt",
-          "port/games/sb2/game/main.cpp"
+          "targets.json"
         ],
-        "evidence_scope": "SB2 goldens unchanged; network hooks exercised by net_sb2_*."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -5968,14 +5967,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action for this edge: SB2 main configures the network audit (--net-test-sync) and pumps the session each tick, as SB1 main does. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt",
-          "port/games/sb2/game/main.cpp"
+          "targets.json"
         ],
-        "evidence_scope": "SB2 goldens unchanged; network hooks exercised by net_sb2_*."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -6059,14 +6056,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action for this edge: SB2 main configures the network audit (--net-test-sync) and pumps the session each tick, as SB1 main does. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt",
-          "port/games/sb2/game/main.cpp"
+          "targets.json"
         ],
-        "evidence_scope": "SB2 goldens unchanged; network hooks exercised by net_sb2_*."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -6146,14 +6141,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action for this edge: SB2 main configures the network audit (--net-test-sync) and pumps the session each tick, as SB1 main does. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt",
-          "port/games/sb2/game/main.cpp"
+          "targets.json"
         ],
-        "evidence_scope": "SB2 goldens unchanged; network hooks exercised by net_sb2_*."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -6238,13 +6231,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -6335,13 +6327,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -6417,13 +6408,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -6499,13 +6489,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -6601,13 +6590,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -6683,13 +6671,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -6797,14 +6784,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "update port: SB2 multiplayer on the native session; the zero-provider stub is replaced by the shared adapter with SB2 rules (port/docs/MULTIPLAYER.md).",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt",
-          "port/games/sb2/game/network.cpp"
+          "targets.json"
         ],
-        "evidence_scope": "Windows: net_sb2_two_instances (Eggbert 2), net_sb2_four_instances (Blupi 2), net_protocol; SB2 goldens pass."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -6954,14 +6939,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "update port: SB2 multiplayer on the native session; the zero-provider stub is replaced by the shared adapter with SB2 rules (port/docs/MULTIPLAYER.md).",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt",
-          "port/games/sb2/game/network.cpp"
+          "targets.json"
         ],
-        "evidence_scope": "Windows: net_sb2_two_instances (Eggbert 2), net_sb2_four_instances (Blupi 2), net_protocol; SB2 goldens pass."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -7079,13 +7062,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -7177,13 +7159,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -7264,13 +7245,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -7402,13 +7382,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -7492,13 +7471,12 @@
         "Directly test CPixmap::IsIconPixel if retained as a supported API; do not infer its contract from active cursor captures."
       ],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -7581,13 +7559,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       },
       "split_from": "F319"
     },
@@ -7687,13 +7664,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       },
       "split_from": "F319"
     },
@@ -7778,13 +7754,12 @@
         "Directly test CPixmap::BuildIconMask if retained as a supported API; do not infer its contract from active cursor captures."
       ],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -7891,13 +7866,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       },
       "split_from": "F325"
     },
@@ -7982,13 +7956,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -8091,13 +8064,12 @@
         "F353: test or explicitly classify actual audio device initialization/failure propagation separately from always-successful logical CSound::Create."
       ],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -8214,13 +8186,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       },
       "split_from": "F349"
     },
@@ -8301,13 +8272,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -8420,13 +8390,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -8512,13 +8481,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -8635,13 +8603,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -8727,13 +8694,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -8827,13 +8793,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -8923,13 +8888,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -9014,13 +8978,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -9108,13 +9071,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -9208,13 +9170,12 @@
         "Multi-cell drag sequences, arbitrary pre-existing world/lift state and host/toolbar routing remain outside this bounded handler matrix."
       ],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       },
       "verified_scope": {
         "targets": [
@@ -9334,13 +9295,12 @@
         "Capture complete m_players before NetSendLobby's raw copy; no successful-network dynamic proof is available in the port. Failed initial SavePalette/AVI restore remains a separate service-failure scope."
       ],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -9426,13 +9386,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -9520,13 +9479,12 @@
         "Trace rebuilt MCI open/play/stop/close/notify ordering and port events; separately document SoundFont/timbre/level policy and one-song limit."
       ],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -9613,13 +9571,12 @@
         "Add bounded SDL focus/lifecycle fixture and compare message/state sequence to rebuilt game; no original execution."
       ],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -9704,13 +9661,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -9808,13 +9764,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -9900,13 +9855,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -9983,13 +9937,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -10101,14 +10054,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action for this edge: SB2 main configures the network audit (--net-test-sync) and pumps the session each tick, as SB1 main does. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt",
-          "port/games/sb2/game/main.cpp"
+          "targets.json"
         ],
-        "evidence_scope": "SB2 goldens unchanged; network hooks exercised by net_sb2_*."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -10185,13 +10136,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -10293,13 +10243,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -10380,13 +10329,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -10462,13 +10410,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -10547,13 +10494,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -10637,13 +10583,12 @@
         "Expand coverage separately for world-content variations, multi-cell drags and toolbar/host routing before claiming those scopes."
       ],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -10744,14 +10689,12 @@
         "Capture complete m_players before NetSendLobby's raw copy; no successful-network dynamic proof is available in the port. Failed initial SavePalette/AVI restore remains a separate service-failure scope."
       ],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action for this edge: SB2 main configures the network audit (--net-test-sync) and pumps the session each tick, as SB1 main does. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt",
-          "port/games/sb2/game/main.cpp"
+          "targets.json"
         ],
-        "evidence_scope": "SB2 goldens unchanged; network hooks exercised by net_sb2_*."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -10828,13 +10771,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -10922,13 +10864,12 @@
         "Trace rebuilt real MCI open/play/stop/close/notify timing and late abort/new-song or overlapping-device cases; keep synth timbre, gain and one-song policy explicit."
       ],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -11006,14 +10947,12 @@
         "Add bounded SDL focus/lifecycle fixture and compare message/state sequence to rebuilt game; no original execution."
       ],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action for this edge: SB2 main configures the network audit (--net-test-sync) and pumps the session each tick, as SB1 main does. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt",
-          "port/games/sb2/game/main.cpp"
+          "targets.json"
         ],
-        "evidence_scope": "SB2 goldens unchanged; network hooks exercised by net_sb2_*."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -11089,14 +11028,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action for this edge: SB2 main configures the network audit (--net-test-sync) and pumps the session each tick, as SB1 main does. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt",
-          "port/games/sb2/game/main.cpp"
+          "targets.json"
         ],
-        "evidence_scope": "SB2 goldens unchanged; network hooks exercised by net_sb2_*."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -11185,13 +11122,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -11268,13 +11204,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -11373,13 +11308,12 @@
         "Internal assignment-by-assignment order, same-TU call interception, real network transport and untested states remain outside this bounded receipt."
       ],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -11465,13 +11399,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -11561,13 +11494,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -11640,13 +11572,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -11724,13 +11655,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -11910,13 +11840,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -12052,14 +11981,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action for this edge: SB2 main configures the network audit (--net-test-sync) and pumps the session each tick, as SB1 main does. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt",
-          "port/games/sb2/game/main.cpp"
+          "targets.json"
         ],
-        "evidence_scope": "SB2 goldens unchanged; network hooks exercised by net_sb2_*."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -12135,13 +12062,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -12284,13 +12210,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -12375,13 +12300,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -12459,13 +12383,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -12556,13 +12479,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -12579,39 +12501,363 @@
       ],
       "historical": [
         {
-          "logical_path": "src/def.h",
+          "logical_path": "games/sb1-blupi-demo/src/blupi.cpp",
           "symbols": [
-            "June 1998 demo"
+            "June 1998 demo source revision"
           ],
           "effective_paths": {
-            "sb1/blupi/demo": "src/def.h"
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/blupi.cpp"
           }
         },
         {
-          "logical_path": "src/blupi.cpp",
+          "logical_path": "games/sb1-blupi-demo/src/button.cpp",
           "symbols": [
-            "June 1998 demo"
+            "June 1998 demo source revision"
           ],
           "effective_paths": {
-            "sb1/blupi/demo": "src/blupi.cpp"
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/button.cpp"
           }
         },
         {
-          "logical_path": "src/pixmap.cpp",
+          "logical_path": "games/sb1-blupi-demo/src/button.h",
           "symbols": [
-            "June 1998 demo"
+            "June 1998 demo source revision"
           ],
           "effective_paths": {
-            "sb1/blupi/demo": "src/pixmap.cpp"
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/button.h"
           }
         },
         {
-          "logical_path": "src/decblock.cpp",
+          "logical_path": "games/sb1-blupi-demo/src/ddutil.cpp",
           "symbols": [
-            "June 1998 demo"
+            "June 1998 demo source revision"
           ],
           "effective_paths": {
-            "sb1/blupi/demo": "src/decblock.cpp"
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/ddutil.cpp"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/ddutil.h",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/ddutil.h"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/decblock.cpp",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/decblock.cpp"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/decblupi.cpp",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/decblupi.cpp"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/decdesign.cpp",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/decdesign.cpp"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/decmove.cpp",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/decmove.cpp"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/decnet.cpp",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/decnet.cpp"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/decor.cpp",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/decor.cpp"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/decor.h",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/decor.h"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/dectables.cpp",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/dectables.cpp"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/dectables.h",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/dectables.h"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/def.h",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/def.h"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/design_tables.h",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/design_tables.h"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/event.cpp",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/event.cpp"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/event.h",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/event.h"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/jauge.cpp",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/jauge.cpp"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/jauge.h",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/jauge.h"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/menu.cpp",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/menu.cpp"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/menu.h",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/menu.h"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/misc.cpp",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/misc.cpp"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/misc.h",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/misc.h"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/movie.cpp",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/movie.cpp"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/movie.h",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/movie.h"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/network.cpp",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/network.cpp"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/network.h",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/network.h"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/obstacle.h",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/obstacle.h"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/pixmap.cpp",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/pixmap.cpp"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/pixmap.h",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/pixmap.h"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/pixtables.h",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/pixtables.h"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/res/sb1-blupi-demo.rc",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/res/sb1-blupi-demo.rc"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/resource.h",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/resource.h"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/sound.cpp",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/sound.cpp"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/sound.h",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/sound.h"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/text.cpp",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/text.cpp"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/text.h",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/text.h"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/texttables.h",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/texttables.h"
+          }
+        },
+        {
+          "logical_path": "games/sb1-blupi-demo/src/wave.h",
+          "symbols": [
+            "June 1998 demo source revision"
+          ],
+          "effective_paths": {
+            "sb1/blupi/demo": "games/sb1-blupi-demo/src/wave.h"
           }
         }
       ],
@@ -12638,9 +12884,9 @@
         "sb1_packs"
       ],
       "dependency_paths": [],
-      "reason": "June 1998 demo is unsupported by the retail-only port catalog; no runtime demo switches enabled.",
+      "reason": "June 1998 demo is unsupported by the retail-only port catalog. Since editions 789db65 its source is the private tree games/sb1-blupi-demo/src, which the port does not compile; no runtime demo switches enabled.",
       "proof_scope": [
-        "demo differences do not affect retail _DEMO=0; no demo source variant, image-directory recognition or runtime catalog in port"
+        "the port compiles src/ (def.h: _DEMO FALSE) and port-owned files only; no demo source tree, image-directory recognition or runtime catalog in port"
       ],
       "tests": [
         "ctest -R \"golden|layout\"",
@@ -12659,19 +12905,21 @@
         "scratch/w-audio/provenance-proposal.json",
         "scratch/w-audio/after-verbose.log (6/6, final complete patch)",
         "scratch/w-audio/final-focused.log (19/19, final complete patch)",
-        "scratch/w-audio/regression.log (193/193, before final loop-boundary normalization; not a final full-patch receipt)"
+        "scratch/w-audio/regression.log (193/193, before final loop-boundary normalization; not a final full-patch receipt)",
+        "docs/SB1_DEMO.md (Completion work 2026-11-11); games/sb1-blupi-demo/README.md"
       ],
       "follow_up": [
         "A separate demo port edition needs its own catalog, source review and tests before support can be claimed."
       ],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: the June 1998 demo moved from src/ with _DEMO=1 to its own tree games/sb1-blupi-demo/src (manifest games/sb1-blupi-demo/recon.json); the port compiles neither. Ownership moved to the new tree. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json",
+          "games/sb1-blupi-demo/recon.json",
+          "games/sb1-blupi-demo/src"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Static review of the catalog and the new tree's paths; no port build or runtime test."
       }
     },
     {
@@ -12785,13 +13033,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -12934,13 +13181,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -13083,13 +13329,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -13211,13 +13456,12 @@
         "Storage exhaustion and OS close-failure behavior remain outside the tested contract; saved-game interchange remains F472."
       ],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -13331,13 +13575,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -13486,13 +13729,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -13623,13 +13865,12 @@
         "Real device initialization/loss, callback scheduling/concurrency and historical resampling transients/aliasing remain outside the offline proof; MIDI timbre and device timing are intentional differences."
       ],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -13738,13 +13979,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -13911,13 +14151,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -14084,13 +14323,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -14204,13 +14442,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -14336,13 +14573,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -14450,13 +14686,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -14700,13 +14935,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -14814,14 +15048,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: comment names the moved validator file. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb1/game/state_hash.cpp",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Comment-only change."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -14915,14 +15147,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "update port: the state hash reads NetMessage::data1 as the adapter sends it (zero unless PK_OBJECTSTART), as SB1 does, so multiplayer hashes do not depend on stack contents. Previous review (6adbe386dd) otherwise stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt",
-          "port/games/sb2/game/state_hash.cpp"
+          "targets.json"
         ],
-        "evidence_scope": "Single-player hashes unchanged (SB2 goldens pass); repeatable SB2 network traces."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -15013,13 +15243,12 @@
         "Capture rebuilt intro and exceptional read/cache recovery paths, plus non-English historical rendered pixels, under separately authorized runtime fixtures; resource consistency and port-native/reference menus do not prove these scopes."
       ],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       }
     },
     {
@@ -15156,13 +15385,12 @@
         "Historical timer/click scheduling remains nondeterministic; retain DIFFERENT receipts and investigate rather than aligning or masking them."
       ],
       "review": {
-        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
-        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: targets.json adds the unsupported targets sb1/eggbert/demo and sb1/eggbert/value and moves the unsupported sb1/blupi/demo to its own tree; every supported target's entry, recon.json, src/, games/sb2/ and port/ are unchanged. Previous review (c88d7c4e74) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "targets.json"
         ],
-        "evidence_scope": "Build configuration; no change to this edge's sources."
+        "evidence_scope": "Target catalog; no change to this edge's sources or compile context."
       },
       "verified_scope": {
         "targets": [
@@ -15323,6 +15551,210 @@
           "diagnosis": "Supervisor: documented historical asynchronous timer/click race shifts save one tick; four bytes are +1. Both restore directions still match; fresh 16-bpp rerun MATCH. DIFFERENT retained without normalization."
         }
       ]
+    },
+    {
+      "id": "F473",
+      "ledger_ids": [],
+      "game": "sb1",
+      "editions": [
+        "sb1/eggbert"
+      ],
+      "targets": [
+        "sb1/eggbert/demo"
+      ],
+      "historical": [
+        {
+          "logical_path": "src/blupi.cpp",
+          "symbols": [
+            "Speedy Eggbert Demo overlay (whole file)"
+          ],
+          "effective_paths": {
+            "sb1/eggbert/demo": "games/sb1-eggbert-demo/blupi.cpp"
+          }
+        },
+        {
+          "logical_path": "src/decblock.cpp",
+          "symbols": [
+            "Speedy Eggbert Demo overlay (whole file)"
+          ],
+          "effective_paths": {
+            "sb1/eggbert/demo": "games/sb1-eggbert-demo/decblock.cpp"
+          }
+        },
+        {
+          "logical_path": "src/decblupi.cpp",
+          "symbols": [
+            "Speedy Eggbert Demo overlay (whole file)"
+          ],
+          "effective_paths": {
+            "sb1/eggbert/demo": "games/sb1-eggbert-demo/decblupi.cpp"
+          }
+        },
+        {
+          "logical_path": "src/decor.cpp",
+          "symbols": [
+            "Speedy Eggbert Demo overlay (whole file)"
+          ],
+          "effective_paths": {
+            "sb1/eggbert/demo": "games/sb1-eggbert-demo/decor.cpp"
+          }
+        },
+        {
+          "logical_path": "src/event.cpp",
+          "symbols": [
+            "Speedy Eggbert Demo overlay (whole file)"
+          ],
+          "effective_paths": {
+            "sb1/eggbert/demo": "games/sb1-eggbert-demo/event.cpp"
+          }
+        }
+      ],
+      "port": [
+        {
+          "path": "port/games/sb1/game/port_switches.h",
+          "symbols": [
+            "retail defaults only"
+          ]
+        },
+        {
+          "path": "port/games/sb1/game/language.cpp",
+          "symbols": [
+            "retail defaults only"
+          ]
+        }
+      ],
+      "kind": "UNVERIFIED",
+      "dependency_groups": [
+        "build_context",
+        "common_contracts",
+        "sb1_context",
+        "sb1_port_context",
+        "sb1_packs"
+      ],
+      "dependency_paths": [
+        "games/sb1-eggbert-demo/res/sb1-eggbert-demo.rc"
+      ],
+      "reason": "Speedy Eggbert Demo is unsupported by the retail-only port catalog; the port compiles src/ (def.h: _DEMO and _VALUE FALSE) and none of this target's overlay or resource script.",
+      "proof_scope": [
+        "edition differences do not reach the port: no overlay file of games/sb1-eggbert-demo is compiled, KnownBuild lists only the retail executables, and no edition switch is enabled"
+      ],
+      "tests": [
+        "python port/tools/check_fidelity.py --check (ctest -R fidelity_map)"
+      ],
+      "evidence": [
+        "docs/EGGBERT_DEMO.md",
+        "games/sb1-eggbert-demo/README.md",
+        "targets.json sb1/eggbert/demo"
+      ],
+      "follow_up": [
+        "A separate Speedy Eggbert Demo port edition needs its own catalog, source review and tests before support can be claimed; it must keep the edition's restrictions as the original has them."
+      ],
+      "review": {
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: new unsupported target sb1/eggbert/demo (whole-file overlay games/sb1-eggbert-demo on src/); the port's sources and compile context are unchanged.",
+        "changed_paths": [
+          "targets.json",
+          "games/sb1-eggbert-demo/blupi.cpp",
+          "games/sb1-eggbert-demo/decblock.cpp",
+          "games/sb1-eggbert-demo/decblupi.cpp",
+          "games/sb1-eggbert-demo/decor.cpp",
+          "games/sb1-eggbert-demo/event.cpp",
+          "games/sb1-eggbert-demo/res/sb1-eggbert-demo.rc"
+        ],
+        "evidence_scope": "Static review of the overlay and catalog; no port build or runtime test."
+      }
+    },
+    {
+      "id": "F474",
+      "ledger_ids": [],
+      "game": "sb1",
+      "editions": [
+        "sb1/eggbert"
+      ],
+      "targets": [
+        "sb1/eggbert/value"
+      ],
+      "historical": [
+        {
+          "logical_path": "src/decblupi.cpp",
+          "symbols": [
+            "Speedy Eggbert SE Valueware overlay (whole file)"
+          ],
+          "effective_paths": {
+            "sb1/eggbert/value": "games/sb1-eggbert-value/decblupi.cpp"
+          }
+        },
+        {
+          "logical_path": "src/decor.cpp",
+          "symbols": [
+            "Speedy Eggbert SE Valueware overlay (whole file)"
+          ],
+          "effective_paths": {
+            "sb1/eggbert/value": "games/sb1-eggbert-value/decor.cpp"
+          }
+        },
+        {
+          "logical_path": "src/event.cpp",
+          "symbols": [
+            "Speedy Eggbert SE Valueware overlay (whole file)"
+          ],
+          "effective_paths": {
+            "sb1/eggbert/value": "games/sb1-eggbert-value/event.cpp"
+          }
+        }
+      ],
+      "port": [
+        {
+          "path": "port/games/sb1/game/port_switches.h",
+          "symbols": [
+            "retail defaults only"
+          ]
+        },
+        {
+          "path": "port/games/sb1/game/language.cpp",
+          "symbols": [
+            "retail defaults only"
+          ]
+        }
+      ],
+      "kind": "UNVERIFIED",
+      "dependency_groups": [
+        "build_context",
+        "common_contracts",
+        "sb1_context",
+        "sb1_port_context",
+        "sb1_packs"
+      ],
+      "dependency_paths": [
+        "games/sb1-eggbert-value/res/sb1-eggbert-value.rc"
+      ],
+      "reason": "Speedy Eggbert SE Valueware is unsupported by the retail-only port catalog; the port compiles src/ (def.h: _DEMO and _VALUE FALSE) and none of this target's overlay or resource script.",
+      "proof_scope": [
+        "edition differences do not reach the port: no overlay file of games/sb1-eggbert-value is compiled, KnownBuild lists only the retail executables, and no edition switch is enabled"
+      ],
+      "tests": [
+        "python port/tools/check_fidelity.py --check (ctest -R fidelity_map)"
+      ],
+      "evidence": [
+        "docs/EGGBERT_VALUE.md",
+        "games/sb1-eggbert-value/README.md",
+        "targets.json sb1/eggbert/value"
+      ],
+      "follow_up": [
+        "A separate Speedy Eggbert SE Valueware port edition needs its own catalog, source review and tests before support can be claimed; it must keep the edition's restrictions as the original has them."
+      ],
+      "review": {
+        "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+        "disposition": "no port action: new unsupported target sb1/eggbert/value (whole-file overlay games/sb1-eggbert-value on src/); the port's sources and compile context are unchanged.",
+        "changed_paths": [
+          "targets.json",
+          "games/sb1-eggbert-value/decblupi.cpp",
+          "games/sb1-eggbert-value/decor.cpp",
+          "games/sb1-eggbert-value/event.cpp",
+          "games/sb1-eggbert-value/res/sb1-eggbert-value.rc"
+        ],
+        "evidence_scope": "Static review of the overlay and catalog; no port build or runtime test."
+      }
     }
   ],
   "review_updates": [
@@ -16357,6 +16789,154 @@
         "F472"
       ],
       "scope": "Shared CNetwork adapter (port/common/net/cnetwork.cpp) and validator with per-game rules; SB2 on the native session; SB2 state-hash data1 normalisation; SB2 main network hooks; CMake build-context change."
+    },
+    {
+      "commit": "64427120a4344eb6100a0f32733b11b3c073b575",
+      "round": "Editions: Speedy Eggbert Demo, Valueware, June 1998 demo tree",
+      "reviewed_edges": [
+        "F001",
+        "F002",
+        "F003",
+        "F004",
+        "F005",
+        "F006",
+        "F007",
+        "F008",
+        "F009",
+        "F010",
+        "F011",
+        "F012",
+        "F013",
+        "F014",
+        "F015",
+        "F016",
+        "F017",
+        "F018",
+        "F019",
+        "F020",
+        "F021",
+        "F022",
+        "F023",
+        "F024",
+        "F025",
+        "F027",
+        "F030",
+        "F031",
+        "F036",
+        "F037",
+        "F038",
+        "F048",
+        "F051",
+        "F055",
+        "F056",
+        "F074",
+        "F075",
+        "F077",
+        "F099",
+        "F112",
+        "F115",
+        "F105",
+        "F107",
+        "F120",
+        "F122",
+        "F123",
+        "F124",
+        "F148",
+        "F149",
+        "F195",
+        "F243",
+        "F244",
+        "F245",
+        "F246",
+        "F249",
+        "F250",
+        "F255",
+        "F256",
+        "F257",
+        "F263",
+        "F267",
+        "F270",
+        "F274",
+        "F275",
+        "F293",
+        "F294",
+        "F297",
+        "F298",
+        "F319",
+        "F332",
+        "F335",
+        "F325",
+        "F327",
+        "F347",
+        "F349",
+        "F350",
+        "F351",
+        "F354",
+        "F377",
+        "F378",
+        "F383",
+        "F385",
+        "F386",
+        "F388",
+        "F389",
+        "F391",
+        "F393",
+        "F396",
+        "F398",
+        "F399",
+        "F400",
+        "F401",
+        "F403",
+        "F404",
+        "F405",
+        "F410",
+        "F413",
+        "F415",
+        "F417",
+        "F418",
+        "F420",
+        "F422",
+        "F425",
+        "F427",
+        "F428",
+        "F429",
+        "F430",
+        "F432",
+        "F433",
+        "F434",
+        "F436",
+        "F437",
+        "F438",
+        "F440",
+        "F446",
+        "F448",
+        "F450",
+        "F451",
+        "F452",
+        "F453",
+        "F454",
+        "F455",
+        "F456",
+        "F457",
+        "F458",
+        "F459",
+        "F460",
+        "F461",
+        "F462",
+        "F463",
+        "F464",
+        "F465",
+        "F466",
+        "F467",
+        "F468",
+        "F469",
+        "F470",
+        "F471",
+        "F472",
+        "F473",
+        "F474"
+      ],
+      "scope": "targets.json adds sb1/eggbert/demo and sb1/eggbert/value (unsupported, F473/F474) and moves sb1/blupi/demo to games/sb1-blupi-demo/src (F454); no supported target, historical source of a supported target, or port file changed."
     }
   ]
 }

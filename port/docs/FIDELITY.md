@@ -15,7 +15,9 @@ regression review. Do not move compiler steering into SDL code without behaviora
 evidence. Goldens cannot be regenerated in place of an explanation.
 
 The supported catalog is the nine SB1 retail builds and four SB2 retail builds
-listed in the map. The June 1998 SB1 demo is unsupported. SB1 Eggbert deliberately
+listed in the map. The June 1998 SB1 demo (F454, its own tree `games/sb1-blupi-demo/src`
+since 2026-11-11), the Speedy Eggbert Demo (F473) and Speedy Eggbert SE Valueware (F474)
+are unsupported; their sources are owned by those edges. SB1 Eggbert deliberately
 uses Blupi's INSERT/retry recovery for **both background and mission read/cache
 failures**, rather than Eggbert's INIT recovery. Unavailable network/AVI/CD audio,
 modern device/presentation policy, and remaining verification gaps retain their
