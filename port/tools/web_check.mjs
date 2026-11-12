@@ -94,7 +94,9 @@ function pageOf(name, {evaluate, navigate, screenshot, errors, consoleLines}) {
     async waitFor(expression, timeout = 60000) {
       const deadline = Date.now() + timeout;
       while (Date.now() < deadline) {
-        try { if (await evaluate(expression)) return; } catch (error) { if (!/context|navigat|discarded/i.test(error.message)) throw error; }
+        // A page that is still loading: Chrome reports its old context gone, Firefox a missing element.
+        try { if (await evaluate(expression)) return; }
+        catch (error) { if (!/context|navigat|discarded|is null|of null/i.test(error.message)) throw error; }
         await new Promise((r) => setTimeout(r, 200));
       }
       const state = await evaluate("({status: document.querySelector('#status')?.textContent, log: document.querySelector('#log')?.textContent.slice(-2000)})");

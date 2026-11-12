@@ -53,9 +53,13 @@ cd port\android
 .\gradlew.bat --no-daemon assembleRelease   # ...\apk\release\app-release.apk, signed
 ```
 
+On Linux: `ANDROID_HOME=~/Android/Sdk bash ./gradlew --no-daemon assembleRelease` (`gradlew` is not
+executable in a checkout made on Windows).
+
 The release build is signed with the key described by
-`%USERPROFILE%\.android\speedy-blupi-release.properties` (or `-Pblupi.signing=<file>`);
-without it the release APK is unsigned. A release-signed APK does not install over a debug
+`~/.android/speedy-blupi-release.properties` (Windows: `%USERPROFILE%\.android\`; or
+`-Pblupi.signing=<file>`); without it the release APK is unsigned. Since 1.4.0 this is a new key
+(port/docs/RELEASING.md), so those APKs do not install over 1.2.0. A release-signed APK does not install over a debug
 build: uninstall that first, which removes its imported game data. The version comes from
 `port/VERSION.txt`, the launcher icon from `port/res/icon.png` (the `launcherIcon` task draws
 a plain and an adaptive icon), and the licence notices go into `assets/licenses/`. Release

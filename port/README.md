@@ -4,13 +4,15 @@ The modern, portable build of the reconstructed games: `blupi-sdl3` (Speedy Blup
 Eggbert 1) and `blupi2-sdl3` (Speedy Blupi 2 and Speedy Eggbert 2); since 1.3.0 also
 `eggbert-demo-sdl3`, `eggbert-value-sdl3` and `blupi-demo-sdl3`, the editions with historical source
 of their own ([docs/EDITIONS.md](docs/EDITIONS.md)). Since 1.4.0 all five also run in a web
-browser (Emscripten; [docs/WEB.md](docs/WEB.md)). It lives entirely under `port/`
+browser (Emscripten; [docs/WEB.md](docs/WEB.md); played at https://openeggbert.github.io/blupi_recon/),
+and since 1.5.0 multiplayer also works through a Free Direct server, in the browser too
+([docs/MULTIPLAYER.md](docs/MULTIPLAYER.md)). It lives entirely under `port/`
 and builds from the historical sources in `../src` and `../games/sb2/src` **without modifying them**. The matching reconstruction
 (`src/`, `tools/`, `oracle/`, `msvc5kb/`, evidence and acceptance status) is unaffected by
 anything here. Rules for working in this directory: [AGENTS.md](AGENTS.md). Design and analysis:
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-Current release: **1.4.0** (Linux x86-64 and web packages; 1.2.0 for Windows x64 and Android)
+Current release: **1.5.0** (Windows x64, Linux x86-64, Android and web packages)
 ([release notes](docs/RELEASE_NOTES.md); how a release is built and packed:
 [docs/RELEASING.md](docs/RELEASING.md)). Players use their own copy of the game.
 
