@@ -1,17 +1,26 @@
-# Speedy Blupi SDL3 port 1.3.0
+# Speedy Blupi SDL3 port 1.4.0
 
 The native port of **Speedy Blupi** (Epsitec, 1998) and **Speedy Blupi 2** (2001), and of their
 eGames editions **Speedy Eggbert** and **Speedy Eggbert 2**, for Windows, Linux and Android. It is
 built from this repository's reconstruction of the original programs' source, compiled unchanged with
 a modern compiler, plus a small platform layer on SDL3.
 
-Version 1.3 adds the Speedy Eggbert Demo, Speedy Eggbert SE Valueware and the June 1998 Speedy Blupi
+Version 1.4 runs all five programs in a web browser as well. Version 1.3 added the Speedy Eggbert Demo, Speedy Eggbert SE Valueware and the June 1998 Speedy Blupi
 Demo as programs of their own, internet games from the game's own multiplayer screens, the gamepad as
 the keyboard, and Speedy Blupi 2's CD music from tracks you rip yourself. Version 1.2 brought Speedy
 Blupi 2 and Speedy Eggbert 2, and the original multiplayer of all four games.
 
 **The original games' files are not included.** You need your own copy of the game: the CD or the
 installed game. On the first start the port asks for its folder and remembers it.
+
+## New in 1.4
+
+- **In a web browser:** `speedy-blupi-sdl3-1.4.0-web.zip` holds all five programs compiled to
+  WebAssembly, with a page to choose one. As on the desktop, you use your own copy of the game: on the
+  first start the page asks for the game's folder and keeps its files in the browser's storage (nothing
+  is uploaded); saves and settings stay there too. Unpack the zip, run `python3 serve.py` in it and open
+  http://localhost:8080/ (or put the folder on any web server). Multiplayer is not available in a
+  browser. Tested in Chrome; see `port/docs/WEB.md`.
 
 ## New in 1.3
 
@@ -60,12 +69,13 @@ installed game. On the first start the port asks for its folder and remembers it
 
 | File | For |
 |---|---|
-| `speedy-blupi-sdl3-1.3.0-linux-x86_64.tar.gz` | x86-64 Linux with glibc 2.38 or newer (Debian 13, Ubuntu 24.04, Fedora 39 and later), X11 or Wayland: `blupi-sdl3`, `blupi2-sdl3`, `eggbert-demo-sdl3`, `eggbert-value-sdl3`, `blupi-demo-sdl3` |
+| `speedy-blupi-sdl3-1.4.0-linux-x86_64.tar.gz` | x86-64 Linux with glibc 2.38 or newer (Debian 13, Ubuntu 24.04, Fedora 39 and later), X11 or Wayland: `blupi-sdl3`, `blupi2-sdl3`, `eggbert-demo-sdl3`, `eggbert-value-sdl3`, `blupi-demo-sdl3` |
+| `speedy-blupi-sdl3-1.4.0-web.zip` | a web browser: the five programs as WebAssembly, the page, `serve.py` |
 | `SHA256SUMS.txt` | checksums |
 
-For 1.3.0 only the Linux package was built, on Debian 13 (it needs glibc 2.38; the 1.2.0 package,
-built on Ubuntu 22.04, needed 2.35). Windows and Android packages of 1.3.0 have not been built yet;
-the 1.2.0 ones remain available.
+For 1.3.0 and 1.4.0 only the Linux and web packages were built, on Debian 13 (the Linux package
+needs glibc 2.38; the 1.2.0 one, built on Ubuntu 22.04, needed 2.35). Windows and Android packages
+have not been built since 1.2.0; the 1.2.0 ones remain available.
 
 - **Windows and Linux:** unpack anywhere and start `blupi-sdl3` (Speedy Blupi, Speedy Eggbert) or
   `blupi2-sdl3` (Speedy Blupi 2, Speedy Eggbert 2); for the demos and Valueware, `eggbert-demo-sdl3`,

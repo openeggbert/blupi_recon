@@ -241,7 +241,7 @@ include(games/sb1/editions.cmake)
 
 # Speedy Blupi 2 / Speedy Eggbert 2: blupi2-sdl3 on the desktop, libblupi2.so on Android.
 add_subdirectory(games/sb2)
-if(NOT ANDROID)
+if(NOT ANDROID AND NOT EMSCRIPTEN)
     enable_testing()
     find_package(Python3 REQUIRED COMPONENTS Interpreter)
     add_test(NAME fidelity_map COMMAND ${Python3_EXECUTABLE}
