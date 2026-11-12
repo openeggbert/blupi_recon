@@ -13,7 +13,8 @@ code. The same sources also drive a native SDL3 port for Windows, Linux and Andr
   compiler and linker. No original executable or reverse-engineering tool is needed.
 - **SDL3 port.** [port/README.md](port/README.md): the faithful 640×480 games, plus optional
   widescreen and smooth motion. They compile the historical game sources unchanged. Players use their
-  own copy of the game data. Multiplayer is not available yet; it is a required upcoming milestone.
+  own copy of the game data. Both games have native multiplayer since port 1.2.0
+  ([port/docs/MULTIPLAYER.md](port/docs/MULTIPLAYER.md)).
 - **Web through Free API / Free Direct.** [freeapi/README.md](freeapi/README.md): all four games
   compiled to WebAssembly from their historical sources, with bundled game data and browser saves.
   Build with `bash freeapi/tools/build_web.sh` in an activated Emscripten environment.

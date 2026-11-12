@@ -3,7 +3,9 @@
 The single current status page for every historical executable and the SDL3 port, as of
 **2026-10-25** on branch `sb2-matching`. The rows for the Speedy Eggbert Demo and Valueware were added on
 **2026-11-11** (branch `editions`), fresh on that day. The function-matching, certificate and relink figures of the 14 earlier targets were
-re-run on that day with identical results; the port section was not re-run.
+re-run on that day with identical results; the port section was not re-run. On **2026-11-12** the
+Russian edition was documented ([EGGBERT_RU.md](EGGBERT_RU.md)), the port's provenance map was
+updated, and this page moved to `main`.
  Each figure is marked **fresh** (re-run for this page) or
 **doc** (taken from the cited document). Progress is reported per executable; no figure here is a
 combined metric. The previous SB1-only page is preserved as
@@ -147,7 +149,8 @@ They compile the historical game TUs unchanged: 12 from `src/` and 11 from `game
 - **Windows test suite: 269 / 269 passed**, serially, in 2,303 s: `ctest --test-dir build/port`
   with the MinGW-x64 Ninja build. Linux and Android were not re-run (doc: the release receipts in
   port/docs/RELEASING.md and ROADMAP.md).
-- **The provenance map passes:** `port/tools/check_fidelity.py --check`, with 139 edges and 0 issues.
+- **The provenance map passes:** `port/tools/check_fidelity.py --check`, with 139 edges and 0 issues
+  (fresh 2026-11-12: 141 edges and 0 issues, after the edges F473 and F474 of the two eGames editions).
   The categories describe source relationships, not percentages of fidelity:
 
 | Target | Direct shared | Verified derivative | Verified platform replacement | Intentional difference | Unverified | Edges |
@@ -190,8 +193,9 @@ These are bounded receipts, not whole-game certification.
 - **Whole image.** The original linker inputs (dead contributions, TU population, order) are
   underdetermined by the binaries. Experimental witnesses, such as branch `sb1-histlink`, are
   evidence, not recovered source.
-- **Consolidation.** Stage 1 (ordinary builds) and stage 2 (this documentation) are done; stages
-  3 to 5 follow (docs/CONSOLIDATION_PLAN.md).
+- **Consolidation.** Stages 1 (ordinary builds), 2 (this documentation) and 3 (port cleanup: Linux
+  release and test portability, Android import, port docs; `083944a`) are done. Stages 4 and 5 are
+  optional (docs/CONSOLIDATION_PLAN.md).
 - **Port.** 1.2.0 ships both games with native multiplayer (roadmap stage 10). Open: an in-game
   address entry for internet play, real-network fault tests, and the optional consolidation stage 4
   (shared language, pixmap and audio services).
