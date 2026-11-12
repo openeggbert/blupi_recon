@@ -5,7 +5,8 @@ The single current status page for every historical executable and the SDL3 port
 **2026-11-11** (branch `editions`), fresh on that day. The function-matching, certificate and relink figures of the 14 earlier targets were
 re-run on that day with identical results. On **2026-11-12** the
 Russian edition was documented ([EGGBERT_RU.md](EGGBERT_RU.md)), the port's provenance map was
-updated, this page moved to `main`, and the port section (5) was re-run for port 1.5.0.
+updated, this page moved to `main`, and the port section (5) was re-run for port 1.5.0, and again
+for port 1.5.2 (`wss://` on the desktop and Android) the same day.
  Each figure is marked **fresh** (re-run for this page) or
 **doc** (taken from the cited document). Progress is reported per executable; no figure here is a
 combined metric. The previous SB1-only page is preserved as
@@ -145,8 +146,19 @@ Fresh: consolidation stage 1, on commit `a4a2352`. Details are in [BUILDING.md](
 The port is five native programs: `blupi-sdl3` (SB1, Eggbert 1), `blupi2-sdl3` (Blupi 2, Eggbert 2),
 and since 1.3.0 `eggbert-demo-sdl3`, `eggbert-value-sdl3` and `blupi-demo-sdl3` (the editions with
 source of their own). They compile the historical game TUs unchanged: 12 from `src/` and 11 from
-`games/sb2/src/` ([port/README.md](../port/README.md)). Release 1.5.0 has Windows, Linux, Android and
+`games/sb2/src/` ([port/README.md](../port/README.md)). Release 1.5.2 has Windows, Linux, Android and
 web packages.
+
+**Fresh results (2026-11-12, port 1.5.2, tag `port-v1.5.2`):**
+
+- **Linux test suite: 285 / 285 passed** in the release build (`port/tools/linux_release.sh`, `ctest -j 1`,
+  3,050 s), with the new `net_tls` (eight certificate and transport cases against free-direct-server behind
+  a TLS front) and `net_sb1_relay_wss` (the relay game over `wss://`).
+- **Windows:** 34 / 34 of the network, TLS, launcher and golden subset under Wine; `test_net_tls` reached
+  `wss://fds.openeggbert.com` through the Windows certificate check and refused badssl.com's bad
+  certificates.
+- **Web:** unchanged code; the five programs pass in Chrome and Firefox, and the relay game in both.
+- **Android:** built and signed, not run.
 
 **Fresh results (2026-11-12, port 1.5.0, branch `port-1.5.0`):**
 
@@ -211,7 +223,7 @@ These are bounded receipts, not whole-game certification.
 - **Consolidation.** Stages 1 (ordinary builds), 2 (this documentation) and 3 (port cleanup: Linux
   release and test portability, Android import, port docs; `083944a`) are done. Stages 4 and 5 are
   optional (docs/CONSOLIDATION_PLAN.md).
-- **Port.** 1.5.0 ships the five programs on Windows, Linux and the web (the two games on Android),
-  with multiplayer on a LAN, by address, and through a Free Direct server. Open: running the Android
+- **Port.** 1.5.2 ships the five programs on Windows, Linux and the web (the two games on Android),
+  with multiplayer on a LAN, by address, and through a Free Direct server (`ws://` or `wss://`). Open: running the Android
   build on a device, real-network fault tests, and the optional consolidation stage 4 (shared
   language, pixmap and audio services).
