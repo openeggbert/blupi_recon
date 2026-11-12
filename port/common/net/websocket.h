@@ -1,6 +1,7 @@
 // A small WebSocket client for the Free Direct server's relay (net/relay.cpp, port/docs/MULTIPLAYER.md):
-// binary messages only. On the desktop and Android it speaks ws:// over ENet's sockets, polled from
-// the game loop without threads; in a browser it is the browser's WebSocket (ws:// and wss://).
+// binary messages only. On the desktop and Android it speaks ws:// over ENet's sockets, and wss://
+// through TLS on them (net/tls.h; builds with BLUPI_TLS, the default), polled from the game loop
+// without threads; in a browser it is the browser's WebSocket (ws:// and wss://).
 #ifndef BLUPI_NET_WEBSOCKET_H
 #define BLUPI_NET_WEBSOCKET_H
 #include <cstdint>
@@ -14,6 +15,7 @@ namespace blupi::net {
 // Fills a ws:// or wss:// URL with the port and the path; false if it is not one. Without a port:
 // wss:// means 443 and ws:// 80; a plain address means the server's own 51325 (ws://), or, on a page
 // served over https:// (secureDefault), wss:// on 443, where a TLS proxy serves it (since 1.5.1).
+// The desktop and Android use wss:// only when it is typed (since 1.5.2).
 bool ServerUrl(const std::string& text, bool secureDefault, std::string& url);
 // The port a plain address gets: 443 on an https:// page, else 51325.
 unsigned DefaultServerPort(bool secureDefault);

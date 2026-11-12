@@ -10,6 +10,13 @@ def sdl3Dir = file(project.findProperty('blupi.sdl3.dir') ?: "${rootDir}/../../b
 if (!file("${sdl3Dir}/CMakeLists.txt").exists()) {
     throw new GradleException("SDL3 source not found at ${sdl3Dir} (see port/android/README.md)")
 }
+// Mbed TLS source tree, for wss:// (port/third_party/README.md): compiled into
+// the game libraries. Default: build/third_party/mbedtls-3.6.7 of the
+// repository; override with -Pblupi.mbedtls.dir=... or in gradle.properties.
+def mbedtlsDir = file(project.findProperty('blupi.mbedtls.dir') ?: "${rootDir}/../../build/third_party/mbedtls-3.6.7")
+if (!file("${mbedtlsDir}/library/ssl_tls.c").exists()) {
+    throw new GradleException("Mbed TLS source not found at ${mbedtlsDir} (see port/android/README.md)")
+}
 
 // The port's version (port/VERSION.txt, as in the desktop builds): 1.2.3 is
 // versionName "1.2.3" and versionCode 10203.
@@ -40,6 +47,7 @@ android {
                 // host-safety limit; Gradle runs one ABI at a time, gradle.properties).
                 arguments '-DANDROID_STL=c++_static',
                           "-DBLUPI_SDL3_SOURCE_DIR=${sdl3Dir}",
+                          "-DBLUPI_MBEDTLS_SOURCE_DIR=${mbedtlsDir}",
                           '-DCMAKE_JOB_POOLS=compile=4;link=2',
                           '-DCMAKE_JOB_POOL_COMPILE=compile',
                           '-DCMAKE_JOB_POOL_LINK=link'
@@ -123,6 +131,7 @@ tasks.register('copyNotices', Copy) {
     from('../../release/COPYING.txt')
     from('../../release/THIRD_PARTY.txt')
     from("${sdl3Dir}/LICENSE.txt") { rename { 'LICENSE-SDL3.txt' } }
+    from("${mbedtlsDir}/LICENSE") { rename { 'LICENSE-MbedTLS.txt' } }
     from('../../third_party/generaluser-gs/documentation/LICENSE.txt') { rename { 'LICENSE-GeneralUser-GS.txt' } }
     into "${buildDir}/generated/blupiAssets/licenses"
 }

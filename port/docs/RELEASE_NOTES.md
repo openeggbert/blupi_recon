@@ -1,4 +1,4 @@
-# Speedy Blupi SDL3 port 1.5.1
+# Speedy Blupi SDL3 port 1.5.2
 
 The native port of **Speedy Blupi** (Epsitec, 1998) and **Speedy Blupi 2** (2001), and of their
 eGames editions **Speedy Eggbert** and **Speedy Eggbert 2**, for Windows, Linux, Android and web
@@ -6,7 +6,8 @@ browsers. It is
 built from this repository's reconstruction of the original programs' source, compiled unchanged with
 a modern compiler, plus a small platform layer on SDL3.
 
-Version 1.5.1 gives the web page a server to play on, fds.openeggbert.com. Version 1.5 plays
+Version 1.5.2 lets the Windows, Linux and Android programs reach a Free Direct server over `wss://`
+(TLS) as well. Version 1.5.1 gives the web page a server to play on, fds.openeggbert.com. Version 1.5 plays
 multiplayer through a Free Direct server, without open ports and also in the browser,
 where it can be played at https://openeggbert.github.io/blupi_recon/. Version 1.4 runs all five programs
 in a web browser as well. Version 1.3 added the Speedy Eggbert Demo, Speedy Eggbert SE Valueware and the June 1998 Speedy Blupi
@@ -16,6 +17,20 @@ Blupi 2 and Speedy Eggbert 2, and the original multiplayer of all four games.
 
 **The original games' files are not included.** You need your own copy of the game: the CD or the
 installed game. On the first start the port asks for its folder and remembers it.
+
+## New in 1.5.2
+
+- **`wss://` on Windows, Linux and Android:** type `wss://fds.openeggbert.com` on the server screen (or
+  `--net-server wss://...`) and the game connects through the server's TLS front on port 443, like the web
+  page. It helps on networks that let only port 443 out, and keeps a server password
+  (`BLUPI_NET_PASSWORD`) off the network in clear. A plain name still means `ws://` on port 51325, so
+  nothing changes for those who do not type `wss://`.
+- **The certificate is checked:** it must be valid for the server's name and trusted by the system (on
+  Windows, the system's own check; on Linux, the distribution's CA bundle; on Android, the system's
+  certificates). `SSL_CERT_FILE` or `SSL_CERT_DIR` name other trusted certificates. A server whose
+  certificate does not pass is refused with the reason (not trusted, another name, expired).
+- TLS is Mbed TLS 3.6.7, compiled into the programs (`LICENSE-MbedTLS.txt`). The Windows programs also
+  use the system's `bcrypt.dll` and `crypt32.dll`.
 
 ## New in 1.5.1
 
@@ -116,10 +131,10 @@ installed game. On the first start the port asks for its folder and remembers it
 
 | File | For |
 |---|---|
-| `speedy-blupi-sdl3-1.5.1-windows-x64.zip` | 64-bit Windows 10 or 11: `blupi-sdl3`, `blupi2-sdl3`, `eggbert-demo-sdl3`, `eggbert-value-sdl3`, `blupi-demo-sdl3`, `SDL3.dll` |
-| `speedy-blupi-sdl3-1.5.1-linux-x86_64.tar.gz` | x86-64 Linux with glibc 2.38 or newer (Debian 13, Ubuntu 24.04, Fedora 39 and later), X11 or Wayland: the same five programs |
-| `speedy-blupi-sdl3-1.5.1-android.apk` | Android 7.0 or newer (arm64-v8a, x86_64): Speedy Blupi and Speedy Blupi 2 |
-| `speedy-blupi-sdl3-1.5.1-web.zip` | a web browser: the five programs as WebAssembly, the page, `serve.py`; also at https://openeggbert.github.io/blupi_recon/ |
+| `speedy-blupi-sdl3-1.5.2-windows-x64.zip` | 64-bit Windows 10 or 11: `blupi-sdl3`, `blupi2-sdl3`, `eggbert-demo-sdl3`, `eggbert-value-sdl3`, `blupi-demo-sdl3`, `SDL3.dll` |
+| `speedy-blupi-sdl3-1.5.2-linux-x86_64.tar.gz` | x86-64 Linux with glibc 2.38 or newer (Debian 13, Ubuntu 24.04, Fedora 39 and later), X11 or Wayland: the same five programs |
+| `speedy-blupi-sdl3-1.5.2-android.apk` | Android 7.0 or newer (arm64-v8a, x86_64): Speedy Blupi and Speedy Blupi 2 |
+| `speedy-blupi-sdl3-1.5.2-web.zip` | a web browser: the five programs as WebAssembly, the page, `serve.py`; also at https://openeggbert.github.io/blupi_recon/ |
 | `SHA256SUMS.txt` | checksums |
 
 All packages are built on Debian 13 from the release tag: Linux natively (it needs glibc 2.38; 1.2.0's,
@@ -131,7 +146,7 @@ package with Emscripten.
   `eggbert-value-sdl3` or `blupi-demo-sdl3`. The Windows executables are not code-signed, so
   SmartScreen may ask for confirmation ("More info", "Run anyway").
 - **Android:** install the APK. It is signed with a new key: uninstall 1.2.0 or older first (that also
-  removes the games you imported; import them again). It updates 1.4.0 and 1.5.0 in place.
+  removes the games you imported; import them again). It updates 1.4.0 and 1.5.x in place.
   Choose a game folder to import; the app copies it into its own storage. It tells the two games apart,
   and after a second import it asks which game to start.
 
@@ -172,7 +187,10 @@ package with Emscripten.
   - an Android player who switches away from the game is likely to drop out of a session;
   - fds.openeggbert.com is the one public Free Direct server so far; any group can run its own
     (port/docs/FREE_DIRECT_SERVER.md).
-- **Android:** the 1.5.0 APK was built but not run (no device or emulator was available). A player's own
+  - `wss://` from the desktop was tested on Linux and on Windows under Wine (against fds.openeggbert.com
+    and certificate test sites), not yet on a real Windows PC.
+- **Android:** the 1.5.x APKs were built but not run (no device or emulator was available); `wss://`
+  there is untested. A player's own
   language file goes into a `languages` folder inside the game folder before importing it. Gamepads and
   running in the background have had little testing. The 1.3 and 1.5 additions (the address and server
   screens, the gamepad as the keyboard) are built for Android but untested there, and the edition programs

@@ -60,11 +60,56 @@ endif()
 # The Free Direct server's client (relay.cpp over websocket.cpp) is a second transport of the
 # session layer: a browser's only one (port/docs/MULTIPLAYER.md).
 add_library(blupi_net STATIC common/net/session.cpp common/net/game_protocol.cpp
-    common/net/relay.cpp common/net/websocket.cpp)
+    common/net/relay.cpp common/net/websocket.cpp common/net/tls.cpp)
 target_include_directories(blupi_net PUBLIC ${BLUPI_COMMON})
 target_link_libraries(blupi_net PRIVATE blupi_enet)
 if(EMSCRIPTEN)
     target_link_options(blupi_net INTERFACE -lwebsocket.js)
+endif()
+
+# wss:// on the desktop and Android (common/net/tls.h): Mbed TLS, the pinned 3.6 LTS release, compiled
+# from its release archive as it comes (its default configuration). The source tree is
+# BLUPI_MBEDTLS_SOURCE_DIR, by default build/third_party/mbedtls-<version> of the repository; without
+# it, CMake downloads the archive and checks its SHA-256 (port/third_party/README.md). With
+# BLUPI_TLS=OFF the programs are built without it and refuse wss:// addresses. A browser has its own.
+if(NOT EMSCRIPTEN)
+    option(BLUPI_TLS "wss:// (TLS) to a Free Direct server, with Mbed TLS" ON)
+endif()
+if(BLUPI_TLS AND NOT EMSCRIPTEN)
+    set(BLUPI_MBEDTLS_VERSION 3.6.7)
+    set(BLUPI_MBEDTLS_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../build/third_party/mbedtls-${BLUPI_MBEDTLS_VERSION}"
+        CACHE PATH "Mbed TLS ${BLUPI_MBEDTLS_VERSION} source tree (its release archive), for wss://")
+    set(mbedtls_dir "${BLUPI_MBEDTLS_SOURCE_DIR}")
+    if(NOT EXISTS "${mbedtls_dir}/library/ssl_tls.c")
+        message(STATUS "Mbed TLS: no source tree at ${mbedtls_dir}; downloading the ${BLUPI_MBEDTLS_VERSION} release")
+        if(POLICY CMP0135)
+            cmake_policy(SET CMP0135 NEW)
+        endif()
+        include(FetchContent)
+        FetchContent_Declare(blupi_mbedtls
+            URL https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-${BLUPI_MBEDTLS_VERSION}/mbedtls-${BLUPI_MBEDTLS_VERSION}.tar.bz2
+            URL_HASH SHA256=a7e8bcbec0e6f761b4af24f25677626b35f762f68eef79c08677a363212d11f6
+            SOURCE_SUBDIR not-built-with-its-own-cmake)
+        FetchContent_MakeAvailable(blupi_mbedtls)
+        set(mbedtls_dir "${blupi_mbedtls_SOURCE_DIR}")
+    endif()
+    file(STRINGS "${mbedtls_dir}/include/mbedtls/build_info.h" mbedtls_version
+        REGEX "#define MBEDTLS_VERSION_STRING +\"")
+    if(NOT mbedtls_version MATCHES "\"${BLUPI_MBEDTLS_VERSION}\"")
+        message(FATAL_ERROR "${mbedtls_dir} is not Mbed TLS ${BLUPI_MBEDTLS_VERSION} (${mbedtls_version})")
+    endif()
+    file(GLOB mbedtls_sources "${mbedtls_dir}/library/*.c")
+    add_library(blupi_mbedtls STATIC ${mbedtls_sources})
+    target_include_directories(blupi_mbedtls SYSTEM PUBLIC "${mbedtls_dir}/include" PRIVATE "${mbedtls_dir}/library")
+    if(WIN32)
+        # Its random numbers (BCryptGenRandom); inet_pton, for IP addresses in certificates.
+        target_link_libraries(blupi_mbedtls PUBLIC bcrypt ws2_32)
+        target_link_libraries(blupi_net PRIVATE crypt32)         # the system's certificate check (tls.cpp)
+    endif()
+    target_link_libraries(blupi_net PRIVATE blupi_mbedtls)
+    target_compile_definitions(blupi_net PRIVATE BLUPI_TLS=1)
+    # The licence the packages carry as LICENSE-MbedTLS.txt (tools/package_release.py, linux_release.sh).
+    set(BLUPI_MBEDTLS_LICENSE "${mbedtls_dir}/LICENSE" CACHE INTERNAL "Mbed TLS licence")
 endif()
 
 # Historical TUs compiled unchanged. The other seven historical TUs (blupi, ddutil,

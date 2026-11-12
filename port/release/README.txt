@@ -106,10 +106,13 @@ a Free Direct server", type the server's address (with :port if it is not
 51325) and leave the room empty to create a room. The game shows the room's ID and puts it on the
 clipboard; the other players choose the same server and type the ID. The
 room's games are then listed as on a local network. Players of this program
-on Windows, Linux, Android and in a web browser can share a room. This
-program speaks ws:// only; a server that only offers wss:// (TLS) works from
-the web version. --net-server and --net-room fill the screen in advance;
-BLUPI_NET_PASSWORD gives the password of a server that needs one.
+on Windows, Linux, Android and in a web browser can share a room. A plain
+server name means ws:// on port 51325; type wss://NAME (for example
+wss://fds.openeggbert.com) to go through the server's TLS front on port 443,
+for networks that let only that port out or with a password. The server's
+certificate must be trusted by the system (or by SSL_CERT_FILE). --net-server
+and --net-room fill the screen in advance; BLUPI_NET_PASSWORD gives the
+password of a server that needs one.
 
 Your own language
 -----------------

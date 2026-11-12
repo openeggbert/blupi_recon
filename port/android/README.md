@@ -43,6 +43,10 @@ Requirements:
   or point `-Pblupi.sdl3.dir=...` elsewhere. CMake builds it, and its Java glue
   (`android-project/app/src/main/java/org/libsdl/app`) is compiled into the app; neither is
   copied into this repository.
+- the Mbed TLS 3.6.7 source tree (for `wss://`), by default at `build/third_party/mbedtls-3.6.7` of
+  the repository: the release archive `mbedtls-3.6.7.tar.bz2` from
+  https://github.com/Mbed-TLS/mbedtls/releases/tag/mbedtls-3.6.7 unpacked there (its SHA-256 is in
+  `port/third_party/README.md`), or `-Pblupi.mbedtls.dir=...` elsewhere.
 - the SoundFont submodule: `git submodule update --init port/third_party/generaluser-gs`.
 
 ```powershell

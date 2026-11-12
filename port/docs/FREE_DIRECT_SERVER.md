@@ -2,16 +2,20 @@
 
 How to run [free-direct-server](https://github.com/openeggbert/free-direct/blob/hires-images/docs/free-direct-server.md) so that every build of
 the port can use it: the web page on GitHub Pages (`https://`, so only `wss://`), and the desktop and
-Android programs (`ws://` only, port/docs/MULTIPLAYER.md). One server process serves both, so all of
-them share its rooms. The web page offers `fds.openeggbert.com` as its default server (`port/web/loader.js`).
+Android programs (`ws://`, and since 1.5.2 also `wss://`, port/docs/MULTIPLAYER.md). One server process
+serves both, so all of them share its rooms. The web page offers `fds.openeggbert.com` as its default server (`port/web/loader.js`).
 
 ```text
 browser (https page) ── wss://fds.openeggbert.com (443) ── nginx (TLS) ──┐
+desktop, Android ────── wss://fds.openeggbert.com (443) ──┘ (typed so)     │
 desktop, Android ────── ws://fds.openeggbert.com:51325 ─────────────────┴── free-direct-server :51325
 ```
 
 Players type the plain name `fds.openeggbert.com` everywhere: on an `https://` page the game takes
-`wss://` on port 443, on the desktop and Android `ws://` on port 51325 (since port 1.5.1).
+`wss://` on port 443, on the desktop and Android `ws://` on port 51325 (since port 1.5.1). On the
+desktop and Android, `wss://fds.openeggbert.com` goes through nginx on 443 instead (since 1.5.2): for
+networks that let only 443 out, or with a password. Those programs send no `Origin`, so
+`--allow-origin` does not concern them.
 
 ## 1. Build the server
 
@@ -59,7 +63,8 @@ journalctl -u free-direct-server -f        # its log: connections, rooms (IDs sh
 
 A password (`--password-file`) keeps strangers off the server; the port's programs take it from the
 environment variable `BLUPI_NET_PASSWORD`, which a browser cannot set, so a server for the web page runs
-without one. The room IDs are the secret.
+without one. The room IDs are the secret. Over `ws://` the password crosses the network in clear; with
+one, the desktop and Android programs should use `wss://`.
 
 ## 3. nginx: wss:// on 443
 
@@ -142,7 +147,8 @@ curl -si --http1.1 -H "Connection: Upgrade" -H "Upgrade: websocket" -H "Sec-WebS
   -H "Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==" -H "Origin: https://openeggbert.github.io" \
   https://fds.openeggbert.com/ | head -1
 # The desktop program: choose "Internet through a Free Direct server", leave the room empty, OK.
-blupi-sdl3 --net-server fds.openeggbert.com
+blupi-sdl3 --net-server fds.openeggbert.com            # ws:// on 51325
+blupi-sdl3 --net-server wss://fds.openeggbert.com      # wss:// through nginx (1.5.2)
 ```
 
 In the browser: https://openeggbert.github.io/blupi_recon/, a program, the multiplayer screen, the provider

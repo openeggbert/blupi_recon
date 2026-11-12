@@ -17,6 +17,8 @@
 #   BLUPI_LINUX_WORK  work directory (default: ~/blupi-release)
 #   BLUPI_DATA        game folder for the tests (default: assets/Speedy Blupi of this repo)
 #   BLUPI_SDL3_SRC    SDL3 source tree (default: build/third_party/SDL3-3.4.16 of this repo)
+#   BLUPI_MBEDTLS_SRC Mbed TLS source tree for wss:// (default: build/third_party/mbedtls-3.6.7 of
+#                     this repo; without one CMake downloads it, port/third_party/README.md)
 #   BLUPI_TEST_DATA_EGGBERT_DEMO, BLUPI_TEST_DATA_EGGBERT_VALUE, BLUPI_TEST_DATA_BLUPI_DEMO
 #                     the edition programs' data for their tests (port/docs/EDITIONS.md; optional)
 #   BLUPI_TEST_DATA_EGGBERT, BLUPI2_DATA, BLUPI2_TEST_DATA_BLUPI, BLUPI2_TEST_DATA_VARIANTS
@@ -35,6 +37,7 @@ REPO=$(cd "$(dirname "$0")/../.." && pwd)
 WORK=${BLUPI_LINUX_WORK:-$HOME/blupi-release}
 DATA=${BLUPI_DATA:-$REPO/assets/Speedy Blupi}
 SDL=${BLUPI_SDL3_SRC:-$REPO/build/third_party/SDL3-3.4.16}
+MBEDTLS=${BLUPI_MBEDTLS_SRC:-$REPO/build/third_party/mbedtls-3.6.7}
 VERSION=$(head -n 1 "$REPO/port/VERSION.txt" | tr -d '\r')
 NAME=speedy-blupi-sdl3-$VERSION-linux-x86_64
 
@@ -54,6 +57,7 @@ for edition in sb1-eggbert-demo sb1-eggbert-value sb1-blupi-demo; do
 done
 rsync -a --delete "$DATA/" "$WORK/data/"
 rsync -a --delete "$SDL/" "$WORK/sdl3-src/"
+rsync -a --delete "$MBEDTLS/" "$WORK/mbedtls-src/"
 
 # Enable each edition's regression suite when its original data is available.
 DATA2=${BLUPI2_DATA:-$REPO/assets/eggbert2}
@@ -90,6 +94,7 @@ cmake --install "$WORK/build/sdl3"
 B="$WORK/build/release"
 cmake -S "$WORK/port" -B "$B" -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo $LAUNCH \
     -DCMAKE_PREFIX_PATH="$WORK/sdl3" -DBLUPI_PORTABLE=ON -DBLUPI_TEST_DATA="$WORK/data" \
+    -DBLUPI_MBEDTLS_SOURCE_DIR="$WORK/mbedtls-src" \
     -DBLUPI2_TEST_DATA="$EGGBERT2_TEST" -DBLUPI2_TEST_DATA_BLUPI="$BLUPI2_TEST" \
     -DBLUPI_TEST_DATA_EGGBERT="$EGGBERT1_TEST" \
     -DBLUPI_TEST_DATA_EGGBERT_DEMO="${BLUPI_TEST_DATA_EGGBERT_DEMO:-}" \
@@ -115,6 +120,7 @@ sed -e 's/\r$//' -e "s/@VERSION@/$VERSION/" "$WORK/port/release/README.txt" > "$
 sed 's/\r$//' "$WORK/port/release/THIRD_PARTY.txt" > "$OUT/THIRD_PARTY.txt"
 sed 's/\r$//' "$WORK/port/release/COPYING.txt" > "$OUT/COPYING.txt"
 sed 's/\r$//' "$WORK/sdl3-src/LICENSE.txt" > "$OUT/LICENSE-SDL3.txt"
+sed 's/\r$//' "$WORK/mbedtls-src/LICENSE" > "$OUT/LICENSE-MbedTLS.txt"
 sed 's/\r$//' "$WORK/port/third_party/generaluser-gs/documentation/LICENSE.txt" > "$OUT/LICENSE-GeneralUser-GS.txt"
 chmod 0644 "$OUT"/*.txt "$OUT/soundfont.sf2" "$OUT/libSDL3.so.0"
 for app in $APPS; do chmod 0755 "$OUT/$app"; done

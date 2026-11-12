@@ -74,6 +74,10 @@ def windows():
         'LICENSE-SDL3.txt': os.path.join(SDL_SOURCE, 'LICENSE.txt'),
         'LICENSE-GeneralUser-GS.txt': os.path.join(PORT, 'third_party', 'generaluser-gs', 'documentation', 'LICENSE.txt'),
     }
+    # wss:// (BLUPI_TLS, on by default): the Mbed TLS the build compiled in.
+    mbedtls = cache_value(build, 'BLUPI_MBEDTLS_LICENSE')
+    if mbedtls:
+        texts['LICENSE-MbedTLS.txt'] = mbedtls
     path = os.path.join(OUT, name + '.zip')
     with zipfile.ZipFile(path, 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as z:
         for arc, src in files.items():
