@@ -34,6 +34,12 @@ unsigned     g_nextId = 0;
 unsigned     g_finished = 0;
 float        g_level = 1.0f;
 std::vector<float> g_block;
+// A WAV track (play_wav): stereo float frames at their own rate, read with
+// linear interpolation at the output rate.
+std::vector<float> g_pcm;
+int          g_pcmRate = 0;
+double       g_pcmPos = 0.0;
+bool         g_pcmPlaying = false;
 
 void reset_channels()
 {
@@ -50,6 +56,33 @@ void release_song()
     g_song = nullptr;
     g_cursor = nullptr;
     g_playing = false;
+    g_pcm.clear();
+    g_pcmPlaying = false;
+}
+
+// Mixes the WAV track; at its end the play command completed.
+void render_pcm(float* out, int frames, int rate)
+{
+    const double step = (double)g_pcmRate / rate;
+    const size_t count = g_pcm.size() / 2;
+    for (int i = 0; i < frames && g_pcmPlaying; i++)
+    {
+        const size_t k = (size_t)g_pcmPos;
+        if (k >= count)
+        {
+            g_pcmPlaying = false;
+            g_finished = g_id;
+            break;
+        }
+        const double f = g_pcmPos - (double)k;
+        const size_t next = k + 1 < count ? k + 1 : k;
+        for (int c = 0; c < 2; c++)
+        {
+            const float a = g_pcm[k * 2 + c], b = g_pcm[next * 2 + c];
+            out[(size_t)i * 2 + c] += (float)(a + (b - a) * f) * g_level;
+        }
+        g_pcmPos += step;
+    }
 }
 
 void dispatch(const tml_message* m)
@@ -112,11 +145,37 @@ unsigned play(const uint8_t* data, size_t size)
     return g_id;
 }
 
+unsigned play_wav(const uint8_t* data, size_t size)
+{
+    SDL_AudioSpec spec;
+    Uint8* raw = nullptr;
+    Uint32 length = 0;
+    if (!SDL_LoadWAV_IO(SDL_IOFromConstMem(data, size), true, &spec, &raw, &length)) return 0;
+    const SDL_AudioSpec want{SDL_AUDIO_F32, 2, spec.freq};
+    Uint8* converted = nullptr;
+    int convertedLength = 0;
+    const bool ok = SDL_ConvertAudioSamples(&spec, raw, (int)length, &want, &converted, &convertedLength);
+    SDL_free(raw);
+    if (!ok || spec.freq <= 0) return 0;
+    std::vector<float> pcm((const float*)converted, (const float*)(converted + convertedLength));
+    SDL_free(converted);
+    std::lock_guard<std::mutex> guard(g_lock);
+    release_song();
+    if (g_font) reset_channels();
+    g_pcm.swap(pcm);
+    g_pcmRate = spec.freq;
+    g_pcmPos = 0.0;
+    g_pcmPlaying = true;
+    g_id = ++g_nextId;
+    if (g_id == 0) g_id = ++g_nextId;
+    return g_id;
+}
+
 bool stop(unsigned id)
 {
     std::lock_guard<std::mutex> guard(g_lock);
     if (id == 0 || id != g_id) return false;
-    bool wasPlaying = g_playing;
+    bool wasPlaying = g_playing || g_pcmPlaying;
     release_song();
     if (g_font) reset_channels();
     g_id = 0;
@@ -141,6 +200,11 @@ void set_level(float level)
 void render_mix(float* out, int frames, int rate)
 {
     std::lock_guard<std::mutex> guard(g_lock);
+    if (g_pcmPlaying)
+    {
+        render_pcm(out, frames, rate);
+        return;
+    }
     if (g_font == nullptr || (!g_playing && tsf_active_voice_count(g_font) == 0)) return;
     if (rate != g_rate)
     {

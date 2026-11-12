@@ -181,7 +181,8 @@ These are bounded receipts, not whole-game certification.
   players on one machine) and, for each game, by the user between real devices; little other
   real-world play. No in-game address entry: Android joins LAN sessions only.
 - **AVI movies:** not played; the phase is skipped.
-- **SB2 CD audio:** fails, logged once.
+- **SB2 CD audio:** plays ripped tracks the player supplies (`music/trackNN.wav`, port 1.3.0); without
+  them it fails and logs once. No archive holds the tracks.
 - **MIDI:** played with a modern SoundFont, not the 1998 device's timbre.
 - **Coverage gaps:** hardware gamepads and Android keyboard/background are open. SB2 on Android
   (since 1.2.0-rc2) is checked on the emulator (start, menus, touch controls, play) and by the user's
