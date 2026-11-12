@@ -1,0 +1,14 @@
+# SB1 client through the provider list's Internet entry (port/tests/net_session.py --internet): it uses
+# another game port than the host, so neither the LAN discovery nor its own address finds the host's
+# session; only the address typed on the port's address screen does. See sb1_host.input.
+40 click 112 430    # title: dice -> choose player
+70 click 127 431    # choose player: multiplayer service
+100 click 160 170   # service: provider row 1, "Internet (enter an address)"
+230 click 242 407   # service: OK -> CreateProvider(1), EnumSessions (nothing) -> sessions + address screen
+240 type 127.0.0.1:{port}
+262 key 13          # Enter: the address is set, the session screen's refresh finds the host's session
+280 click 140 130   # sessions: row 0
+290 click 140 407   # sessions: join -> lobby (JOIN, slot 1)
+320 click 308 160   # lobby: client ready (slot 1)
+400 keydown 37      # play: walk left
+460 keyup 37

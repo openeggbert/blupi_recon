@@ -84,8 +84,8 @@ variant = de                           <- the original's code variant (see below
 - **Variant.** Most of the original's languages differ only in text. The German build also lays
   out the help screen differently, for its longer texts. `variant = de` asks for that layout;
   any other value uses the original US one.
-- **Port texts.** The Display options screen's own texts can be translated too, with these
-  ids:
+- **Port texts.** The port's own screens' texts can be translated too. The Display options use
+  these ids:
 
   | Id | English |
   |---|---|
@@ -106,6 +106,17 @@ variant = de                           <- the original's code variant (see below
   | 9014 | Fit the window |
   | 9015 | Whole pixels |
   | 9016 | Language |
+
+  The multiplayer address screen (port 1.3.0) and the provider list's Internet entry:
+
+  | Id | English |
+  |---|---|
+  | 9020 | Internet game |
+  | 9021 | Address of the computer that created the game: |
+  | 9022 | A name or a number, with :port if it is not 28640. |
+  | 9023 | Leave it empty to search the local network only. |
+  | 9024 | This is not an address. |
+  | 9025 | Internet (enter an address) |
 
 ## How the built-in packs are made
 

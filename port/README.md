@@ -270,9 +270,10 @@ Not implemented / known gaps (each fails the way the original did when the servi
   -6 dB so that GeneralUser GS does not clip at full option volume.
 - **AVI movies**: `CMovie` reports itself disabled, so movies are skipped as in the original
   without the MCI AVI driver. The movie files are not part of the installed data anyway.
-- **Multiplayer**: SB1 has a native UDP pilot (ENet under the original `CNetwork`): two instances
-  on one machine create/join a session, use the lobby and play (`--net-port`, `--net-join`). No LAN
-  discovery, internet or host migration yet; SB2 keeps the unavailable stub
+- **Multiplayer**: native UDP sessions (ENet under the original `CNetwork`) for both games, two to
+  four players on a local network (discovery) or over the internet: the provider list's "Internet
+  (enter an address)" entry asks for the host's address (since 1.3.0; `--net-join` adds addresses
+  from the command line). No NAT traversal and no host migration
   ([docs/MULTIPLAYER.md](docs/MULTIPLAYER.md)).
 - **Gamepads** stand in for the 1998 joystick. The game's own joystick code runs unchanged on
   SDL gamepads: choose the gamepad under "Choose input device" on the settings screen (each

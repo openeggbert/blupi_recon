@@ -37,10 +37,21 @@ different games or editions never do (the protocol id and the content check belo
   original session list. Addresses can be added with `--net-join HOST[:PORT]`; `--net-port N` changes
   the port (default 28640, discovery 28641). Android holds a Wi-Fi multicast lock while in the foreground,
   so a phone that hosts is discoverable.
+- **Internet (since 1.3.0):** the provider list has a second entry, "Internet (enter an address)". As
+  DirectPlay's TCP/IP provider asked for an address in a dialog of its own while the game enumerated
+  sessions, choosing it opens the port's address screen over the session screen
+  (`common/ui/address_screen.cpp`). The player types a host name or IPv4 address, with `:port` if it is not
+  the game port; OK hands it to the adapter and posts the session screen's own refresh, which then also
+  probes that address. An empty field searches the local network only; Escape or Cancel closes the screen.
+  The last address is remembered (`netAddress` in the settings file). The host side is unchanged: it creates
+  its session as before, and its game port (28640 by default) must be reachable from the joining computer
+  (forwarded through a router where needed; no NAT traversal or relay). [EVIDENCE] `net_sb1_internet_address`
+  (`tests/net_session.py --internet`): the client uses another game port, finds nothing on the LAN or at its
+  own address, types the host's address, then finds, joins and plays the session; both runs repeat exactly.
+  Android: built, untested (the on-screen keyboard opens while the screen is up).
 
 [OPEN] Not yet:
 
-- an address entry in the game for internet play (desktop: `--net-join`);
 - real-network behaviour tests (latency, loss, reordering) and the host-loss and client-drop paths as
   game scenarios (transport level only so far);
 - [EVIDENCE, 2026-10-25, user test] An SB1 session between an Android phone (1.2.0-rc1) and a Windows PC

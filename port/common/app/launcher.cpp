@@ -3,6 +3,7 @@
 #include "app/launcher.h"
 #include "port_messages.h"
 #include "ui/options_events.h"
+#include "ui/address_events.h"
 #include "platform/vfs.h"
 #include "platform/audio.h"
 #include "platform/music.h"
@@ -79,7 +80,8 @@ void Usage(const Game& game)
         "                      tick and frame N) before writing screenshots\n"
         "  --probe FILE        test-only state injection before a frame\n"
         "  --input FILE        scripted input: lines 'FRAME click|move X Y' or\n"
-        "                      'FRAME key|keydown|keyup VK' (may be given more than once)\n"
+        "                      'FRAME key|keydown|keyup VK' or 'FRAME char CODE' (a typed\n"
+        "                      character); may be given more than once\n"
         "                      viewclick|viewmove|viewrightclick X Y use view coordinates\n"
         "%s", game.name, game.dataEnvironment, game.settingsFile, game.extraUsage);
 }
@@ -92,7 +94,7 @@ bool LoadInputScript(const std::string& path, std::vector<ScriptedInput>& inputs
         ScriptedInput in;
         if (line[0] == '#' || sscanf(line, "%ld %15s %d %d", &in.tick, kind, &in.x, &in.y) < 3) continue;
         in.kind = kind;
-        if (in.kind != "key" && in.kind != "keydown" && in.kind != "keyup" && in.kind != "click" && in.kind != "move" &&
+        if (in.kind != "key" && in.kind != "keydown" && in.kind != "keyup" && in.kind != "char" && in.kind != "click" && in.kind != "move" &&
             in.kind != "viewclick" && in.kind != "viewmove" && in.kind != "viewrightclick") { fclose(f); return false; }
         inputs.push_back(in);
     }
@@ -242,7 +244,7 @@ void TranslateHostEvent(const blupi::host::Event& e, Game& game)
         game.windowProc(WM_ACTIVATEAPP, 0, 0);
         break;
     case EventType::KeyDown:
-        if (PortOptionsKey(WM_KEYDOWN, (WPARAM)e.key)) break;
+        if (PortAddressKey(WM_KEYDOWN, (WPARAM)e.key) || PortOptionsKey(WM_KEYDOWN, (WPARAM)e.key)) break;
         if (e.key == VK_LEFT || e.key == VK_RIGHT)
         {
             const bool right = e.key == VK_RIGHT;
@@ -255,7 +257,7 @@ void TranslateHostEvent(const blupi::host::Event& e, Game& game)
             game.windowProc(WM_CHAR, (WPARAM)e.key, 1);
         break;
     case EventType::KeyUp:
-        if (PortOptionsKey(WM_KEYUP, (WPARAM)e.key)) break;
+        if (PortAddressKey(WM_KEYUP, (WPARAM)e.key) || PortOptionsKey(WM_KEYUP, (WPARAM)e.key)) break;
         if (e.key == VK_LEFT || e.key == VK_RIGHT)
         {
             const bool right = e.key == VK_RIGHT;
@@ -265,7 +267,7 @@ void TranslateHostEvent(const blupi::host::Event& e, Game& game)
         game.windowProc(WM_KEYUP, (WPARAM)e.key, (LPARAM)(1 | (1 << 30) | (1u << 31)));
         break;
     case EventType::Text:
-        if (PortOptionsKey(WM_CHAR, (WPARAM)e.ch)) break;
+        if (PortAddressKey(WM_CHAR, (WPARAM)e.ch) || PortOptionsKey(WM_CHAR, (WPARAM)e.ch)) break;
         game.windowProc(WM_CHAR, (WPARAM)e.ch, 1);
         break;
     case EventType::MouseMove:
@@ -290,6 +292,7 @@ void TranslateHostEvent(const blupi::host::Event& e, Game& game)
             }
             break;
         }
+        if (PortAddressMouse(message, MouseKeys(e), MousePos(e.x, e.y))) break;
         if (PortOptionsMouse(message, MouseKeys(e), MousePos(e.x, e.y))) break;
         game.windowProc(message, MouseKeys(e), MousePos(e.x, e.y));
         if (message == WM_MOUSEMOVE) PortOptionsHover(MousePos(e.x, e.y));
@@ -314,11 +317,20 @@ void DispatchPosted(Game& game)
     PortMessage msg;
     while (!*game.quit && PortPopMessage(msg))
     {
-        if (PortOptionsCommand(msg.message)) continue;   // the port's own buttons
+        if (PortOptionsCommand(msg.message) || PortAddressCommand(msg.message)) continue;   // the port's own buttons
         // Scripted mouse input meets the port's screen like live input.
         if ((msg.message == WM_MOUSEMOVE || msg.message == WM_LBUTTONDOWN || msg.message == WM_LBUTTONUP ||
              msg.message == WM_RBUTTONDOWN || msg.message == WM_RBUTTONUP) &&
-            PortOptionsMouse(msg.message, msg.wParam, msg.lParam)) continue;
+            (PortAddressMouse(msg.message, msg.wParam, msg.lParam) ||
+             PortOptionsMouse(msg.message, msg.wParam, msg.lParam))) continue;
+        // Scripted keys meet the address screen like live keys and their characters.
+        if ((msg.message == WM_KEYDOWN || msg.message == WM_KEYUP || msg.message == WM_CHAR) &&
+            PortAddressKey(msg.message, msg.wParam))
+        {
+            const int ch = msg.message == WM_KEYDOWN ? TranslatedChar(msg.wParam) : 0;
+            if (ch > ' ') PortAddressKey(WM_CHAR, (WPARAM)ch);
+            continue;
+        }
         if ((msg.message == WM_KEYDOWN || msg.message == WM_KEYUP || msg.message == WM_CHAR) &&
             PortOptionsKey(msg.message, msg.wParam)) continue;
         if (game.postedMessage) msg.message = game.postedMessage(msg.message);
@@ -358,6 +370,8 @@ void PostScriptedInput(const Options& o, long frame, Game& game) {
                 PostMessage(nullptr, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(in.x, in.y));
                 PostMessage(nullptr, WM_LBUTTONUP, 0, MAKELPARAM(in.x, in.y));
             }
+        } else if (in.kind == "char") {
+            PostMessage(nullptr, WM_CHAR, in.x, 1);   // a typed character, as text input delivers it
         } else {
             if (in.kind != "keyup") PostMessage(nullptr, WM_KEYDOWN, in.x, 1);
             if (in.kind != "keydown") PostMessage(nullptr, WM_KEYUP, in.x, 1 | (1u<<30) | (1u<<31));

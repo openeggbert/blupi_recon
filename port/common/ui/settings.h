@@ -26,6 +26,7 @@ struct PortSettings
 	std::string gamepadStart = "pause", gamepadBack = "escape";
 	std::string gamepadLeftShoulder = "none", gamepadRightShoulder = "none";
 	bool gamepadArrows = true;
+	std::string netAddress;     // the last server address of the Internet provider (multiplayer)
 };
 
 namespace blupi::host { struct GamepadKeys; }

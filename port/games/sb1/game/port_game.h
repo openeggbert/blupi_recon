@@ -93,6 +93,11 @@ void     PortOptionsInit(CPixmap* pixmap, CSound* sound, PortSettings* settings,
                          bool windowChoice, int entryX = 70, int entryY = 330);
 #include "ui/options_events.h"
 
+// The multiplayer provider list's Internet entry asks for a server address on a port
+// screen (address_screen.cpp); save is called after the remembered address changed.
+void     PortAddressInit(CPixmap* pixmap, CSound* sound, PortSettings* settings, void (*save)());
+#include "ui/address_events.h"
+
 // Editor input over the side areas of a wide view (editor_wide.cpp); pos in
 // frame coordinates, outside the frame.
 void     PortEditorSideMouse(CEvent* event, CDecor* decor, unsigned int message, int fwKeys, struct tagPOINT pos);

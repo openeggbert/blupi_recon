@@ -7,6 +7,10 @@ The test checks from each peer's network audit (user dir/network.trace) that the
 session, both reached PLAY with two members, each received the other's moves, and no packet was rejected.
 It runs the scenario twice and requires each peer's frame trace and audit to repeat exactly. Every process
 and wait is bounded; children are killed on failure. Never runs an original executable.
+
+--internet: two peers; the client uses another game port and the provider list's Internet entry
+(<game>_client_internet.input), so it finds the host's session only through the address it types on the
+port's address screen ("N type TEXT" lines become one "char" per tick; {port} is the host's port).
 """
 import argparse
 import os
@@ -32,6 +36,20 @@ def write_atomic(path, text):
     os.replace(tmp, path)
 
 
+def expand(source, target, port):
+    """'N type TEXT' becomes one 'char' line per character from tick N; {port} is the host's port."""
+    lines = []
+    for line in source.read_text(encoding="ascii").splitlines():
+        parts = line.split(None, 2)
+        if len(parts) == 3 and parts[1] == "type":
+            tick, text = int(parts[0]), parts[2].split("#")[0].strip().replace("{port}", str(port))
+            lines += [f"{tick + i} char {ord(c)} 0" for i, c in enumerate(text)]
+        else:
+            lines.append(line)
+    target.write_text("\n".join(lines) + "\n", encoding="ascii")
+    return target
+
+
 def run(args, work, port):
     if work.exists():
         shutil.rmtree(work)
@@ -42,9 +60,13 @@ def run(args, work, port):
         user = work / name
         user.mkdir()
         env = dict(os.environ, BLUPI_NET_TEST_DIR=str(control), BLUPI_NET_TEST_ROLE=str(role))
+        script, own_port = Path(args.inputs) / f"{args.game}_{name}.input", port
+        if args.internet and name != "host":
+            script = expand(Path(args.inputs) / f"{args.game}_{name}_internet.input", work / f"{name}.input", port)
+            own_port = args.client_port
         command = [args.exe, "--headless", "--data", args.data, "--user", str(user), "--color", "16",
-                   "--frames", str(args.frames), "--input", str(Path(args.inputs) / f"{args.game}_{name}.input"),
-                   "--trace", str(work / f"{name}.trace"), "--net-test-sync", "--net-port", str(port)]
+                   "--frames", str(args.frames), "--input", str(script),
+                   "--trace", str(work / f"{name}.trace"), "--net-test-sync", "--net-port", str(own_port)]
         for frame in args.state_dump:
             command += ["--state-dump", f"{frame}:{work / f'{name}-state-{frame}.txt'}"]
         log = open(work / f"{name}.log", "w", encoding="utf-8")
@@ -93,7 +115,7 @@ def peer_names(players):
     return ["host", "client", "client2", "client3"][:players]
 
 
-def check(work, codes, players):
+def check(work, codes, players, internet_port=None):
     failures = []
     for name, code in codes.items():
         if code != 0:
@@ -104,6 +126,8 @@ def check(work, codes, players):
     peers = {name: audit(work, name) for name in names}
     expect = {name: ("joined session",) for name in names}
     expect["host"] = ("created session", "START")
+    if internet_port is not None:
+        expect["client"] = (f"Internet address 127.0.0.1:{internet_port}", "joined session")
     for name, (lines, notes, received, states) in peers.items():
         for note in expect[name]:
             if not any(n.startswith(note) for n in notes):
@@ -134,18 +158,25 @@ def main():
     parser.add_argument("--frames", type=int, default=700)
     parser.add_argument("--players", type=int, choices=(2, 3, 4), default=2)
     parser.add_argument("--timeout", type=float, default=240.0, help="seconds per run")
+    parser.add_argument("--internet", action="store_true",
+                        help="the client joins through the Internet provider and a typed address (two peers)")
     parser.add_argument("--state-dump", type=int, action="append", default=[], metavar="FRAME",
                         help="diagnostic: each peer dumps its hashed state fields after FRAME")
     args = parser.parse_args()
     args.exe = str(Path(args.exe).resolve())
     args.work = args.work.resolve()
     port = free_port()
+    if args.internet:
+        args.players = 2
+        args.client_port = free_port()
+        while args.client_port in (port, port + 1) or port in (args.client_port + 1,):
+            args.client_port = free_port()
     results = []
     for run_index in (1, 2):
         work = args.work / f"run{run_index}"
         started = time.monotonic()
         codes = run(args, work, port)
-        failures = check(work, codes, args.players)
+        failures = check(work, codes, args.players, port if args.internet else None)
         print(f"run {run_index}: {time.monotonic() - started:.1f} s")
         if failures:
             print("\n".join(failures))
@@ -157,7 +188,8 @@ def main():
             if a.read_bytes() != b.read_bytes():
                 print(f"not repeatable: {item} differs between runs")
                 return 1
-    print(f"{args.players}-instance session: create/join/lobby/ready/start/play passed; each peer's traces repeat exactly")
+    how = " through the Internet provider and a typed address" if args.internet else ""
+    print(f"{args.players}-instance session{how}: create/join/lobby/ready/start/play passed; each peer's traces repeat exactly")
     return 0
 
 

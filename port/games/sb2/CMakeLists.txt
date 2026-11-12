@@ -42,7 +42,7 @@ else()
 endif()
 add_library(blupi2_game STATIC
     ${BLUPI_COMMON}/compat/src/win32.cpp ${BLUPI_COMMON}/compat/src/hist_stdio.cpp
-    ${BLUPI_COMMON}/ui/options_screen.cpp ${BLUPI_COMMON}/ui/settings.cpp
+    ${BLUPI_COMMON}/ui/options_screen.cpp ${BLUPI_COMMON}/ui/address_screen.cpp ${BLUPI_COMMON}/ui/settings.cpp
     game/editor_wide.cpp game/scene.cpp game/end_of_tick.cpp
     game/main.cpp game/pixmap.cpp game/sound.cpp game/misc.cpp
     game/movie.cpp ${BLUPI_COMMON}/net/cnetwork.cpp game/state_hash.cpp game/language.cpp game/probe.cpp

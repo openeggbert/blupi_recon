@@ -1,0 +1,13 @@
+# SB2 client through the provider list's Internet entry (port/tests/net_session.py --internet --game sb2);
+# as sb1_client_internet.input, with SB2's screen positions (sb2_client.input). See sb2_host.input.
+40 key 13           # title -> choose player
+70 click 127 434    # choose player: multiplayer service
+100 click 160 170   # service: provider row 1, "Internet (enter an address)"
+230 click 242 409   # service: OK -> CreateProvider(1), EnumSessions (nothing) -> sessions + address screen
+240 type 127.0.0.1:{port}
+262 key 13          # Enter: the address is set, the session screen's refresh finds the host's session
+280 click 140 130   # sessions: row 0
+290 click 140 409   # sessions: join -> lobby (JOIN, slot 1)
+320 click 308 160   # lobby: ready (slot 1)
+400 keydown 37      # play: walk left
+460 keyup 37
