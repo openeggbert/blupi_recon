@@ -38,7 +38,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
             foreach(scenario attract tour editor save)
                 add_test(NAME fidelity_init_${edition}_${scenario}
                     COMMAND "${BLUPI_TEST_PYTHON}" "${init_tests}/fidelity_init.py"
-                    --exe $<TARGET_FILE:fidelity_init_${game}> --data "${data}" --game ${game}
+                    --exe $<TARGET_FILE:fidelity_init_${game}>${BLUPI_TEST_LAUNCHER} --data "${data}" --game ${game}
                     --scenario ${scenario} --work "${CMAKE_CURRENT_BINARY_DIR}/fidelity_init_${edition}_${scenario}")
                 set_tests_properties(fidelity_init_${edition}_${scenario} PROPERTIES TIMEOUT 1200)
             endforeach()

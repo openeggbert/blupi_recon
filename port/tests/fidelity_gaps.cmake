@@ -11,7 +11,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
             --eggbert2 "${BLUPI2_TEST_DATA}" --blupi2 "${BLUPI2_TEST_DATA_BLUPI}"
             --blupi2-variants "${BLUPI2_TEST_DATA_VARIANTS}"
             --languages "${PROJECT_SOURCE_DIR}/games/sb2/languages"
-            --exe $<TARGET_FILE:fidelity_language_sb2>
+            --exe $<TARGET_FILE:fidelity_language_sb2>${BLUPI_TEST_LAUNCHER}
             --work "${CMAKE_CURRENT_BINARY_DIR}/fidelity_resources")
     endif()
     add_executable(fidelity_editor_sb2 fidelity_editor.cpp)
@@ -68,14 +68,14 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
                 add_test(NAME fidelity_sound_${edition} COMMAND fidelity_sound_sb2
                     "${data}" "${CMAKE_CURRENT_BINARY_DIR}/fidelity_sound_${edition}")
                 add_test(NAME fidelity_editor_${edition}
-                    COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:fidelity_editor_sb2>
+                    COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:fidelity_editor_sb2>${BLUPI_TEST_LAUNCHER}
                     "-DDATA=${data}" "-DWORK=${CMAKE_CURRENT_BINARY_DIR}/fidelity_editor_${edition}"
                     "-DARGS=--color 16 --frames 180 --input ${CMAKE_CURRENT_SOURCE_DIR}/golden/sb2_editor.input"
                     -P ${CMAKE_CURRENT_SOURCE_DIR}/run_fresh.cmake)
                 if(edition STREQUAL "sb2_blupi")
                     foreach(language de fr)
                         add_test(NAME fidelity_language_menu_${language}
-                            COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2> "-DDATA=${data}"
+                            COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2>${BLUPI_TEST_LAUNCHER} "-DDATA=${data}"
                             "-DWORK=${CMAKE_CURRENT_BINARY_DIR}/fidelity_language_menu_${language}"
                             "-DARGS=--language ${language} --color 16 --frames 260 --input ${CMAKE_CURRENT_SOURCE_DIR}/golden/sb2_tour.input"
                             -P ${CMAKE_CURRENT_SOURCE_DIR}/sb2_scene.cmake)
@@ -97,7 +97,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
                     endif()
                 endif()
                 add_test(NAME fidelity_effects_${edition}_${scenario}
-                    COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:fidelity_effects_${game}>
+                    COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:fidelity_effects_${game}>${BLUPI_TEST_LAUNCHER}
                     "-DDATA=${data}" "-DWORK=${CMAKE_CURRENT_BINARY_DIR}/fidelity_effects_${edition}_${scenario}"
                     "-DARGS=${args}" -DSB2=$<STREQUAL:${game},sb2>
                     -DEFFECTS=$<AND:$<STREQUAL:${game},sb2>,$<STREQUAL:${scenario},effects>>
