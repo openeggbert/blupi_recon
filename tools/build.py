@@ -269,7 +269,18 @@ def prepare_output(out):
     return out
 
 
-def build(spec, out, allow_unpinned=False):
+HISTLINK_PROFILES = {"rtm": "rtm-link", "sp3": "sp3-link"}
+
+
+def fixed_clock_command(tool, timestamp, report, arguments):
+    """Run a pinned VC5 tool under tools/histlink.py's process-local clock only. --system-crt keeps the
+    tool's own CRT bindings, as a plain run has: the pinned VC5 CRT that the verification relink uses
+    (relink.py --historical-host) also changes LINK's layout, which is not this build's business."""
+    return [sys.executable, str(ROOT / "tools/histlink.py"), "--tool", tool, "--timestamp", hex(timestamp),
+            "--system-crt", "--report", str(report), "--", *arguments]
+
+
+def build(spec, out, allow_unpinned=False, current_clock=False):
     manifest, settings, tree, link_tree = plan(spec)
     components = preflight(manifest, link_tree, load_pins())
     unpinned = [c for c in components if not c["pinned"]]
@@ -307,6 +318,28 @@ def build(spec, out, allow_unpinned=False):
     libraries = target_libraries(manifest, vc_root, link_vc_root)
     script, resource_status = resource_script(spec, effective_root)
     res_files = [build_resources(out, script, vc_root)] if script else []
+    # Reproducible times (targets.json "build_time"): the original's own link and resource-directory
+    # times, a chosen build setting. RTM LINK starts CVTRES as a child process, which the clock does not
+    # reach, so a nonzero resource time converts the .res first in a separate clock-fixed CVTRES.
+    clock = None if current_clock else spec.build_time
+    clock_record = dict(mode="current clock")
+    if clock:
+        clock_record = dict(mode="fixed", pe=f"0x{clock['pe']:08x}", resources=f"0x{clock.get('resources', 0):08x}",
+                            source="targets.json build_time: the original's own times, a chosen build setting",
+                            launcher="tools/histlink.py", launcher_sha256=digest(ROOT / "tools/histlink.py"))
+        if link_tree not in HISTLINK_PROFILES:
+            raise SystemExit(f"build: no fixed-clock profile for linker tree {link_tree}")
+        if res_files and clock.get("resources"):
+            res_obj = res_files[0].with_suffix(".obj")
+            cvtres = fixed_clock_command("rtm-cvtres", clock["resources"], out / "clock-cvtres.json",
+                                         ["/NOLOGO", "/MACHINE:IX86", f"/OUT:{res_obj}", str(res_files[0])])
+            run = subprocess.run(cvtres, cwd=ROOT, capture_output=True, text=True, encoding="mbcs", errors="replace")
+            (out / "cvtres.log").write_text(run.stdout + run.stderr, encoding="utf-8")
+            if run.returncode or not res_obj.is_file():
+                print(f"build: clock-fixed CVTRES failed; see {out / 'cvtres.log'}", flush=True)
+                return run.returncode or 1
+            res_files = [res_obj]
+            clock_record["resource_object"] = dict(path=str(res_obj), sha256=digest(res_obj))
     image_path = out / spec.image_name
     map_path = out / (Path(spec.image_name).stem + ".map")
     ordered = recorded_order(units, settings)
@@ -316,7 +349,11 @@ def build(spec, out, allow_unpinned=False):
     response = out / "link.rsp"
     response.write_text("\n".join(subprocess.list2cmdline([a]) for a in arguments) + "\n", encoding="cp1252")
     env, link_path = link_environment(linker, vc_root, shared_bin)
-    run = subprocess.run([str(linker), "@" + str(response)], cwd=ROOT, env=env, capture_output=True, text=True,
+    command = [str(linker), "@" + str(response)]
+    if clock:
+        command = fixed_clock_command(HISTLINK_PROFILES[link_tree], clock["pe"], out / "clock-link.json",
+                                      ["@" + str(response)])
+    run = subprocess.run(command, cwd=ROOT, env=env, capture_output=True, text=True,
                          encoding="mbcs", errors="replace")
     (out / "link.log").write_text(run.stdout + run.stderr, encoding="utf-8")
     print(run.stdout + run.stderr, end="", flush=True)
@@ -339,7 +376,7 @@ def build(spec, out, allow_unpinned=False):
                   order_provenance=settings.get("provenance"), arguments=arguments,
                   search_path=[str(p) for p in link_path], exit_code=run.returncode,
                   libraries={str(p): digest(p) for p in libraries}),
-        toolchain=components, degraded=degraded)
+        toolchain=components, degraded=degraded, clock=clock_record)
     if run.returncode:
         record["result"] = "LINK FAILED"
         (out / "build.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
@@ -348,6 +385,13 @@ def build(spec, out, allow_unpinned=False):
                 path.unlink()
         return run.returncode
     pe, fields = timestamp_fields(image_path)
+    if clock:
+        expected = {"pe_header": clock["pe"], "resource_directory": clock.get("resources", 0)}
+        wrong = sorted({f for f, _o, v in fields if v != expected[f]})
+        clock_record["fields_as_set"] = not wrong
+        if wrong:
+            degraded["clock"] = f"timestamp fields differ from build_time: {', '.join(wrong)}"
+            print(f"  DEGRADED: {degraded['clock']}", flush=True)
     data = image_path.read_bytes()
     record["image"] = dict(path=str(image_path), bytes=len(data), sha256=hashlib.sha256(data).hexdigest(),
                            sha256_without_timestamps=reproducible_digest(data, [o for _, o, _ in fields]),
@@ -372,6 +416,9 @@ def summary(record):
         print(f"  {source}: __FILE__ {item['path']} ({item['status']})")
     print(f"  {image['path']}: {image['bytes']} bytes, sha256 {image['sha256']}")
     print(f"  without {len(image['timestamp_fields'])} timestamp field(s): {image['sha256_without_timestamps']}")
+    clock = record.get("clock", {})
+    print(f"  clock: {clock.get('mode')}" + (f" (link {clock['pe']}, resources {clock['resources']}; "
+          "the original's own times, a chosen setting)" if clock.get("mode") == "fixed" else ""))
     print("  no original executable, oracle or certificate read; not compared with the original")
 
 
@@ -382,6 +429,8 @@ def main(argv=None):
     parser.add_argument("--out-dir", type=Path, help="default build/standalone/<target slug> (with --all: a parent)")
     parser.add_argument("--list", action="store_true", help="list targets and their build configuration")
     parser.add_argument("--plan", action="store_true", help="resolve inputs and toolchain pins, do not compile")
+    parser.add_argument("--current-clock", action="store_true",
+                        help="link with the current clock instead of the target's build_time (timestamps then differ)")
     parser.add_argument("--allow-unpinned-toolchain", action="store_true",
                         help="build with components that differ from toolchains.json (recorded as DEGRADED)")
     args = parser.parse_args(argv)
@@ -406,7 +455,7 @@ def main(argv=None):
         else:
             out = args.out_dir or ROOT / "build/standalone" / spec.slug
         print(f"=== {name} -> {out}", flush=True)
-        results[name] = build(spec, out, args.allow_unpinned_toolchain)
+        results[name] = build(spec, out, args.allow_unpinned_toolchain, args.current_clock)
     if len(names) > 1:
         print("\n" + "\n".join(f"{n}: {'ok' if r == 0 else f'FAILED ({r})'}" for n, r in results.items()))
     return max(results.values(), default=0)

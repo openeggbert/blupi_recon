@@ -198,6 +198,9 @@ class BuildSpec:
     source_overlays: list[str]
     resource_script: str | None
     resource_note: str | None
+    # The fixed link and resource-directory times of the build (targets.json "build_time"), or None for
+    # the current clock. A chosen build setting (the original's own times), not a recovered fact.
+    build_time: dict[str, int] | None = None
 
     @property
     def primary(self) -> bool:
@@ -238,7 +241,9 @@ def build_spec(name: str | None = None) -> BuildSpec:
                      defines=list(spec.get("defines", [])), toolchain_tree=spec.get("toolchain_tree"),
                      link_tree=spec.get("link_tree"), build_path=spec.get("build_path"),
                      source_overlays=list(spec.get("source_overlays", [])),
-                     resource_script=spec.get("resource_script"), resource_note=spec.get("resource_note"))
+                     resource_script=spec.get("resource_script"), resource_note=spec.get("resource_note"),
+                     build_time={k: int(str(v), 0) for k, v in spec["build_time"].items() if k in ("pe", "resources")}
+                     if spec.get("build_time") else None)
 
 
 def add_argument(parser: argparse.ArgumentParser) -> None:
