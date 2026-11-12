@@ -772,7 +772,8 @@ SDL_EnumerationResult SDLCALL add_subdirectory(void* userdata, const char* dirna
 
 std::string choose_folder(const char* title, const char* text)
 {
-#ifdef SDL_PLATFORM_ANDROID
+#if defined(SDL_PLATFORM_ANDROID) || defined(SDL_PLATFORM_EMSCRIPTEN)
+    // Android imports the folder in its launcher; the web page in its loader (port/web).
     (void)title;
     (void)text;
     return std::string();

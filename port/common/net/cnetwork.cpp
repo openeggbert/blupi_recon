@@ -196,6 +196,11 @@ BOOL CNetwork::EnumProviders() {
     FreeProviderList();
     m_providers.pList=(NamedGUID(*)[MAXSESSION])std::calloc(MAXSESSION,sizeof(NamedGUID));
     if (!m_providers.pList) return FALSE;
+#ifdef __EMSCRIPTEN__
+    // A browser has no UDP: the web build lists no provider, as the original did on a system
+    // without a DirectPlay service provider (port/docs/WEB.md).
+    m_providers.nb=0; Note("no network provider in a browser"); return TRUE;
+#endif
     m_providers.nb=2; strcpy((*m_providers.pList)[0].name,"Native network (UDP)");
     snprintf((*m_providers.pList)[1].name,sizeof((*m_providers.pList)[1].name),"%s",
              PortLanguageText(9025,"Internet (enter an address)").c_str());

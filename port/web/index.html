@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Speedy Blupi — SDL3 port for the web</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <section id="chooser" hidden>
+    <h1>Speedy Blupi and Speedy Eggbert</h1>
+    <p>The SDL3 port of the reconstructed games, in your browser. You need your own copy of the game:
+      on the first start you choose its folder, and its files are kept in this browser (nothing is
+      uploaded). Multiplayer is not available on the web.</p>
+    <nav id="programs"></nav>
+  </section>
+
+  <section id="player" hidden>
+    <h1 id="heading"></h1>
+    <div id="controls">
+      <p>Needs the folder of your own copy of <span id="needs"></span>: the one that contains DATA,
+        the image folders and SOUND, or a folder that contains it.</p>
+      <div class="buttons">
+        <button id="pick">Choose the game folder…</button>
+        <button id="play" disabled>Play</button>
+        <button id="forget" disabled>Remove the stored game files</button>
+      </div>
+      <input id="pick-input" type="file" webkitdirectory directory multiple hidden>
+      <p class="small"><a href="./">All programs</a> · Alt+Enter: full screen</p>
+    </div>
+    <p id="status"></p>
+    <canvas id="canvas" tabindex="-1" oncontextmenu="event.preventDefault()" hidden></canvas>
+    <pre id="log" hidden></pre>
+  </section>
+</main>
+<script src="loader.js"></script>
+</body>
+</html>

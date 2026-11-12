@@ -3,6 +3,17 @@ function(blupi_package_app target)
     if(ANDROID)
         return()
     endif()
+    if(EMSCRIPTEN)
+        # The web build (port/docs/WEB.md): <program>.js and .wasm, started by port/web/loader.js
+        # once the player's game folder is in the browser's storage (IDBFS under /persist).
+        # ASYNCIFY lets the launcher's blocking loop yield to the browser while it waits.
+        set_target_properties(${target} PROPERTIES SUFFIX ".js")
+        target_link_options(${target} PRIVATE
+            -sASYNCIFY -sASYNCIFY_STACK_SIZE=131072 -sALLOW_MEMORY_GROWTH=1 -sSTACK_SIZE=5MB
+            -sINVOKE_RUN=0 -sEXIT_RUNTIME=1 -sFORCE_FILESYSTEM=1 -sENVIRONMENT=web -lidbfs.js
+            "-sEXPORTED_RUNTIME_METHODS=['FS','callMain','addRunDependency','removeRunDependency']")
+        return()
+    endif()
     if(WIN32)
         set_target_properties(${target} PROPERTIES WIN32_EXECUTABLE $<NOT:$<CONFIG:Debug>>)
         add_custom_command(TARGET ${target} POST_BUILD

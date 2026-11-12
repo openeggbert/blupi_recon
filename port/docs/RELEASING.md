@@ -81,6 +81,13 @@ uninstall the debug build first, which also removes its imported game data.
 6. Tag `port-v<version>` on the release commit and publish a GitHub release with the three
    packages, `SHA256SUMS.txt` and the notes from `docs/RELEASE_NOTES.md`.
 
+## 1.4.0
+
+As 1.3.0 for the Linux package, plus the web package: the five programs built with Emscripten and
+`port/tools/package_web.py` (`port/docs/WEB.md`), checked in Chrome with `port/tools/web_check.mjs`
+(each program: import of the game folder, title screen, attract mode, start again from the stored
+files).
+
 ## 1.3.0
 
 Only the Linux package was built for 1.3.0, on the release host itself (Debian 13, glibc 2.41), with
