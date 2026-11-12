@@ -175,17 +175,44 @@ What varies between builds:
 
 | Difference | Cause | Handling |
 |---|---|---|
-| PE `TimeDateStamp` | LINK 5.x writes the current time and has no option to fix it | Recorded. `build.json` gives a digest with the PE and resource-directory timestamp fields read as zero; the file itself is never modified |
-| Resource-directory timestamps (RTM CVTRES) | Same: the current time | Same digest; SP3 CVTRES writes 0 |
+| PE `TimeDateStamp` | LINK 5.x writes the current time and has no option to fix it | Fixed at `build_time` through histlink's clock (below); with `--current-clock`, `build.json` gives a digest with the timestamp fields read as zero. The file itself is never modified |
+| Resource-directory timestamps (RTM CVTRES) | Same: the current time | Fixed by a clock-fixed CVTRES (below); SP3 CVTRES writes 0 |
 | Object `TimeDateStamp`, and the COFF `.file` record (absolute source path) | VC5 | `sections_sha256` per object covers code and data only. The linked image does not contain them |
 | Unavailable historical `__FILE__` path | Host or sandbox | `DEGRADED`; different `.data`; never accepted |
 | Original linker inputs, TU population, link order | Underdetermined by the evidence (docs/SB1_CLOSURE.md) | Not modelled by the ordinary build; it is not the original image |
 
-**A fixed timestamp.** A historical timestamp is reproduced only on the verification side:
-`tools/relink.py --historical-host` freezes the linker's clock at the original executable's own
-timestamp, through a debugger launcher (docs/HISTLINK.md). The ordinary build does not do this,
-because that needs the original's timestamp and research tooling, and it never patches the timestamp
-afterwards.
+**A fixed timestamp (since 2026-11-12).** Every target records its original's own PE link time and
+resource-directory time in `targets.json` (`build_time`). These values are a chosen build setting, not
+a recovered fact, and the build reads no original executable to get them.
+
+`tools/build.py` makes them the image's times in two steps:
+
+1. **Resources.** Where the resource time is not zero, RTM CVTRES first converts the `.res` file in
+   a separate process. RTM LINK would otherwise start CVTRES as a child process, which the frozen clock
+   does not reach.
+2. **Link.** LINK runs under the process-local clock of `tools/histlink.py`, set to the link time.
+   histlink is started with `--system-crt`, so only the clock changes. The pinned VC5 CRT that the
+   verification relink uses (`relink.py --historical-host`) would also change LINK's layout, which is not
+   this build's business.
+
+What the build records and checks:
+
+- **`build.json`** records the clock (`"clock": {"mode": "fixed", ...}`).
+- **A build whose timestamp fields differ from `build_time` is DEGRADED.**
+- **`--current-clock` keeps the old behaviour.**
+- **`tools/check_clean_build.py` requires byte-identical images** when both builds fixed their clock,
+  and exports `tools/histlink.py`, `tools/c2trace/c2dbg.py` and `tools/c2trace/profiles.py` for it.
+
+[EVIDENCE] Measured on 2026-11-12, in the win10 VM:
+
+- **Repeated builds are byte-identical.** Two `tools/build.py` runs each for `sb1/eggbert/en` (RTM link)
+  and `sb1/blupi/us` (SP3 link) gave the same SHA-256.
+- **The image differs from a current-clock build only in its timestamp fields.** For `sb1/blupi/us`
+  these are the 4 bytes of the PE header (its original's resource time is 0).
+- **All 16 targets build with their times set**, and none is DEGRADED.
+- **The clean-export test passes.** `tools/check_clean_build.py --ref repro-build --compare
+  build/standalone` exported commit `4d05d91` and built all 16 targets from it. Every image is byte for
+  byte equal to the main checkout's independent build, and every object's sections are equal.
 
 ## Remaining limitations
 

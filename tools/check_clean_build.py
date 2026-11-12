@@ -9,7 +9,8 @@ and runs the documented `tools/build.py --all` there with this interpreter. No o
 oracle, certificate, research tool, generated object or cache exists in the export. Checks: every target
 links, no output names a path of this checkout outside the export, every toolchain component matches
 toolchains.json, every historical __FILE__ path was established, output directories are distinct, and
-(with --compare) each image and object equals an independent build apart from its timestamp fields.
+(with --compare) each image and object equals an independent build: byte for byte where both builds fixed the
+link clock (targets.json build_time), otherwise apart from its timestamp fields.
 Writes build/clean-export/report.json. The export is replaced on the next run.
 """
 from __future__ import annotations
@@ -26,7 +27,9 @@ import tarfile
 
 ROOT = Path(__file__).resolve().parents[1]
 KEEP = ("src", "games", "targets.json", "recon.json", "toolchains.json",
-        "tools/build.py", "tools/targets.py", "tools/source_tree.py", "tools/msvc.py", "tools/buildpath.py")
+        "tools/build.py", "tools/targets.py", "tools/source_tree.py", "tools/msvc.py", "tools/buildpath.py",
+        # the fixed link clock (targets.json build_time): histlink and its debugger core
+        "tools/histlink.py", "tools/c2trace/c2dbg.py", "tools/c2trace/profiles.py")
 
 
 def export(ref, tree):
@@ -117,7 +120,12 @@ def main(argv=None):
                 same_image = other["image"]["sha256_without_timestamps"] == record["image"]["sha256_without_timestamps"]
                 same_objects = all(other["objects"][k]["sections_sha256"] == v["sections_sha256"]
                                    for k, v in record["objects"].items())
-                row["reproducible"] = ("yes: image equal apart from timestamp fields, object sections equal"
+                fixed = all(r.get("clock", {}).get("mode") == "fixed" for r in (record, other))
+                if fixed:
+                    # Both linked at the target's build_time: the whole image must be equal.
+                    same_image = same_image and other["image"]["sha256"] == record["image"]["sha256"]
+                row["reproducible"] = (("yes: image byte-identical (fixed clock), object sections equal" if fixed else
+                                        "yes: image equal apart from timestamp fields, object sections equal")
                                        if same_image and same_objects else
                                        f"NO (image {'equal' if same_image else 'differs'}, "
                                        f"objects {'equal' if same_objects else 'differ'})")
