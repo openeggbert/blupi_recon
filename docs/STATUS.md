@@ -39,6 +39,9 @@ Notes:
 
 - **The June demo is a completion target since 2026-11-11** (owner decision of 2026-11-09). It has its
   own source tree, and the verifier emits the same 132,672 bytes it accepts (docs/SB1_DEMO.md).
+- **Reaktivniy Egbert v1.1 (Russian) is not a target.** Its `.text` and `.rdata` equal the original of
+  `sb1/eggbert/en`; everything else is a third-party change made after linking, including a CD check
+  ([EGGBERT_RU.md](EGGBERT_RU.md)).
 - **Earlier pages give the primary as "411 STRICT".** That is the verifier's emitted-record sum,
   which counts repeated bodies; there are 407 unique accepted records.
 

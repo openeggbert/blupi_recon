@@ -38,6 +38,9 @@ same `src/`:
   whole-file overlays `games/sb1-eggbert-demo/` and `games/sb1-eggbert-value/`, where those arms are resolved into plain
   code. Never set `_DEMO=1` for them: in `src/` that name also selects the June 1998 revision (docs/EGGBERT_DEMO.md,
   docs/EGGBERT_VALUE.md). Change an overlay only from that executable's bytes; `src/` stays as it is.
+- Reaktivniy Egbert v1.1 (Russian) is documentation only (docs/EGGBERT_RU.md, `games/sb1-eggbert-ru/`): its game code is
+  `sb1/eggbert/en`'s, and its other differences are third-party changes made after linking, including a CD check.
+  Never register it as a target, never patch a build to reproduce it, and never run it.
 - Historical targets are matched independently (user policy, 2026-10-24). The matching reconstruction exists to
   reproduce each original executable, not to compile every edition from one source: Speedy Blupi 1, Speedy
   Eggbert 1, Speedy Blupi 2 and Speedy Eggbert 2 (and their language and demo builds) are optimized separately.
