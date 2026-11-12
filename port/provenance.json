@@ -409,14 +409,14 @@
     "port/common/compat/include/windowsx.h": "ae97f1d92824184c876762d9707b8761ce36ba371c5783f4919fd3ac589f8852",
     "port/common/compat/src/hist_stdio.cpp": "f359ad9fd0dfacd5a0c149ae9021b29a319a012e320938a37230475a155c5e72",
     "port/common/compat/src/win32.cpp": "283938589f1e27fbf6948d6577d128ce956d7b0c279efc471ee4babb82427bab",
-    "port/common/net/cnetwork.cpp": "96038af854821e31d196dcc947862ecff9bf504cdf5b22faa6110b305e827fbb",
+    "port/common/net/cnetwork.cpp": "cf503932f895a7f93cbeeb96e7f8627d3c13c34eca80a2fe0a13ee58d18f6350",
     "port/common/net/game_protocol.cpp": "d3eda1a01db576ae734c3cb4d5a087a48b937c24bfb57965581e2501e75d6c8e",
     "port/common/net/game_protocol.h": "2c953d4ac8917db6019b31943ccb26da2fc8b9a9064fa1ef4029addeaf9cd62d",
-    "port/common/net/relay.cpp": "00de62a4124265e35d3960c8a441aa75c7b0813d660bf4ef6746e401cf69c015",
-    "port/common/net/relay.h": "ef4bc0cc8569a8fc5dd38b451c8c8388da51c1adad2e00c4a764ce9142577d0f",
-    "port/common/net/session.cpp": "37d4f33b0f0905d5625a454f6aecb44f6a7f5863071a043f8f87600782bd3dca",
+    "port/common/net/relay.cpp": "a27b9ddf15f44b172f72bc080ac00760ab894fa6885100cc09a57b7d72185a41",
+    "port/common/net/relay.h": "f8b7bc242b575c7e8f172ed09bbaa61d283aa899175e307f6a9835b825c22835",
+    "port/common/net/session.cpp": "cc2595fea1e11aa1d850726dd7bcc69709f0dc87795cc480094eabdc99135743",
     "port/common/net/session.h": "23d490b332c55f96cb4fba2c5ca8dbe7a1e49dc93632b3e97b7b9d82b203766e",
-    "port/common/net/websocket.cpp": "2ea1afcd7c72c56710e16b4cf58efd62dcd03ed565f6b0e5843c2d5cf2711508",
+    "port/common/net/websocket.cpp": "407591535a0637c504bc57047d6e8d8a6a8fc1c4bae3311d7481362bac603f40",
     "port/common/net/websocket.h": "3ac496560e89836ea89aacdaa5fc8af1c0056b84551650c39990f2532be073f4",
     "port/common/platform/audio.cpp": "efe4312940a3b1918c7fb86f154200654356b7ced130b3f29a5b09697a105fdb",
     "port/common/platform/audio.h": "5ac7abe72761b98e46957eaecf54870ecdb202df387ec385502130b8827c2402",
@@ -3820,19 +3820,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "02dfe5dad8ab0d216416bff53fbb2dcfcaeb4a16",
-        "disposition": "Reviewed: platform and presentation additions outside the historical game logic. The relay carries the unchanged session envelope; the provider list gains one entry; golden changes are explained in their commits and limited to the provider list and data-dependent fields. Previous review (9da85942dc) stands.",
+        "commit": "4a47284e6561fa2ed1b9eeba086d82aca849fcc7",
+        "disposition": "Reviewed: transport robustness only. Previous review (02dfe5dad8) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h",
-          "port/common/net/cnetwork.cpp",
-          "port/common/platform/host.cpp",
-          "port/common/platform/host.h",
-          "port/common/ui/settings.cpp",
-          "port/common/ui/settings.h"
+          "port/common/net/cnetwork.cpp"
         ],
-        "evidence_scope": "Linux ctest 279/279 with unplayed data and net_sb1_relay/net_sb2_relay; web_check Chrome and Firefox incl. --relay; 1.2.0 vs current traces on unplayed data; Windows 10 package replay of goldens."
+        "evidence_scope": "Linux net_* and launcher tests 22/22 incl. net_sb1_relay and net_sb2_relay."
       }
     },
     {
@@ -3998,27 +3991,16 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "02dfe5dad8ab0d216416bff53fbb2dcfcaeb4a16",
-        "disposition": "Reviewed: platform and presentation additions outside the historical game logic. The relay carries the unchanged session envelope; the provider list gains one entry; golden changes are explained in their commits and limited to the provider list and data-dependent fields. Previous review (9da85942dc) stands.",
+        "commit": "4a47284e6561fa2ed1b9eeba086d82aca849fcc7",
+        "disposition": "Reviewed: transport robustness only. Previous review (02dfe5dad8) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h",
           "port/common/net/cnetwork.cpp",
           "port/common/net/relay.cpp",
           "port/common/net/relay.h",
           "port/common/net/session.cpp",
-          "port/common/net/session.h",
-          "port/common/net/websocket.cpp",
-          "port/common/net/websocket.h",
-          "port/common/platform/host.cpp",
-          "port/common/platform/host.h",
-          "port/common/ui/address_events.h",
-          "port/common/ui/address_screen.cpp",
-          "port/common/ui/settings.cpp",
-          "port/common/ui/settings.h"
+          "port/common/net/websocket.cpp"
         ],
-        "evidence_scope": "Linux ctest 279/279 with unplayed data and net_sb1_relay/net_sb2_relay; web_check Chrome and Firefox incl. --relay; 1.2.0 vs current traces on unplayed data; Windows 10 package replay of goldens."
+        "evidence_scope": "Linux net_* and launcher tests 22/22 incl. net_sb1_relay and net_sb2_relay."
       }
     },
     {
@@ -7188,19 +7170,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "02dfe5dad8ab0d216416bff53fbb2dcfcaeb4a16",
-        "disposition": "Reviewed: platform and presentation additions outside the historical game logic. The relay carries the unchanged session envelope; the provider list gains one entry; golden changes are explained in their commits and limited to the provider list and data-dependent fields. Previous review (9da85942dc) stands.",
+        "commit": "4a47284e6561fa2ed1b9eeba086d82aca849fcc7",
+        "disposition": "Reviewed: transport robustness only. Previous review (02dfe5dad8) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h",
-          "port/common/net/cnetwork.cpp",
-          "port/common/platform/host.cpp",
-          "port/common/platform/host.h",
-          "port/common/ui/settings.cpp",
-          "port/common/ui/settings.h"
+          "port/common/net/cnetwork.cpp"
         ],
-        "evidence_scope": "Linux ctest 279/279 with unplayed data and net_sb1_relay/net_sb2_relay; web_check Chrome and Firefox incl. --relay; 1.2.0 vs current traces on unplayed data; Windows 10 package replay of goldens."
+        "evidence_scope": "Linux net_* and launcher tests 22/22 incl. net_sb1_relay and net_sb2_relay."
       }
     },
     {
@@ -7355,25 +7330,16 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "02dfe5dad8ab0d216416bff53fbb2dcfcaeb4a16",
-        "disposition": "Reviewed: platform and presentation additions outside the historical game logic. The relay carries the unchanged session envelope; the provider list gains one entry; golden changes are explained in their commits and limited to the provider list and data-dependent fields. Previous review (9da85942dc) stands.",
+        "commit": "4a47284e6561fa2ed1b9eeba086d82aca849fcc7",
+        "disposition": "Reviewed: transport robustness only. Previous review (02dfe5dad8) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h",
           "port/common/net/cnetwork.cpp",
           "port/common/net/relay.cpp",
           "port/common/net/relay.h",
           "port/common/net/session.cpp",
-          "port/common/net/session.h",
-          "port/common/net/websocket.cpp",
-          "port/common/net/websocket.h",
-          "port/common/platform/host.cpp",
-          "port/common/platform/host.h",
-          "port/common/ui/settings.cpp",
-          "port/common/ui/settings.h"
+          "port/common/net/websocket.cpp"
         ],
-        "evidence_scope": "Linux ctest 279/279 with unplayed data and net_sb1_relay/net_sb2_relay; web_check Chrome and Firefox incl. --relay; 1.2.0 vs current traces on unplayed data; Windows 10 package replay of goldens."
+        "evidence_scope": "Linux net_* and launcher tests 22/22 incl. net_sb1_relay and net_sb2_relay."
       }
     },
     {
@@ -19006,6 +18972,17 @@
         "F474"
       ],
       "scope": "Windows cross build and Wine test launchers (tests only); SB2 data marker DEMO300.BLP (launcher, Android importer); goldens re-recorded on unplayed data (tour16_de, editor16/8, sb2_blupi_editor16/8) and for the third provider (tour16/8, tour16_de, options16); the launcher keeps every settings-file field; Windows log to a redirected stderr; the Free Direct server provider: relay transport of the session layer, own WebSocket client, the address screen's server and room form, share_room, web loader parameters. Historical sources unchanged."
+    },
+    {
+      "commit": "4a47284e6561fa2ed1b9eeba086d82aca849fcc7",
+      "round": "Port 1.5.0: review fixes in the relay client",
+      "reviewed_edges": [
+        "F055",
+        "F056",
+        "F274",
+        "F275"
+      ],
+      "scope": "Relay client and WebSocket framing checks; stale relay events dropped when a session closes. Session envelope and game logic unchanged."
     }
   ]
 }
