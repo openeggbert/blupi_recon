@@ -492,6 +492,22 @@ if(BLUPI2_TEST_DATA AND BLUPI_TEST_PYTHON)
         --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb2_internet" --internet)
     set_tests_properties(net_sb2_internet_address PROPERTIES TIMEOUT 600 RUN_SERIAL TRUE)
 endif()
+# Through a Free Direct server (port/docs/MULTIPLAYER.md): the provider list's server entry, a room
+# the host creates and the client joins. Configure with -DBLUPI_TEST_RELAY_SERVER=<free-direct-server>.
+set(BLUPI_TEST_RELAY_SERVER "" CACHE FILEPATH "free-direct-server executable for the relay multiplayer tests")
+if(BLUPI_TEST_RELAY_SERVER AND BLUPI_TEST_DATA AND BLUPI_TEST_PYTHON)
+    add_test(NAME net_sb1_relay COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_session.py"
+        --exe $<TARGET_FILE:blupi>${BLUPI_TEST_LAUNCHER} --data "${BLUPI_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
+        --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb1_relay" --relay "${BLUPI_TEST_RELAY_SERVER}")
+    set_tests_properties(net_sb1_relay PROPERTIES TIMEOUT 600 RUN_SERIAL TRUE)
+endif()
+if(BLUPI_TEST_RELAY_SERVER AND BLUPI2_TEST_DATA AND BLUPI_TEST_PYTHON)
+    add_test(NAME net_sb2_relay COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_session.py"
+        --game sb2 --exe $<TARGET_FILE:blupi2>${BLUPI_TEST_LAUNCHER} --data "${BLUPI2_TEST_DATA}"
+        --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net" --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb2_relay"
+        --relay "${BLUPI_TEST_RELAY_SERVER}")
+    set_tests_properties(net_sb2_relay PROPERTIES TIMEOUT 600 RUN_SERIAL TRUE)
+endif()
 if(BLUPI2_TEST_DATA_BLUPI AND BLUPI_TEST_PYTHON)
     add_test(NAME net_sb2_four_instances COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_session.py"
         --game sb2 --exe $<TARGET_FILE:blupi2> --data "${BLUPI2_TEST_DATA_BLUPI}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"

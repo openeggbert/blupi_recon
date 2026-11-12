@@ -1,0 +1,12 @@
+# SB2 client through a Free Direct server (port/tests/net_session.py --relay --game sb2); see
+# sb2_host_relay.input and sb1_client_relay.input.
+40 key 13           # title -> choose player
+70 click 127 434    # choose player: multiplayer service
+100 click 160 210   # service: provider row 2, "Internet through a Free Direct server"
+230 click 242 409   # service: OK -> CreateProvider(2), EnumSessions (no room yet) -> sessions + server screen
+240 key 13          # server screen: Enter -> connect, join the host's room; the refresh lists its session
+280 click 140 130   # sessions: row 0
+290 click 140 409   # sessions: join -> lobby (JOIN, slot 1)
+320 click 308 160   # lobby: ready (slot 1)
+400 keydown 37      # play: walk left
+460 keyup 37

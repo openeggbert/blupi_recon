@@ -52,11 +52,16 @@ void Usage(const Game& game)
         "  --verbose           log the game's debug output\n"
         "  --net-port N        native network listen/probe port (default 28640)\n"
         "  --net-join HOST[:PORT]  additional session probe endpoint (repeatable)\n"
+        "  --net-server ADDRESS  Free Direct server for multiplayer through a server\n"
+        "                      (name or IP[:port], ws:// or wss:// URL; prefills its screen)\n"
+        "  --net-room ID       room on that server (prefills its screen; empty: a new room)\n"
         "  --version           print the version and exit\n"
         "  --language CODE     built-in pack or a pack in the user folder languages/\n"
         "test options:\n"
         "  --headless          no window, no audio device, frames run back to back\n"
         "  --net-test-sync     reliable tick ingress, requires the test supervisor\n"
+        "  --net-room-file F   the server screen's room from F if it exists; a room this\n"
+        "                      instance creates is written to F\n"
         "  --frames N          exit after N game frames (WM_UPDATE)\n"
         "  --trace FILE        write 'frame phase state-hash screen-hash' per frame\n"
         "  --trace-every N     write only every Nth frame (checkpoints)\n"
@@ -133,6 +138,9 @@ bool ParseOptions(int argc, char** argv, Options& o, Game& game)
             o.net.endpoints.push_back(endpoint);
         }
         else if (a == "--net-test-sync") o.net.testSync=true;
+        else if (a == "--net-server") { o.settings.netServer = next(); o.setNetServer = true; }
+        else if (a == "--net-room") { o.settings.netRoom = next(); o.setNetRoom = true; }
+        else if (a == "--net-room-file") o.net.roomFile = next();
         else if (a == "--frames") o.ticks = atol(next());
         else if (a == "--trace") o.trace = next();
         else if (a == "--trace-every") { o.traceEvery = atol(next()); if (o.traceEvery < 1) o.traceEvery = 1; }
@@ -412,7 +420,7 @@ int Run(int argc, char** argv, Game& game)
         PortSettingsGiven set;
         set.widescreen = o.setWide; set.interpolate = o.setInterpolate; set.displayRate = o.setPresent;
         set.fullscreen = o.setFullscreen; set.scale = o.setScale; set.integerScale = o.setIntegerScale;
-        set.language = o.setLanguage;
+        set.language = o.setLanguage; set.netServer = o.setNetServer; set.netRoom = o.setNetRoom;
         o.settings = PortSettingsMerge(fromFile, o.settings, set);
         (*game.settings) = o.settings;
     }

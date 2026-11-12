@@ -5,6 +5,7 @@
 #define BLUPI_UI_ADDRESS_EVENTS_H
 #include <cstdint>
 void     PortAddressRequest();                // the Internet provider was chosen
+void     PortServerRequest();                 // the Free Direct server provider was chosen
 void     PortAddressPhase(unsigned int phase);  // every frame: opens it on the session screen
 bool     PortAddressOpen();
 // Input for it; true when the event is not for the game.

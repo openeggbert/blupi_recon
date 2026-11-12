@@ -27,6 +27,8 @@ struct PortSettings
 	std::string gamepadLeftShoulder = "none", gamepadRightShoulder = "none";
 	bool gamepadArrows = true;
 	std::string netAddress;     // the last server address of the Internet provider (multiplayer)
+	std::string netServer;      // the last Free Direct server (multiplayer through a server)
+	std::string netRoom;        // and the room last used there
 };
 
 namespace blupi::host { struct GamepadKeys; }
@@ -39,6 +41,7 @@ struct PortSettingsGiven
 {
 	bool widescreen = false, interpolate = false, displayRate = false, fullscreen = false;
 	bool scale = false, integerScale = false, language = false;
+	bool netServer = false, netRoom = false;
 };
 PortSettings PortSettingsMerge(const PortSettings& file, const PortSettings& given, const PortSettingsGiven& set);
 

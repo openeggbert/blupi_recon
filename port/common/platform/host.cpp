@@ -4,6 +4,9 @@
 #include "platform/touch.h"
 
 #include <SDL3/SDL.h>
+#ifdef SDL_PLATFORM_EMSCRIPTEN
+#include <emscripten.h>
+#endif
 
 #include <deque>
 #include <map>
@@ -734,6 +737,18 @@ void message_box(const char* title, const char* text)
 {
     SDL_Log("%s: %s", title, text);
     if (!g_headless) SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title, text, g_window);
+}
+
+void share_room(const char* room, const char* server)
+{
+    if (!g_headless) SDL_SetClipboardText(room);
+#ifdef SDL_PLATFORM_EMSCRIPTEN
+    EM_ASM({
+        if (typeof Module.blupiRoomCreated === 'function') Module.blupiRoomCreated(UTF8ToString($0), UTF8ToString($1));
+    }, room, server);
+#else
+    (void)server;
+#endif
 }
 
 std::string base_path()

@@ -1,0 +1,62 @@
+// Client of the Free Direct server (free-direct-server, ../free-direct/docs/directplay-relay-protocol.md):
+// a WebSocket connection to it, a room (a secret ID: a private LAN on the Internet) and the sessions
+// in it. net/session.cpp carries its own envelope (Hello, Welcome, Data ...) as the payload of the
+// relay's Data messages, exactly as it does over ENet; the server never interprets it.
+#ifndef BLUPI_NET_RELAY_H
+#define BLUPI_NET_RELAY_H
+#include "net/websocket.h"
+#include <array>
+#include <cstdint>
+#include <deque>
+#include <string>
+#include <vector>
+
+namespace blupi::net {
+struct RelaySession {
+    std::array<uint8_t, 16> instance{};   // the session's id in the room
+    uint32_t maxPlayers = 0, players = 0;
+    std::string name;
+};
+struct RelayEvent {
+    enum Kind { PeerJoined, PeerLeft, SessionEnded, Deliver } kind = Deliver;
+    uint32_t connection = 0;           // the member (PeerJoined/PeerLeft) or the sender (Deliver)
+    uint8_t reason = 0;                // SessionEnded: 0 host left, 1 refused, 2 server shutting down
+    std::vector<uint8_t> payload;      // Deliver
+};
+class Relay {
+public:
+    // compat names the game, edition and content: the server only lets a room's creator's kind in.
+    bool Connect(const std::string& url, const std::string& password, const std::string& compat);
+    bool CreateRoom();                         // then Room() is its new ID
+    bool JoinRoom(const std::string& id);
+    bool ListSessions(std::vector<RelaySession>& out);
+    bool HostSession(const RelaySession& info);
+    bool JoinSession(const std::array<uint8_t, 16>& instance, uint32_t& host);
+    void CloseSession();                       // the host stops hosting
+    void LeaveSession();                       // a member leaves
+    void Admit(uint32_t member);
+    void Refuse(uint32_t member);
+    // Routes: 0 to the host, 1 to one member (target), 2 to all others.
+    bool Data(uint8_t route, uint32_t target, const std::vector<uint8_t>& payload);
+    void Service();                            // reads messages; events queue up
+    bool Next(RelayEvent& event);
+    void Disconnect();
+    bool Connected() const { return connected; }
+    const std::string& Room() const { return room; }
+    const std::string& Url() const { return url; }
+    uint32_t Connection() const { return connection; }
+    const std::string& Error() const { return error; }
+private:
+    bool Request(const std::vector<uint8_t>& message, uint8_t answer, std::vector<uint8_t>& reply, unsigned ms = 8000);
+    bool Handle(const std::vector<uint8_t>& message, uint8_t want, std::vector<uint8_t>* reply);
+    WebSocket socket;
+    bool connected = false;
+    uint32_t connection = 0, nextRequest = 1;
+    std::string url, room, error;
+    std::deque<RelayEvent> events;
+};
+// Room IDs as the server writes them, read the way the server reads them (case, spaces, dashes,
+// O for 0, I and L for 1 ignored): false if the text cannot be one.
+bool RoomId(const std::string& typed, std::string& id);
+} // namespace blupi::net
+#endif

@@ -42,6 +42,7 @@ struct Options
     bool        setWide = false, setInterpolate = false, setPresent = false;
     bool        setFullscreen = false, setScale = false, setIntegerScale = false;
     bool        setLanguage = false;
+    bool        setNetServer = false, setNetRoom = false;
     bool        checkView = false;
     bool        checkWide = false;
     int         presentRepeat = 0;           // --present-repeat (test)

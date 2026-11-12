@@ -138,6 +138,8 @@ bool PortSettingsLoad(const char* path, PortSettings& settings)
 	ReadString(values, "gamepadRightShoulder", settings.gamepadRightShoulder);
 	ReadBool(values, "gamepadArrows", settings.gamepadArrows);
 	ReadString(values, "netAddress", settings.netAddress);
+	ReadString(values, "netServer", settings.netServer);
+	ReadString(values, "netRoom", settings.netRoom);
 	return true;
 }
 
@@ -151,6 +153,8 @@ PortSettings PortSettingsMerge(const PortSettings& file, const PortSettings& giv
 	if (set.scale) s.scale = given.scale;
 	if (set.integerScale) s.integerScale = given.integerScale;
 	if (set.language) s.language = given.language;
+	if (set.netServer) s.netServer = given.netServer;
+	if (set.netRoom) s.netRoom = given.netRoom;
 	return s;
 }
 
@@ -217,6 +221,14 @@ bool PortSettingsSave(const char* path, const PortSettings& settings)
 	if (!settings.netAddress.empty())
 	{
 		fprintf(file, ",\n  \"netAddress\": %s", Quoted(settings.netAddress).c_str());
+	}
+	if (!settings.netServer.empty())
+	{
+		fprintf(file, ",\n  \"netServer\": %s", Quoted(settings.netServer).c_str());
+	}
+	if (!settings.netRoom.empty())
+	{
+		fprintf(file, ",\n  \"netRoom\": %s", Quoted(settings.netRoom).c_str());
 	}
 	fprintf(file, "\n}\n");
 	bool ok = ferror(file) == 0;

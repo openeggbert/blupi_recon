@@ -1,6 +1,7 @@
 // Small native session contract. No game layouts or platform compatibility types.
 #ifndef BLUPI_NET_SESSION_H
 #define BLUPI_NET_SESSION_H
+#include <array>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -13,10 +14,19 @@ struct Options {
     uint16_t port = 28640;
     std::vector<Endpoint> endpoints;
     bool testSync = false;
+    // The Free Direct server provider (cnetwork.cpp): the room file, if set, prefills the room field
+    // with the room it holds and receives the ID of a room this instance creates (tests, scripts).
+    std::string roomFile;
 };
 void Configure(const Options&);
 const Options& Configuration();
-struct Advertisement { Endpoint endpoint; std::string name; uint32_t epoch = 0; };
+// A session found on the LAN, at an address, or in a Free Direct server's room (relay: instance is
+// its id there; endpoint is unused).
+struct Advertisement {
+    Endpoint endpoint; std::string name; uint32_t epoch = 0;
+    bool relay = false; std::array<uint8_t,16> instance{};
+};
+class Relay;
 struct Message {
     uint32_t origin = 0, sequence = 0, tick = 0;
     bool reliable = false;
@@ -36,6 +46,11 @@ public:
     std::vector<Advertisement> Probe(const std::vector<Endpoint>&, unsigned deadlineMs = 200);
     // LAN discovery: sessions answering on game port + 1; counts incompatible (other content) answers.
     std::vector<Advertisement> Discover(uint16_t port, unsigned deadlineMs = 300, unsigned* incompatible = nullptr);
+    // The Free Direct server (net/relay.h, connected and in a room): with a relay, Create hosts the
+    // session in the room, List lists the room's sessions and Join joins one of them; every message
+    // travels through the server. nullptr returns to ENet (UDP). Set it before Create/Join/List.
+    void UseRelay(Relay*);
+    std::vector<Advertisement> List();
     void Service(unsigned waitMs = 0);
     bool Send(const void*, size_t, bool reliable);
     bool Receive(Message&);

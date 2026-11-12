@@ -57,9 +57,15 @@ else()
 endif()
 # The transport and the games' wire rules (SB1, SB2), shared by both games. Each game compiles the
 # CNetwork adapter (common/net/cnetwork.cpp) in its own historical context.
-add_library(blupi_net STATIC common/net/session.cpp common/net/game_protocol.cpp)
+# The Free Direct server's client (relay.cpp over websocket.cpp) is a second transport of the
+# session layer: a browser's only one (port/docs/MULTIPLAYER.md).
+add_library(blupi_net STATIC common/net/session.cpp common/net/game_protocol.cpp
+    common/net/relay.cpp common/net/websocket.cpp)
 target_include_directories(blupi_net PUBLIC ${BLUPI_COMMON})
 target_link_libraries(blupi_net PRIVATE blupi_enet)
+if(EMSCRIPTEN)
+    target_link_options(blupi_net INTERFACE -lwebsocket.js)
+endif()
 
 # Historical TUs compiled unchanged. The other seven historical TUs (blupi, ddutil,
 # misc, movie, network, pixmap, sound) talk to Windows/DirectX/MCI and are replaced

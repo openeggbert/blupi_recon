@@ -1,4 +1,5 @@
 #include "net/session.h"
+#include "net/relay.h"
 #include <enet/enet.h>
 #include <algorithm>
 #include <array>
@@ -10,6 +11,7 @@
 #include <filesystem>
 #include <fstream>
 #include <map>
+#include <random>
 #include <thread>
 
 namespace blupi::net {
@@ -59,11 +61,18 @@ struct Session::Impl {
     uint16_t port = 0;
     ENetHost* socket = nullptr;
     ENetPeer* server = nullptr;
+    // The Free Direct server (net/relay.h): set by UseRelay; every peer is then a connection of the
+    // server, and relayHost the host's connection for a member.
+    Relay* relay = nullptr;
+    uint32_t relayHost = 0;
     bool host = false, active = false, started = false;
     std::string name, player, error;
     std::array<uint32_t,4> members{};
     struct Peer { uint32_t id = 0; unsigned count = 0; Clock::time_point since = Clock::now(); };
-    std::map<ENetPeer*,Peer> peers;
+    // Peers by handle: an ENetPeer*, or a relay connection ID.
+    std::map<uintptr_t,Peer> peers;
+    static uintptr_t Handle(ENetPeer* peer) { return reinterpret_cast<uintptr_t>(peer); }
+    uintptr_t Server() const { return relay ? uintptr_t(relayHost) : Handle(server); }
     std::deque<Message> incoming;
     std::deque<Departure> departures;
     std::map<uint32_t,uint32_t> received;
@@ -78,13 +87,21 @@ struct Session::Impl {
         if (n) std::memcpy(b.data()+Header,body,n);
         return b;
     }
-    bool Write(ENetPeer* peer, const std::vector<uint8_t>& b, bool reliable = true) {
+    bool Write(uintptr_t to, const std::vector<uint8_t>& b, bool reliable = true) {
+        if (relay) {
+            // The server delivers everything reliably and in order; the first byte keeps the sender's
+            // choice for the receiver's checks. A host writes to one member, a member to its host.
+            std::vector<uint8_t> payload; payload.reserve(b.size()+1);
+            payload.push_back(reliable ? 1 : 0); payload.insert(payload.end(),b.begin(),b.end());
+            return host ? relay->Data(1,uint32_t(to),payload) : relay->Data(0,0,payload);
+        }
+        ENetPeer* peer=reinterpret_cast<ENetPeer*>(to);
         ENetPacket* packet = enet_packet_create(b.data(), b.size(), reliable ? ENET_PACKET_FLAG_RELIABLE : ENET_PACKET_FLAG_UNSEQUENCED);
         if (!packet) return false;
         if (enet_peer_send(peer, reliable ? 0 : 1, packet) < 0) { enet_packet_destroy(packet); return false; }
         return true;
     }
-    void Broadcast(const std::vector<uint8_t>& b, bool reliable = true, ENetPeer* except = nullptr) {
+    void Broadcast(const std::vector<uint8_t>& b, bool reliable = true, uintptr_t except = 0) {
         for (auto& [peer, state] : peers) if (state.id && peer != except && !Write(peer,b,reliable)) Fail("reliable enqueue failed");
     }
     void Fail(const char* why) {
@@ -101,11 +118,25 @@ struct Session::Impl {
         }
         Broadcast(Packet(Members,1,0,b.data(),b.size()));
     }
-    void Reject(ENetPeer* peer, const char* why) {
+    void Reject(uintptr_t peer, const char* why) {
         Write(peer,Packet(Refuse,1,0,why,std::strlen(why)+1));
-        enet_peer_disconnect_later(peer,0);
+        if (relay) relay->Refuse(uint32_t(peer));
+        else enet_peer_disconnect_later(reinterpret_cast<ENetPeer*>(peer),0);
     }
-    void Accept(ENetPeer* peer, const uint8_t* b, size_t n, bool reliable) {
+    // A member is gone (its connection closed or the server says it left): its id is freed.
+    void MemberLeft(uintptr_t peer) {
+        auto it=peers.find(peer);
+        if (it==peers.end()) return;
+        uint32_t gone=it->second.id;
+        peers.erase(it);
+        if (!gone) return;
+        departures.push_back({gone,false});
+        std::vector<uint8_t> body(4); Put(body,0,gone);
+        Broadcast(Packet(Gone,1,0,body.data(),body.size()));
+        for (auto& member:members) if (member==gone) member=0;
+        Membership();
+    }
+    void Accept(uintptr_t peer, const uint8_t* b, size_t n, bool reliable) {
         if (n < Header || Get(b,0) != Magic || Get(b,32) != n-Header) return;
         const auto kind = Kind(Get(b,12));
         const uint32_t origin = Get(b,20), seq = Get(b,24);
@@ -136,7 +167,8 @@ struct Session::Impl {
             // A welcome carries the host's current data sequence: the joiner never receives earlier
             // data, so the test ingress gate must not wait for it.
             Write(peer,Packet(kind == Query ? Answer : Welcome,1,kind == Query ? 0 : sequence,welcome.data(),welcome.size()));
-            if (kind == Query) enet_peer_disconnect_later(peer,0); else Membership();
+            if (kind != Query) Membership();
+            else if (!relay) enet_peer_disconnect_later(reinterpret_cast<ENetPeer*>(peer),0);
             return;
         }
         if (!host && kind == Refuse) {
@@ -190,6 +222,18 @@ Session::~Session() { Close(); sessions.erase(std::remove(sessions.begin(),sessi
 bool Session::Create(uint16_t port,const std::string& name,const std::string& player) {
     Close();
     if (!Init() || name.empty() || name.size()>99 || player.size()>19) return false;
+    if (p->relay) {
+        // In the server's room: no socket of its own, the server relays every message.
+        if (!p->relay->Connected()) { p->error="not connected to the server"; return false; }
+        RelaySession info;
+        static std::mt19937 random{std::random_device{}()};
+        for (auto& b:info.instance) b=uint8_t(random());
+        info.maxPlayers=4; info.name=name;
+        if (!p->relay->HostSession(info)) { p->error=p->relay->Error(); return false; }
+        p->host=true; p->active=true; p->id=1; p->members[0]=1; p->name=name; p->player=player; p->port=port;
+        p->epoch=uint32_t(Clock::now().time_since_epoch().count()) | 1u;
+        return true;
+    }
     ENetAddress address{ENET_HOST_ANY,port};
     p->socket=enet_host_create(&address,8,2,0,0);
     if (!p->socket) { p->error="cannot bind UDP port"; return false; }
@@ -209,6 +253,18 @@ bool Session::Create(uint16_t port,const std::string& name,const std::string& pl
 }
 bool Session::Join(const Advertisement& ad,const std::string& player,unsigned deadlineMs) {
     Close(); if (!Init() || player.size()>19) return false;
+    if (ad.relay) {
+        if (!p->relay || !p->relay->Connected()) { p->error="not connected to the server"; return false; }
+        uint32_t hostConnection=0;
+        if (!p->relay->JoinSession(ad.instance,hostConnection)) { p->error=p->relay->Error(); return false; }
+        p->relayHost=hostConnection; p->player=player;
+        p->Write(p->Server(),p->Packet(Hello,0,0,player.c_str(),player.size()+1));
+        // Through the server the answer takes a round trip over the Internet.
+        const auto deadline=Clock::now()+std::chrono::milliseconds(std::max(deadlineMs,10000u));
+        while (!p->active && p->error.empty() && Clock::now()<deadline) { Service(2); ServiceAll(); }
+        if (!p->active) { if (p->error.empty()) p->error="join timed out"; const auto error=p->error; Close(); p->error=error; return false; }
+        return true;
+    }
     ENetAddress address{}; address.port=ad.endpoint.port;
     if (enet_address_set_host(&address,ad.endpoint.host.c_str()) < 0) return false;
     p->socket=enet_host_create(nullptr,1,2,0,0); if (!p->socket) return false;
@@ -235,7 +291,7 @@ std::vector<Advertisement> Session::Probe(const std::vector<Endpoint>& endpoints
             if (enet_host_service(probe,&event,1)<=0) continue;
             if (event.type==ENET_EVENT_TYPE_CONNECT) {
                 const char query[]="probe";
-                p->Write(peer,p->Packet(Query,0,0,query,sizeof(query)));
+                p->Write(Impl::Handle(peer),p->Packet(Query,0,0,query,sizeof(query)));
             } else if (event.type==ENET_EVENT_TYPE_RECEIVE) {
                 const auto* b=event.packet->data; const size_t n=event.packet->dataLength;
                 if (n>=Header+21 && n<=Header+120 && Get(b,0)==Magic && Get(b,4)==p->protocol && Get(b,8)==p->version && Content(b)==p->content &&
@@ -250,6 +306,21 @@ std::vector<Advertisement> Session::Probe(const std::vector<Endpoint>& endpoints
     return found;
 }
 void Session::SetContent(uint64_t fingerprint) { p->content = fingerprint; }
+void Session::UseRelay(Relay* relay) { Close(); p->relay = relay; }
+std::vector<Advertisement> Session::List() {
+    // The room's sessions. The room only admits builds with the same game, edition and content
+    // (the relay's compatibility identity, cnetwork.cpp), so every one of them can be joined.
+    std::vector<Advertisement> found;
+    if (!p->relay || !p->relay->Connected()) return found;
+    std::vector<RelaySession> sessions;
+    if (!p->relay->ListSessions(sessions)) { p->error=p->relay->Error(); return found; }
+    for (const auto& s:sessions) {
+        Advertisement ad; ad.relay=true; ad.instance=s.instance; ad.name=s.name;
+        for (int i=0;i<4;++i) ad.epoch|=uint32_t(s.instance[i])<<(8*i);
+        found.push_back(std::move(ad));
+    }
+    return found;
+}
 std::vector<Advertisement> Session::Discover(uint16_t port,unsigned deadlineMs,unsigned* incompatible) {
     // LAN discovery: one query to the local broadcast address and to this machine, answers collected
     // until the deadline. Joinable sessions with the same protocol, version and content are returned.
@@ -288,6 +359,28 @@ std::vector<Advertisement> Session::Discover(uint16_t port,unsigned deadlineMs,u
     return found;
 }
 void Session::Service(unsigned waitMs) {
+    if (p->relay && (p->host || p->relayHost)) {
+        p->relay->Service();
+        RelayEvent e;
+        bool any=false;
+        while (p->relay->Next(e)) {
+            any=true;
+            if (e.kind==RelayEvent::PeerJoined && p->host) {
+                // A pending member: let its Hello through; the session's own rules then accept or refuse it.
+                p->relay->Admit(e.connection);
+                p->peers.emplace(uintptr_t(e.connection),Impl::Peer{});
+            } else if (e.kind==RelayEvent::PeerLeft && p->host) {
+                p->MemberLeft(uintptr_t(e.connection));
+            } else if (e.kind==RelayEvent::SessionEnded) {
+                p->Fail(p->host ? "the server ended the session" : "host disconnected; host migration unsupported");
+            } else if (e.kind==RelayEvent::Deliver && !e.payload.empty()) {
+                if (p->host ? !p->peers.count(uintptr_t(e.connection)) : e.connection!=p->relayHost) continue;
+                p->Accept(uintptr_t(e.connection),e.payload.data()+1,e.payload.size()-1,(e.payload[0]&1)!=0);
+            }
+        }
+        if (!any && waitMs) Pause(waitMs);
+        return;
+    }
     if (!p->socket) return;
     if (p->host && p->discovery!=ENET_SOCKET_NULL) {
         // Answer LAN discovery queries: protocol and version must match; content is reported so the
@@ -311,26 +404,14 @@ void Session::Service(unsigned waitMs) {
     for (unsigned count=0;count<512 && enet_host_service(p->socket,&event,count ? 0 : waitMs)>0;++count) {
         if (event.type==ENET_EVENT_TYPE_CONNECT) {
             enet_peer_timeout(event.peer,8,1500,3000);
-            if (p->host) p->peers.emplace(event.peer,Impl::Peer{});
-            else p->Write(event.peer,p->Packet(Hello,0,0,p->player.c_str(),p->player.size()+1));
+            if (p->host) p->peers.emplace(Impl::Handle(event.peer),Impl::Peer{});
+            else p->Write(Impl::Handle(event.peer),p->Packet(Hello,0,0,p->player.c_str(),p->player.size()+1));
         } else if (event.type==ENET_EVENT_TYPE_RECEIVE) {
-            p->Accept(event.peer,event.packet->data,event.packet->dataLength,(event.packet->flags & ENET_PACKET_FLAG_RELIABLE)!=0);
+            p->Accept(Impl::Handle(event.peer),event.packet->data,event.packet->dataLength,(event.packet->flags & ENET_PACKET_FLAG_RELIABLE)!=0);
             enet_packet_destroy(event.packet);
         } else if (event.type==ENET_EVENT_TYPE_DISCONNECT) {
-            if (p->host) {
-                auto it=p->peers.find(event.peer);
-                if (it!=p->peers.end()) {
-                    uint32_t id=it->second.id;
-                    p->peers.erase(it);
-                    if (id) {
-                        p->departures.push_back({id,false});
-                        std::vector<uint8_t> gone(4); Put(gone,0,id);
-                        p->Broadcast(p->Packet(Gone,1,0,gone.data(),gone.size()));
-                        for (auto& member:p->members) if (member==id) member=0;
-                        p->Membership();
-                    }
-                }
-            } else p->Fail("host disconnected; host migration unsupported");
+            if (p->host) p->MemberLeft(Impl::Handle(event.peer));
+            else p->Fail("host disconnected; host migration unsupported");
         }
     }
     enet_host_flush(p->socket);
@@ -341,8 +422,8 @@ bool Session::Send(const void* data,size_t n,bool reliable) {
     auto b=p->Packet(Data,p->id,++p->sequence,data,n);
     if (options.testSync) testSent=p->sequence;
     if (p->host) p->Broadcast(b,reliable);
-    else if (!p->Write(p->server,b,reliable)) { p->Fail("send enqueue failed"); return false; }
-    enet_host_flush(p->socket);
+    else if (!p->Write(p->Server(),b,reliable)) { p->Fail("send enqueue failed"); return false; }
+    if (p->socket) enet_host_flush(p->socket);
     return p->active;
 }
 bool Session::Receive(Message& message) {
@@ -362,8 +443,13 @@ bool Session::Receive(Message& message) {
 bool Session::Departed(Departure& d) { if (p->departures.empty()) return false; d=p->departures.front(); p->departures.pop_front(); return true; }
 void Session::Start() { p->started=true; }
 void Session::Close(unsigned deadlineMs) {
+    // Leaving a session in the server's room keeps the connection and the room (cnetwork.cpp owns them).
+    if (p->relay && p->relay->Connected()) {
+        if (p->host) p->relay->CloseSession();
+        else if (p->relayHost) p->relay->LeaveSession();
+    }
     if (p->socket) {
-        if (p->host) for (auto& [peer,state]:p->peers) enet_peer_disconnect_later(peer,0);
+        if (p->host) for (auto& [peer,state]:p->peers) enet_peer_disconnect_later(reinterpret_cast<ENetPeer*>(peer),0);
         else if (p->server) enet_peer_disconnect_later(p->server,0);
         // enet_peer_disconnect lowers connectedPeers as soon as the disconnect is queued, before it
         // is sent: wait until every peer has acknowledged it (state DISCONNECTED), within the deadline.
@@ -378,8 +464,8 @@ void Session::Close(unsigned deadlineMs) {
         enet_host_destroy(p->socket);
     }
     if (p->discovery!=ENET_SOCKET_NULL) enet_socket_destroy(p->discovery);
-    const auto protocol=p->protocol,version=p->version; const uint64_t content=p->content;
-    p.reset(new Impl); p->protocol=protocol; p->version=version; p->content=content;
+    const auto protocol=p->protocol,version=p->version; const uint64_t content=p->content; Relay* relay=p->relay;
+    p.reset(new Impl); p->protocol=protocol; p->version=version; p->content=content; p->relay=relay;
 }
 bool Session::Active() const { return p->active; }
 bool Session::IsHost() const { return p->host; }
