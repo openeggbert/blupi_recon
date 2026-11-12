@@ -66,7 +66,9 @@ uninstall the debug build first, which also removes its imported game data.
 ## Steps on Linux (since 1.5.0)
 
 1. Set the version in `port/VERSION.txt`.
-2. Each script builds in the repository's `build/`, runs the test suite with the game data given in
+2. The Mbed TLS 3.6.7 release archive unpacked at `build/third_party/mbedtls-3.6.7` (or
+   `BLUPI_MBEDTLS_SRC`; port/third_party/README.md), next to SDL 3.4.16; Android takes it from there too.
+   Each script builds in the repository's `build/`, runs the test suite with the game data given in
    its environment (unplayed copies: the goldens were recorded with those; a played copy holds the game's
    own saves, which change the traces) and packs into `build/release/`:
    ```bash
@@ -117,6 +119,13 @@ uninstall the debug build first, which also removes its imported game data.
    `C:\Windows\System32`, so no MinGW DLL is picked up by accident).
 6. Tag `port-v<version>` on the release commit and publish a GitHub release with the three
    packages, `SHA256SUMS.txt` and the notes from `docs/RELEASE_NOTES.md`.
+
+## 1.5.2
+
+As 1.5.1, all four packages from one commit on the Debian 13 host. New: Mbed TLS compiled into the
+Windows, Linux and Android programs for `wss://` (its licence in each package). The Linux package ran
+the whole suite; the Windows build ran the network, TLS, launcher and golden subset under Wine, and
+`test_net_tls` against `wss://fds.openeggbert.com` through the Windows certificate check.
 
 ## 1.5.1
 

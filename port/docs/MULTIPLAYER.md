@@ -56,7 +56,9 @@ different games or editions never do (the protocol id and the content check belo
   player needs an open port. Its rooms, with secret IDs, are private LANs: the session list shows the
   games in the player's room. Choosing the entry opens the address screen in a second form with two
   fields: the server (a name or IP with `:port` if it is not 51325, on an `https://` page 443, or a
-  `ws://`/`wss://` URL) and a room.
+  `ws://`/`wss://` URL) and a room. On the desktop and Android, `wss://name` reaches a server through
+  its TLS front on port 443, as the web page does (since 1.5.2): for networks that let only 443 out, or
+  a server password that should not cross the network in clear.
   An empty room creates one; the screen then shows its ID (also on the clipboard, and in a browser as a
   link with `?server=` and `?room=`) to give to the others, who type it. The last server and room are
   remembered (`netServer`, `netRoom`); `--net-server` and `--net-room` fill the screen, and the password
@@ -69,7 +71,13 @@ different games or editions never do (the protocol id and the content check belo
   the kind of build that created it: the relay's compatibility identity names the program, game,
   edition, protocol and the content fingerprint. The WebSocket client (`common/net/websocket.*`) is the
   port's own: on the desktop and Android `ws://` over ENet's TCP sockets, polled in the game loop without
-  threads (no TLS: `wss://` needs a browser, or a server reachable over plain `ws://`); in a browser the
+  threads, and `wss://` with TLS on the same sockets (`common/net/tls.*`, since 1.5.2): Mbed TLS 3.6
+  ([third_party/README.md](../third_party/README.md)), built in unless `BLUPI_TLS=OFF`, which then refuses
+  `wss://`. The certificate must be valid for the typed name and trusted: by `SSL_CERT_FILE` or
+  `SSL_CERT_DIR` if set, else on Linux by the distribution's CA bundle, on Android by the system's CA
+  directory, and on Windows by the system's own chain and name check (CertGetCertificateChain), made
+  after the handshake and before anything is sent. A plain address on the desktop still means `ws://` on
+  51325. In a browser the
   browser's WebSocket. A page served over `https://` may only use `wss://`, so a plain address there means
   `wss://` on port 443 (since 1.5.1; 1.5.0 kept 51325). The web page offers `fds.openeggbert.com`
   until the player has used another server (`--net-server-default`). Running a server for all of
@@ -80,6 +88,17 @@ different games or editions never do (the protocol id and the content check belo
   of `--net-room-file`), the client's screen joins it, then both play as in the LAN test, lockstepped; both
   runs repeat exactly. `port/tools/web_check.mjs --relay`: a browser (the web build in headless Chrome)
   creates the room and the session and a native Linux program joins it; both reach PLAY.
+  `net_tls` (`tests/net_tls.py`, probe `tests/test_net_tls.cpp`): free-direct-server behind a TLS front
+  (`tests/tls_front.py`, test certificates made by openssl): welcome with the test CA as a file and as
+  a directory; refused for another CA, another name, the system's trust (the test CA is no system's; on
+  Windows the system's chain check, which under Wine first passed it until the chain's own trust status
+  was checked as well), a certificate file without certificates, `ws://` to the TLS port and `wss://` to
+  the plain port. `net_sb1_relay_wss`: the `net_sb1_relay` game through
+  `wss://` and the front; both runs repeat exactly. Both also pass in the Windows build under Wine.
+  `net_tls_online` (`-DBLUPI_TEST_ONLINE_SERVER=wss://...`): a real server with the system's trust.
+  [EVIDENCE, 2026-11-12] `wss://fds.openeggbert.com` welcomed the probe on Linux (CA bundle) and on
+  Windows under Wine (the system check); badssl.com's expired, wrong-name, self-signed and
+  untrusted-root certificates were refused on both. Not tested: Android, and real Windows.
 
 [OPEN] Not yet:
 

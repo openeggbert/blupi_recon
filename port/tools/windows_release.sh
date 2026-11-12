@@ -12,6 +12,8 @@
 #   BLUPI_WINDOWS_WORK   work directory (default: build/port-windows of this repository)
 #   BLUPI_WINDOWS_TESTS  0: build and pack without the test run
 #   BLUPI_SDL3_SRC       SDL3 source tree (default: build/third_party/SDL3-3.4.16)
+#   BLUPI_MBEDTLS_SRC    Mbed TLS source tree for wss:// (default: build/third_party/mbedtls-3.6.7;
+#                        without one CMake downloads it, port/third_party/README.md)
 #   BLUPI_DATA, BLUPI2_DATA, BLUPI2_TEST_DATA_BLUPI, BLUPI_TEST_DATA_EGGBERT,
 #   BLUPI_TEST_DATA_EGGBERT_DEMO, BLUPI_TEST_DATA_EGGBERT_VALUE, BLUPI_TEST_DATA_BLUPI_DEMO
 #                        game data for the tests, as for linux_release.sh (each optional)
@@ -25,6 +27,7 @@ set -eu
 REPO=$(cd "$(dirname "$0")/../.." && pwd)
 WORK=${BLUPI_WINDOWS_WORK:-$REPO/build/port-windows}
 SDL=${BLUPI_SDL3_SRC:-$REPO/build/third_party/SDL3-3.4.16}
+MBEDTLS=${BLUPI_MBEDTLS_SRC:-$REPO/build/third_party/mbedtls-3.6.7}
 VERSION=$(head -n 1 "$REPO/port/VERSION.txt" | tr -d '\r')
 TOOLCHAIN=$REPO/port/cmake/mingw-w64-x86_64.cmake
 
@@ -71,6 +74,7 @@ B=$WORK/port
 cmake -S "$REPO/port" -B "$B" -G Ninja -DCMAKE_TOOLCHAIN_FILE="$TOOLCHAIN" \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_PREFIX_PATH="$WORK/sdl3" \
     -DCMAKE_FIND_ROOT_PATH="$WORK/sdl3" $LAUNCH -DCMAKE_CROSSCOMPILING_EMULATOR="$RUN" \
+    -DBLUPI_MBEDTLS_SOURCE_DIR="$MBEDTLS" \
     -DBLUPI_TEST_DATA="${BLUPI_DATA:-}" -DBLUPI2_TEST_DATA="${BLUPI2_DATA:-}" \
     -DBLUPI2_TEST_DATA_BLUPI="${BLUPI2_TEST_DATA_BLUPI:-}" \
     -DBLUPI_TEST_DATA_EGGBERT="${BLUPI_TEST_DATA_EGGBERT:-}" \

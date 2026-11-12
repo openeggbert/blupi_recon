@@ -1,5 +1,6 @@
 // WebSocket client (websocket.h): RFC 6455, client side, binary messages. Native: ws:// over ENet's
-// portable TCP sockets, non-blocking and polled. Browser: emscripten's binding of the page's WebSocket.
+// portable TCP sockets, non-blocking and polled, and wss:// with TLS (net/tls.h) on the same sockets.
+// Browser: emscripten's binding of the page's WebSocket.
 #include "net/websocket.h"
 #include <algorithm>
 #include <cctype>
@@ -12,6 +13,7 @@
 #include <emscripten.h>
 #include <emscripten/websocket.h>
 #else
+#include "net/tls.h"
 #include <enet/enet.h>
 #endif
 
@@ -210,12 +212,15 @@ std::mt19937& Random()
 }
 } // namespace
 
-struct WebSocket::Impl {
+struct WebSocket::Impl : Tls::Io {
     State state = State::Closed;
-    enum class Step { Connect, Handshake, Frames } step = Step::Connect;
+    // TCP connect, the TLS handshake (wss://), the HTTP upgrade, then frames.
+    enum class Step { Connect, Secure, Handshake, Frames } step = Step::Connect;
     std::string error, host, path, key;
     uint16_t port = 0;
     ENetSocket socket = ENET_SOCKET_NULL;
+    bool secure = false;       // wss://: everything goes through tls
+    Tls tls;
     std::vector<uint8_t> in, out, partial;
     bool fragmented = false;   // a data message continues in the next frames
     std::deque<std::vector<uint8_t>> messages;
@@ -228,7 +233,44 @@ struct WebSocket::Impl {
     }
     void Drop()
     {
+        tls.Stop();
         if (socket != ENET_SOCKET_NULL) { enet_socket_destroy(socket); socket = ENET_SOCKET_NULL; }
+    }
+    // The socket itself (and the TLS layer's view of it, Tls::Io).
+    int Send(const uint8_t* data, size_t size) override
+    {
+        if (socket == ENET_SOCKET_NULL) return Tls::kBroken;
+        ENetBuffer buffer;
+        buffer.data = const_cast<uint8_t*>(data);   // ENet's buffer is not const; it only reads it
+        buffer.dataLength = size;
+        const int sent = enet_socket_send(socket, nullptr, &buffer, 1);
+        return sent < 0 ? Tls::kBroken : sent;
+    }
+    int Receive(uint8_t* data, size_t size) override
+    {
+        if (socket == ENET_SOCKET_NULL) return Tls::kBroken;
+        ENetBuffer buffer;
+        buffer.data = data;
+        buffer.dataLength = size;
+        int n = enet_socket_receive(socket, nullptr, &buffer, 1);
+        if (n == 0) {
+            // ENet reports both "nothing yet" and an orderly close as 0. A socket that is readable
+            // and still yields nothing has been closed by the server; one read more tells it from
+            // data that arrived just after the first read.
+            enet_uint32 condition = ENET_SOCKET_WAIT_RECEIVE;
+            if (enet_socket_wait(socket, &condition, 0) != 0 || !(condition & ENET_SOCKET_WAIT_RECEIVE)) return 0;
+            n = enet_socket_receive(socket, nullptr, &buffer, 1);
+            if (n == 0) return Tls::kClosed;
+        }
+        return n < 0 ? Tls::kBroken : n;
+    }
+    void Request()
+    {
+        std::string request = "GET " + path + " HTTP/1.1\r\nHost: " + host + ":" + std::to_string(port) +
+                              "\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " + key +
+                              "\r\nSec-WebSocket-Version: 13\r\nUser-Agent: blupi-sdl3\r\n\r\n";
+        out.insert(out.end(), request.begin(), request.end());
+        step = Step::Handshake;
     }
     void Frame(uint8_t opcode, const uint8_t* data, size_t size)
     {
@@ -243,12 +285,11 @@ struct WebSocket::Impl {
     }
     bool Flush()
     {
+        // Before the TLS handshake is done there is nothing to send (Request() follows it).
         while (!out.empty() && socket != ENET_SOCKET_NULL) {
-            ENetBuffer buffer;
-            buffer.data = out.data();
-            buffer.dataLength = out.size();
-            const int sent = enet_socket_send(socket, nullptr, &buffer, 1);
-            if (sent < 0) { Fail("the connection to the server broke"); return false; }
+            std::string why;
+            const int sent = secure ? tls.Write(out.data(), out.size(), why) : Send(out.data(), out.size());
+            if (sent < 0) { Fail(secure ? why : "the connection to the server broke"); return false; }
             if (sent == 0) break;
             out.erase(out.begin(), out.begin() + sent);
         }
@@ -258,24 +299,15 @@ struct WebSocket::Impl {
     {
         for (int round = 0; round < 64 && socket != ENET_SOCKET_NULL; ++round) {
             uint8_t chunk[4096];
-            ENetBuffer buffer;
-            buffer.data = chunk;
-            buffer.dataLength = sizeof(chunk);
-            int n = enet_socket_receive(socket, nullptr, &buffer, 1);
-            if (n == 0) {
-                // ENet reports both "nothing yet" and an orderly close as 0. A socket that is readable
-                // and still yields nothing has been closed by the server; one read more tells it from
-                // data that arrived just after the first read.
-                enet_uint32 condition = ENET_SOCKET_WAIT_RECEIVE;
-                if (enet_socket_wait(socket, &condition, 0) != 0 || !(condition & ENET_SOCKET_WAIT_RECEIVE)) return;
-                n = enet_socket_receive(socket, nullptr, &buffer, 1);
-                if (n == 0) {
-                    if (state == State::Open) { state = State::Closed; error = "the server closed the connection"; Drop(); }
-                    else Fail("the server closed the connection");
-                    return;
-                }
+            std::string why;
+            const int n = secure ? tls.Read(chunk, sizeof(chunk), why) : Receive(chunk, sizeof(chunk));
+            if (n == 0) return;
+            if (n == Tls::kClosed) {
+                if (state == State::Open) { state = State::Closed; error = "the server closed the connection"; Drop(); }
+                else Fail("the server closed the connection");
+                return;
             }
-            if (n < 0) { Fail("the connection to the server broke"); return; }
+            if (n < 0) { Fail(secure ? why : "the connection to the server broke"); return; }
             in.insert(in.end(), chunk, chunk + n);
             if (in.size() > 4 * kMaxMessage) { Fail("too much data from the server"); return; }
         }
@@ -368,15 +400,17 @@ bool WebSocket::Open(const std::string& url)
     p->state = State::Failed;
     static const bool initialised = enet_initialize() == 0;
     if (!initialised) { p->error = "no network"; return false; }
-    if (StartsWith(url, "wss://")) { p->error = "wss:// needs the web version; this build speaks ws:// only"; return false; }
-    if (!StartsWith(url, "ws://")) { p->error = "not a server address"; return false; }
-    std::string rest = url.substr(5);
+    p->secure = StartsWith(url, "wss://");
+    if (p->secure && !Tls::Built()) { p->error = "this build has no wss:// (built without BLUPI_TLS)"; return false; }
+    if (!p->secure && !StartsWith(url, "ws://")) { p->error = "not a server address"; return false; }
+    std::string rest = url.substr(p->secure ? 6 : 5);
     size_t slash = rest.find('/');
     std::string hostPort = rest.substr(0, slash);
     p->path = slash == std::string::npos ? "/" : rest.substr(slash);
     size_t colon = hostPort.rfind(':');
     p->host = hostPort.substr(0, colon);
-    p->port = colon == std::string::npos ? 80 : uint16_t(std::strtoul(hostPort.c_str() + colon + 1, nullptr, 10));
+    p->port = colon == std::string::npos ? (p->secure ? 443 : 80)
+                                         : uint16_t(std::strtoul(hostPort.c_str() + colon + 1, nullptr, 10));
     ENetAddress address{};
     address.port = p->port;
     if (enet_address_set_host(&address, p->host.c_str()) < 0) { p->error = "unknown server name " + p->host; return false; }
@@ -409,11 +443,24 @@ void WebSocket::Service()
             p->Fail("cannot reach the server");
             return;
         }
-        std::string request = "GET " + p->path + " HTTP/1.1\r\nHost: " + p->host + ":" + std::to_string(p->port) +
-                              "\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " + p->key +
-                              "\r\nSec-WebSocket-Version: 13\r\nUser-Agent: blupi-sdl3\r\n\r\n";
-        p->out.insert(p->out.end(), request.begin(), request.end());
-        p->step = Impl::Step::Handshake;
+        if (p->secure) {
+            std::string why;
+            if (!p->tls.Start(p->host, *p, why)) { p->Fail(why); return; }
+            p->step = Impl::Step::Secure;
+        } else {
+            p->Request();
+        }
+    }
+    if (p->step == Impl::Step::Secure) {
+        // The TLS handshake reads and writes the socket itself; the upgrade request follows it.
+        std::string why;
+        const int done = p->tls.Handshake(why);
+        if (done < 0) { p->Fail(why); return; }
+        if (done == 0) {
+            if (Clock::now() >= p->deadline) p->Fail("the server does not answer");
+            return;
+        }
+        p->Request();
     }
     if (!p->Flush()) return;
     p->Read();

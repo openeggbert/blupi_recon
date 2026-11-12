@@ -12,7 +12,7 @@ and builds from the historical sources in `../src` and `../games/sb2/src` **with
 anything here. Rules for working in this directory: [AGENTS.md](AGENTS.md). Design and analysis:
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-Current release: **1.5.1** (Windows x64, Linux x86-64, Android and web packages)
+Current release: **1.5.2** (Windows x64, Linux x86-64, Android and web packages)
 ([release notes](docs/RELEASE_NOTES.md); how a release is built and packed:
 [docs/RELEASING.md](docs/RELEASING.md)). Players use their own copy of the game.
 
@@ -35,6 +35,7 @@ Current release: **1.5.1** (Windows x64, Linux x86-64, Android and web packages)
 | `common/render/` | port | Rendering device interface and commands (`device.h`), software reference renderer (8 bpp palettized and RGB565 surfaces, DirectDraw blit rules), BMP reader. No SDL, no Win32 names |
 | `common/platform/` | port | SDL3 host: window/presentation, input, touch controls, timing, audio mixer, MIDI synthesizer, file system roots, the language-pack format, icon, `SDL_main` entry (calls the game's `BlupiMain`). No game names: the game passes its own (e.g. its user folder's) |
 | `third_party/tinysoundfont/` | vendored | TinySoundFont v0.9 (MIT) and TinyMidiLoader v0.7 (zlib) headers, unchanged; provenance in its README |
+| Mbed TLS 3.6.7 | release archive, not in the repository | TLS for `wss://` on the desktop and Android (`common/net/tls.*`): `build/third_party/mbedtls-3.6.7` or `BLUPI_MBEDTLS_SOURCE_DIR`, else CMake downloads it and checks its SHA-256; `-DBLUPI_TLS=OFF` builds without it ([third_party/README.md](third_party/README.md)) |
 | `third_party/generaluser-gs/` | git submodule | GeneralUser GS v2.0.3 SoundFont, the author's repository at a pinned commit (shallow); provenance, licence and SHA-256 in [third_party/README.md](third_party/README.md) |
 | `tests/` | port | Unit tests, music tests, golden traces (`tests/golden/`) |
 | `languages/` | port, generated from the original executables | The built-in language packs (`tools/language_pack.py`; [docs/LANGUAGES.md](docs/LANGUAGES.md)) |
@@ -329,6 +330,8 @@ After 1.1.0:
 ## Dependencies and licences
 
 - SDL3 (zlib licence), dynamically linked; `SDL3.dll` is copied next to the executable.
+- Mbed TLS 3.6.7 (Apache-2.0, dual-licensed with GPL-2.0-or-later), compiled in for `wss://`; the
+  pinned release archive, not stored here ([third_party/README.md](third_party/README.md)).
 - TinySoundFont (MIT) and TinyMidiLoader (zlib): vendored headers in `third_party/tinysoundfont`,
   taken unchanged from Free API's `external/` copy.
 - GeneralUser GS v2.0.3 SoundFont by S. Christian Collins (GeneralUser GS License v2.0: free use

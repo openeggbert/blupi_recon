@@ -15,6 +15,9 @@ port's address screen ("N type TEXT" lines become one "char" per tick; {port} is
 --relay SERVER: two peers through a Free Direct server (free-direct-server, started here on a free port):
 both choose the provider list's server entry (<game>_<name>_relay.input). The host's server screen creates
 a room and writes its ID to the room file (--net-room-file); the client's screen reads it from there.
+
+--tls (with --relay): the peers reach the server through wss://localhost and a TLS front for it, with test
+certificates (tls_front.py; SSL_CERT_FILE names the test CA). Exit 77 (skipped) without openssl.
 """
 import argparse
 import os
@@ -24,6 +27,8 @@ import socket
 import subprocess
 import sys
 import time
+
+import tls_front
 
 PLAY = 1525  # WM_PHASE_PLAY, in both games
 
@@ -100,7 +105,10 @@ def run(args, work, port):
         for frame in args.state_dump:
             command += ["--state-dump", f"{frame}:{work / f'{name}-state-{frame}.txt'}"]
         if server:
-            command += ["--net-server", f"ws://127.0.0.1:{server[2]}", "--net-room-file", str(control / "room.txt")]
+            address = f"wss://localhost:{args.front.port}" if args.front else f"ws://127.0.0.1:{server[2]}"
+            command += ["--net-server", address, "--net-room-file", str(control / "room.txt")]
+            if args.front:
+                env["SSL_CERT_FILE"] = str(args.certs["ca"])
         log = open(work / f"{name}.log", "w", encoding="utf-8")
         peers.append((name, subprocess.Popen(command, env=env, stdout=log, stderr=subprocess.STDOUT), log))
     try:
@@ -198,6 +206,8 @@ def main():
                         help="the client joins through the Internet provider and a typed address (two peers)")
     parser.add_argument("--relay", metavar="SERVER",
                         help="free-direct-server executable: two peers through it (the server provider)")
+    parser.add_argument("--tls", action="store_true",
+                        help="with --relay: through wss:// and a TLS front with test certificates")
     parser.add_argument("--state-dump", type=int, action="append", default=[], metavar="FRAME",
                         help="diagnostic: each peer dumps its hashed state fields after FRAME")
     args = parser.parse_args()
@@ -209,14 +219,24 @@ def main():
         args.client_port = free_port()
         while args.client_port in (port, port + 1) or port in (args.client_port + 1,):
             args.client_port = free_port()
-    args.server = None
+    args.server = args.front = None
+    if args.tls and not args.relay:
+        parser.error("--tls needs --relay")
+    if args.tls and not tls_front.openssl():
+        print("no openssl: cannot make the test certificates")
+        return tls_front.SKIP
     if args.relay:
         args.work.mkdir(parents=True, exist_ok=True)
         args.server = start_server(args, args.work)
     results = []
     try:
+        if args.tls:
+            args.certs = tls_front.make_certs(args.work / "certs")
+            args.front = tls_front.TlsFront(args.certs["cert"], args.certs["key"], args.server[2])
         return repeat(args, port, results)
     finally:
+        if args.front:
+            args.front.stop()
         if args.server:
             args.server[0].kill()
             args.server[0].wait()
@@ -242,7 +262,7 @@ def repeat(args, port, results):
                 return 1
     how = " through the Internet provider and a typed address" if args.internet else ""
     if args.relay:
-        how = " through a Free Direct server and a room"
+        how = " through a Free Direct server and a room" + (" over wss://" if args.tls else "")
     print(f"{args.players}-instance session{how}: create/join/lobby/ready/start/play passed; each peer's traces repeat exactly")
     return 0
 

@@ -53,6 +53,12 @@ TinyMidiLoader, zlib licence:
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 
+Mbed TLS 3.6.7 (compiled into the Windows, Linux and Android programs; wss:// addresses
+  of a Free Direct server. The web version uses the browser's TLS instead.)
+  Copyright The Mbed TLS Contributors, https://github.com/Mbed-TLS/mbedtls
+  Apache License 2.0 (dual-licensed with GPL-2.0-or-later; used here under Apache-2.0):
+  see LICENSE-MbedTLS.txt.
+
 ENet 1.3.18 (compiled into the program; native multiplayer)
   by Lee Salzman, https://github.com/lsalzman/enet
 

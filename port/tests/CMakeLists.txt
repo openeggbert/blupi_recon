@@ -474,6 +474,18 @@ add_test(NAME net_protocol COMMAND test_net_protocol)
 add_executable(test_net_relay test_net_relay.cpp)
 target_link_libraries(test_net_relay PRIVATE blupi_net)
 add_test(NAME net_relay_addresses COMMAND test_net_relay)
+# wss:// from the desktop (common/net/tls.h): the probe, and against a local server behind a TLS front
+# with test certificates (net_tls.py; skipped without openssl). BLUPI_TEST_ONLINE_SERVER names a real
+# server to check too (wss://fds.openeggbert.com): its certificate as this system trusts it.
+if(BLUPI_TLS)
+    add_executable(test_net_tls test_net_tls.cpp)
+    target_link_libraries(test_net_tls PRIVATE blupi_net)
+endif()
+set(BLUPI_TEST_ONLINE_SERVER "" CACHE STRING "A public Free Direct server for net_tls_online (wss://...)")
+if(BLUPI_TLS AND BLUPI_TEST_ONLINE_SERVER)
+    add_test(NAME net_tls_online COMMAND test_net_tls "${BLUPI_TEST_ONLINE_SERVER}" ok)
+    set_tests_properties(net_tls_online PROPERTIES TIMEOUT 60)
+endif()
 add_executable(test_net_transport test_net_transport.cpp)
 target_link_libraries(test_net_transport PRIVATE blupi_net)
 add_test(NAME net_transport COMMAND test_net_transport)
@@ -513,6 +525,19 @@ if(BLUPI_TEST_RELAY_SERVER AND BLUPI_TEST_DATA AND BLUPI_TEST_PYTHON)
         --exe $<TARGET_FILE:blupi>${BLUPI_TEST_LAUNCHER} --data "${BLUPI_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
         --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb1_relay" --relay "${BLUPI_TEST_RELAY_SERVER}")
     set_tests_properties(net_sb1_relay PROPERTIES TIMEOUT 600 RUN_SERIAL TRUE)
+endif()
+if(BLUPI_TLS AND BLUPI_TEST_RELAY_SERVER AND BLUPI_TEST_PYTHON)
+    add_test(NAME net_tls COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_tls.py"
+        --probe $<TARGET_FILE:test_net_tls>${BLUPI_TEST_LAUNCHER} --relay "${BLUPI_TEST_RELAY_SERVER}"
+        --work "${CMAKE_CURRENT_BINARY_DIR}/net_tls")
+    set_tests_properties(net_tls PROPERTIES TIMEOUT 300 RUN_SERIAL TRUE SKIP_RETURN_CODE 77)
+endif()
+# The same SB1 game as net_sb1_relay, through wss:// and the TLS front.
+if(BLUPI_TLS AND BLUPI_TEST_RELAY_SERVER AND BLUPI_TEST_DATA AND BLUPI_TEST_PYTHON)
+    add_test(NAME net_sb1_relay_wss COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_session.py"
+        --exe $<TARGET_FILE:blupi>${BLUPI_TEST_LAUNCHER} --data "${BLUPI_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
+        --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb1_relay_wss" --relay "${BLUPI_TEST_RELAY_SERVER}" --tls)
+    set_tests_properties(net_sb1_relay_wss PROPERTIES TIMEOUT 600 RUN_SERIAL TRUE SKIP_RETURN_CODE 77)
 endif()
 if(BLUPI_TEST_RELAY_SERVER AND BLUPI2_TEST_DATA AND BLUPI_TEST_PYTHON)
     add_test(NAME net_sb2_relay COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_session.py"
