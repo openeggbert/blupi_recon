@@ -50,6 +50,33 @@ different games or editions never do (the protocol id and the content check belo
   own address, types the host's address, then finds, joins and plays the session; both runs repeat exactly.
   Android: built, untested (the on-screen keyboard opens while the screen is up).
 
+- **Through a Free Direct server (since 1.5.0):** the provider list has a third entry, "Internet through
+  a Free Direct server"; in a browser it is the only one (there is no UDP there). Every player, the host
+  too, connects out to a [free-direct-server](../../../free-direct/docs/free-direct-server.md), so no
+  player needs an open port. Its rooms, with secret IDs, are private LANs: the session list shows the
+  games in the player's room. Choosing the entry opens the address screen in a second form with two
+  fields: the server (a name or IP with `:port` if it is not 51325, or a `ws://`/`wss://` URL) and a room.
+  An empty room creates one; the screen then shows its ID (also on the clipboard, and in a browser as a
+  link with `?server=` and `?room=`) to give to the others, who type it. The last server and room are
+  remembered (`netServer`, `netRoom`); `--net-server` and `--net-room` fill the screen, and the password
+  of a server that has one comes from `BLUPI_NET_PASSWORD`.
+  [DESIGN] The server's protocol (`../free-direct/docs/directplay-relay-protocol.md`) is a second
+  transport of the same session layer (`common/net/relay.*`): the host hosts a session in the room,
+  members join it, and the session envelope (Hello, Welcome, Members, Data, Gone) travels unchanged as the
+  payload of the relay's Data messages, routed host to member and member to host, with the sender's
+  reliability flag in front. The server delivers everything reliably and in order. The room admits only
+  the kind of build that created it: the relay's compatibility identity names the program, game,
+  edition, protocol and the content fingerprint. The WebSocket client (`common/net/websocket.*`) is the
+  port's own: on the desktop and Android `ws://` over ENet's TCP sockets, polled in the game loop without
+  threads (no TLS: `wss://` needs a browser, or a server reachable over plain `ws://`); in a browser the
+  browser's WebSocket. A page served over `https://` may only use `wss://`, so a plain address there means
+  `wss://`.
+  [EVIDENCE] `net_sb1_relay` and `net_sb2_relay` (`tests/net_session.py --relay <free-direct-server>`,
+  scripts `tests/net/*_relay.input`): the host's server screen creates a room (its ID goes to the room file
+  of `--net-room-file`), the client's screen joins it, then both play as in the LAN test, lockstepped; both
+  runs repeat exactly. `port/tools/web_check.mjs --relay`: a browser (the web build in headless Chrome)
+  creates the room and the session and a native Linux program joins it; both reach PLAY.
+
 [OPEN] Not yet:
 
 - real-network behaviour tests (latency, loss, reordering) and the host-loss and client-drop paths as
@@ -134,7 +161,8 @@ assessment [MULTIPLAYER_ASSESSMENT.md](MULTIPLAYER_ASSESSMENT.md) (static, file:
    start, play with remote poses and replicated events, pause, leave; malformed-packet rejection tests;
    two-instance regression test.
 2. LAN, up to four players, with discovery.
-3. Internet: direct IP and port first; NAT traversal or a relay only where needed.
+3. Internet: direct IP and port (1.3.0), then through a Free Direct server, which needs no open port
+   and works in a browser (1.5.0).
 4. SB2 on the same transport, with its own protocol id and rules (done 2026-10-25).
 5. Android: INTERNET permission, lifecycle handling, interoperability with the desktop for the editions
    the app supports.

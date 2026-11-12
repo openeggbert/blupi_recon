@@ -1,0 +1,12 @@
+# The native SB1 client of port/tools/web_check.mjs --relay, in real time: it starts once the browser's
+# room exists (--net-server and --net-room fill its server screen) and joins the browser's session.
+40 click 112 430    # title: dice -> choose player
+70 click 127 431    # choose player: multiplayer service
+100 click 160 210   # service: provider row 2, "Internet through a Free Direct server"
+130 click 242 407   # service: OK -> CreateProvider(2) -> sessions + server screen
+140 key 13          # server screen: Enter -> connect, join the room; the refresh lists the session
+200 click 140 130   # sessions: row 0
+210 click 140 407   # sessions: join -> lobby (JOIN, slot 1)
+240 click 308 160   # lobby: client ready (slot 1)
+1000 keydown 37     # play (the host starts at its frame 1000): walk left
+1100 keyup 37

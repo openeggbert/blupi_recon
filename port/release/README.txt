@@ -100,6 +100,17 @@ uses UDP ports 28640 (game) and 28641 (discovery): allow them in your
 firewall (and forward them on your router for internet play). --net-port N
 chooses other ports. If the host leaves, the session ends for everyone.
 
+Without open ports, play through a Free Direct server (free-direct-server,
+which anyone can run): choose "Internet through a Free Direct server", type
+the server's address (with :port if it is not 51325) and leave the room
+empty to create a room. The game shows the room's ID and puts it on the
+clipboard; the other players choose the same server and type the ID. The
+room's games are then listed as on a local network. Players of this program
+on Windows, Linux, Android and in a web browser can share a room. This
+program speaks ws:// only; a server that only offers wss:// (TLS) works from
+the web version. --net-server and --net-room fill the screen in advance;
+BLUPI_NET_PASSWORD gives the password of a server that needs one.
+
 Your own language
 -----------------
 

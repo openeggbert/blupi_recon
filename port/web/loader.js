@@ -182,13 +182,38 @@ async function play() {
   $("canvas").focus();
   status("");
   setInterval(() => sync(), 5000);   // saves and settings go to IndexedDB
-  Module.callMain(["--data", DATA, "--user", USER]);
+  const args = ["--data", DATA, "--user", USER];
+  // Multiplayer through a Free Direct server (port/docs/MULTIPLAYER.md): ?server= and ?room= fill the
+  // game's server screen, so a link can bring a friend straight to a room.
+  if (params.get("server")) args.push("--net-server", params.get("server"));
+  if (params.get("room")) args.push("--net-room", params.get("room"));
+  const testInput = params.get("test-input");   // tests: a scripted input (port/tools/web_check.mjs)
+  if (testInput) {
+    const response = await fetch(testInput);
+    fs.writeFile("/test.input", new Uint8Array(await response.arrayBuffer()));
+    args.push("--input", "/test.input");
+  }
+  Module.callMain(args);
+}
+
+// The game created a room on the server: show a link the other players can open.
+function roomCreated(room, server) {
+  console.log("room created: " + room);
+  const link = new URL(location.href);
+  for (const key of [...link.searchParams.keys()]) if (key.startsWith("test-")) link.searchParams.delete(key);
+  link.searchParams.set("server", server);
+  link.searchParams.set("room", room);
+  $("room-id").textContent = room;
+  $("room-link").href = link.href;
+  $("room-link").textContent = link.href;
+  $("room").hidden = false;
 }
 
 function start() {
   window.Module = {
     noInitialRun: true,
     canvas: $("canvas"),
+    blupiRoomCreated: roomCreated,
     print: (text) => log(text),
     printErr: (text) => log(text),
     locateFile: (path) => program + "/" + path,

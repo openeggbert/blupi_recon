@@ -10,6 +10,12 @@
 //
 //   node port/tools/web_check.mjs --site build/port-web/site --output build/port-web/check \
 //        --program blupi-sdl3=/path/to/Speedy_Blupi_I [--program ...] [--attract]
+//
+// With --relay <free-direct-server> --relay-client <native blupi-sdl3> it checks multiplayer between
+// the browser and the desktop instead (the first --program, SB1): the server runs on this machine, the
+// browser's game creates a room and a session (port/tests/net/sb1_browser_host.input), and the native
+// program, started with that room (sb1_browser_client.input, SDL's offscreen video), joins it; both
+// must reach PLAY.
 import {spawn} from "node:child_process";
 import {createServer} from "node:http";
 import {readFile, readdir, stat, mkdir, writeFile, rm} from "node:fs/promises";
@@ -18,7 +24,8 @@ import path from "node:path";
 import {once} from "node:events";
 
 if (typeof WebSocket === "undefined") throw new Error("Use Node 22+.");
-const options = {site: "build/port-web/site", output: "build/port-web/check", chrome: "google-chrome", programs: [], attract: false};
+const options = {site: "build/port-web/site", output: "build/port-web/check", chrome: "google-chrome", programs: [], attract: false,
+                 inputs: "port/tests/net"};
 for (let i = 2; i < process.argv.length; i++) {
   const a = process.argv[i];
   if (a === "--attract") options.attract = true;
@@ -41,12 +48,15 @@ async function walk(dir, prefix = "") {
 }
 const types = {".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".wasm": "application/wasm", ".json": "application/json"};
 const testData = Object.fromEntries(options.programs.map((p) => [p.name, path.resolve(p.dir)]));
+const inputs = path.resolve(options.inputs);
 const http = createServer(async (req, res) => {
   try {
     const url = decodeURIComponent(new URL(req.url, "http://x").pathname);
     let file;
     const m = url.match(/^\/test-data\/([^/]+)\/(.*)$/);
-    if (m) {
+    const input = url.match(/^\/test-input\/([A-Za-z0-9_.-]+)$/);
+    if (input) file = path.join(inputs, input[1]);
+    else if (m) {
       const root = testData[m[1]];
       if (!root) throw new Error("no test data");
       if (m[2] === "index.json") {
@@ -121,7 +131,7 @@ async function launch(name) {
     if (result.exceptionDetails) throw new Error(name + ": " + JSON.stringify(result.exceptionDetails));
     return result.result.value;
   };
-  return {name, errors, command, evaluate,
+  return {name, errors, consoleLines, command, evaluate,
     async waitFor(expression, timeout = 60000) {
       const deadline = Date.now() + timeout;
       while (Date.now() < deadline) {
@@ -178,10 +188,64 @@ function variety(png) {
 }
 
 const failures = [];
+
+// Multiplayer between a browser and the desktop through a Free Direct server (--relay).
+async function relayCheck() {
+  const {name, dir} = options.programs[0];
+  const net = await import("node:net");
+  const probe = net.createServer();
+  probe.listen(0, "127.0.0.1");
+  await once(probe, "listening");
+  const port = probe.address().port;
+  probe.close();
+  const server = spawn(path.resolve(options.relay), ["--host", "127.0.0.1", "--port", String(port)], {stdio: ["ignore", "pipe", "pipe"]});
+  browsers.push(server);
+  let serverLog = "";
+  server.stdout.on("data", (c) => serverLog += c);
+  server.stderr.on("data", (c) => serverLog += c);
+  for (let i = 0; i < 100 && !/listening/.test(serverLog); i++) await new Promise((r) => setTimeout(r, 100));
+  const ws = `ws://127.0.0.1:${port}`;
+  const page = await launch(name + "-relay");
+  await page.goto(`${base}/index.html?program=${name}&test-import=/test-data/${name}&test-play=1` +
+                  `&server=${encodeURIComponent(ws)}&test-input=/test-input/sb1_browser_host.input`);
+  await page.waitFor("!document.querySelector('#canvas').hidden", 240000);
+  await page.waitFor("!document.querySelector('#room').hidden", 120000);
+  const room = await page.evaluate("document.querySelector('#room-id').textContent");
+  const link = await page.evaluate("document.querySelector('#room-link').href");
+  console.log(`${name}: the browser created room ${room}; link ${link}`);
+  if (!link.includes("room=" + room)) failures.push("the room link does not name the room");
+  const user = path.join(output, "relay-client-user");
+  await mkdir(user, {recursive: true});
+  const client = spawn(path.resolve(options["relay-client"]), ["--data", path.resolve(dir), "--user", user, "--windowed",
+    "--net-server", ws, "--net-room", room, "--input", path.join(inputs, "sb1_browser_client.input"),
+    "--frames", "1300", "--trace", path.join(output, "relay-client.trace")],
+    {stdio: ["ignore", "pipe", "pipe"], env: {...process.env, SDL_VIDEODRIVER: "offscreen", SDL_AUDIODRIVER: "dummy"}});
+  browsers.push(client);
+  let clientLog = "";
+  client.stdout.on("data", (c) => clientLog += c);
+  client.stderr.on("data", (c) => clientLog += c);
+  const exited = await Promise.race([once(client, "exit").then(([code]) => code), new Promise((r) => setTimeout(() => r("timeout"), 180000))]);
+  await writeFile(path.join(output, "relay-client.log"), clientLog);
+  await writeFile(path.join(output, "relay-server.log"), serverLog);
+  const browserLog = await page.evaluate("document.querySelector('#log').textContent");
+  await writeFile(path.join(output, "relay-browser-log.txt"), browserLog);
+  await page.canvasShot("relay-play");
+  const trace = await readFile(path.join(output, "relay-client.trace"), "utf8").catch(() => "");
+  const clientPlayed = trace.split("\n").some((line) => line.split(" ")[1] === "1525");
+  console.log(`native client: exit ${exited}; joined: ${clientLog.includes("joined session")}; reached PLAY: ${clientPlayed}`);
+  console.log(`browser host: created session: ${browserLog.includes("created session")}; START: ${browserLog.includes("START")}`);
+  if (exited !== 0) failures.push(`the native client exited with ${exited} (see relay-client.log)`);
+  if (!clientLog.includes("server room joined") || !clientLog.includes("joined session")) failures.push("the native client did not join the browser's session");
+  if (!clientPlayed) failures.push("the native client never reached PLAY");
+  if (!browserLog.includes("created session") || !browserLog.includes("START")) failures.push("the browser did not host and start the game");
+  if (page.errors.length) failures.push(`${page.errors.length} JavaScript exception(s): ` + JSON.stringify(page.errors[0]).slice(0, 400));
+}
+
 const alarm = setTimeout(() => { console.error("web_check exceeded 15 minutes"); cleanup(); process.exit(1); }, 900000);
 function cleanup() { for (const b of browsers) b.kill("SIGKILL"); http.close(); }
 try {
-  for (const {name} of options.programs) {
+  if (options.relay) await relayCheck();
+  else for (const {name} of options.programs) {
     const page = await launch(name);
     const url = `${base}/index.html?program=${name}`;
     // 1. First visit: import from the test listing, then play.
@@ -216,5 +280,7 @@ try {
   clearTimeout(alarm);
   cleanup();
 }
-console.log(failures.length ? "FAIL\n" + failures.join("\n") : "PASS: every program imported its files, started, and started again from the stored files");
+console.log(failures.length ? "FAIL\n" + failures.join("\n") : options.relay
+  ? "PASS: a browser and a native program played one game through a Free Direct server"
+  : "PASS: every program imported its files, started, and started again from the stored files");
 process.exit(failures.length ? 1 : 0);

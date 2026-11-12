@@ -12,7 +12,8 @@
     <h1>Speedy Blupi and Speedy Eggbert</h1>
     <p>The SDL3 port of the reconstructed games, in your browser. You need your own copy of the game:
       on the first start you choose its folder, and its files are kept in this browser (nothing is
-      uploaded). Multiplayer is not available on the web.</p>
+      uploaded). Multiplayer works through a Free Direct server: choose "Internet through a Free
+      Direct server" in the game's multiplayer screen.</p>
     <nav id="programs"></nav>
   </section>
 
@@ -30,6 +31,9 @@
       <p class="small"><a href="./">All programs</a> · Alt+Enter: full screen</p>
     </div>
     <p id="status"></p>
+    <p id="room" hidden>New room <strong id="room-id"></strong> (also on the clipboard). The other
+      players open this link, choose the server in the multiplayer screen and press OK:
+      <a id="room-link"></a></p>
     <canvas id="canvas" tabindex="-1" oncontextmenu="event.preventDefault()" hidden></canvas>
     <pre id="log" hidden></pre>
   </section>

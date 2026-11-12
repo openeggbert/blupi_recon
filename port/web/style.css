@@ -54,3 +54,5 @@ canvas {
   max-height: 240px; overflow: auto; padding: 8px; margin-top: 16px;
   background: var(--card); border: 1px solid var(--border); border-radius: 8px; font-size: 12px;
 }
+
+#room a { word-break: break-all; }
