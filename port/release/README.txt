@@ -48,8 +48,8 @@ Windows: 64-bit Windows (tested on Windows 11). The program is not
 code-signed, so SmartScreen may warn about an unknown publisher: choose
 "More info", then "Run anyway".
 
-Linux: x86-64 with glibc 2.41 or newer (for example Debian 13 or Ubuntu
-25.04 and later), under X11 or Wayland. The SDL3 library comes with
+Linux: x86-64 with glibc 2.38 or newer (for example Debian 13, Ubuntu 24.04
+or Fedora 39 and later), under X11 or Wayland. The SDL3 library comes with
 the game (libSDL3.so.0, next to the program).
 
 

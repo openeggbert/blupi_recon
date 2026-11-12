@@ -60,10 +60,10 @@ installed game. On the first start the port asks for its folder and remembers it
 
 | File | For |
 |---|---|
-| `speedy-blupi-sdl3-1.3.0-linux-x86_64.tar.gz` | x86-64 Linux with glibc 2.41 or newer (Debian 13, Ubuntu 25.04 and later), X11 or Wayland: `blupi-sdl3`, `blupi2-sdl3`, `eggbert-demo-sdl3`, `eggbert-value-sdl3`, `blupi-demo-sdl3` |
+| `speedy-blupi-sdl3-1.3.0-linux-x86_64.tar.gz` | x86-64 Linux with glibc 2.38 or newer (Debian 13, Ubuntu 24.04, Fedora 39 and later), X11 or Wayland: `blupi-sdl3`, `blupi2-sdl3`, `eggbert-demo-sdl3`, `eggbert-value-sdl3`, `blupi-demo-sdl3` |
 | `SHA256SUMS.txt` | checksums |
 
-For 1.3.0 only the Linux package was built, on Debian 13 (so it needs glibc 2.41; the 1.2.0 package,
+For 1.3.0 only the Linux package was built, on Debian 13 (it needs glibc 2.38; the 1.2.0 package,
 built on Ubuntu 22.04, needed 2.35). Windows and Android packages of 1.3.0 have not been built yet;
 the 1.2.0 ones remain available.
 

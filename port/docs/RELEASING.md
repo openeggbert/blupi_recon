@@ -90,7 +90,7 @@ real tree), and the goldens that fail with that host's copies of the game data o
 this round's port changes too (`golden_editor8/16`, `golden_tour16_de`, `golden_eggbert_attract16`;
 their state hash differs from the first checkpoint on, so the data differs from the data the goldens
 were recorded with). The Speedy Blupi 2 / Speedy Eggbert 2 tests were not run (that host's SB2 data
-fails their goldens the same way). The package therefore needs glibc 2.41, not 2.35. Windows and Android packages of
+fails their goldens the same way). The package needs glibc 2.38 (objdump of its programs and libSDL3.so.0), not 2.35. Windows and Android packages of
 1.3.0 have not been built.
 
 ## The Ubuntu 22.04 build distro
