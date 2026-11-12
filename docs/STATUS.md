@@ -59,7 +59,7 @@ never counts as STRICT, and the byte status stays MISMATCH ([VERIFYING.md](VERIF
 | Eggbert 1 (each language) | 3: ChangePhase, TreatEventBase, WindowProc | 15,360 | 2,880 B |
 | Eggbert Demo | 4: ChangePhase, TreatEventBase, WindowProc, GetBlupiInfo | 15,456 | 3,376 B |
 | Valueware | 3: ChangePhase, TreatEventBase, WindowProc | 15,456 | 2,848 B |
-| SB1 demo | 0 | 0 | 8,112 B |
+| SB1 demo | 4 (variant checker): ChangePhase, QuickIcon, GetBlupiInfo, MockeryDetect | 8,080 | 32 B |
 | Blupi 2 (each language) | 9 | 50,800 | 32 B |
 | Eggbert 2 | 4 | 36,304 | 240 B |
 
@@ -74,6 +74,8 @@ never counts as STRICT, and the byte status stays MISMATCH ([VERIFYING.md](VERIF
 - **The Eggbert Demo's and Valueware's remaining bytes** are DoInit in the same state, and in the
   demo MockeryDetect, whose instruction order depends on the declaration count
   ([EGGBERT_DEMO.md](EGGBERT_DEMO.md), [EGGBERT_VALUE.md](EGGBERT_VALUE.md)).
+- **The SB1 demo's four certificates** (2026-11-12) are checked by `tools/equivalence_variant.py`
+  ([SB1_DEMO.md](SB1_DEMO.md)); its remaining 32 bytes are thunks.
 - **Eggbert 2's 240 bytes** are CreateSoundBuffer (208 B, an `[OPEN]` sound.cpp line difference;
   docs/SB2.md) plus 32 bytes of thunks.
 

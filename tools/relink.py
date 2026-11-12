@@ -326,8 +326,8 @@ def main(argv=None):
         import equivalence
         equivalent = equivalence.check(manifest, comparison, evidence_objects, out)
     elif target.name.startswith(('sb1/', 'sb2/')):
-        import equivalence_target
-        equivalent = equivalence_target.check(target, manifest, comparison, evidence_objects, out)
+        import equivalence_variant   # equivalence_target unless the target declares the variant checker
+        equivalent = equivalence_variant.checker_for(target).check(target, manifest, comparison, evidence_objects, out)
     else:
         equivalent = dict(status="NOT_APPLICABLE", reason="SB2 target has its own oracle inventory")
     gate = dict(regressions=regressions, degraded=degraded, coverage=coverage,

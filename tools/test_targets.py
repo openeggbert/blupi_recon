@@ -240,8 +240,9 @@ class TargetEquivalenceTests(unittest.TestCase):
             target = targets.load(name)
             entries = equiv.declarations(target, target.manifest())
             if name.startswith('sb1/'):
-                # The Speedy Eggbert Demo also certifies GetBlupiInfo (docs/EGGBERT_DEMO.md).
-                expected = (0 if target.primary or name == 'sb1/blupi/demo' else 4 if name == 'sb1/eggbert/demo'
+                # The Speedy Eggbert Demo also certifies GetBlupiInfo (docs/EGGBERT_DEMO.md); the June 1998
+                # demo has four certificates of the variant checker (docs/SB1_DEMO.md).
+                expected = (0 if target.primary else 4 if name in ('sb1/eggbert/demo', 'sb1/blupi/demo')
                             else 3 if '/eggbert/' in name else 2)
             else:
                 expected = 4 if name == 'sb2/eggbert/en' else 9
@@ -537,13 +538,46 @@ class SB1EquivalenceTests(unittest.TestCase):
             t = targets.load(name)
             entries = equiv.declarations(t,t.manifest())
             self.assertFalse(any(e['name']=='DoInit' for e in entries))
-            self.assertEqual(len(entries),0 if t.primary or name == 'sb1/blupi/demo' else 4 if name == 'sb1/eggbert/demo'
+            self.assertEqual(len(entries),0 if t.primary else 4 if name in ('sb1/eggbert/demo', 'sb1/blupi/demo')
                              else 3 if '/eggbert/' in name else 2)
             for entry in entries:
-                # GetBlupiInfo in the Speedy Eggbert Demo is a general region proof, not an SB1-specific one.
-                general = (name, entry['name']) == ('sb1/eggbert/demo', 'GetBlupiInfo')
+                # GetBlupiInfo in the Speedy Eggbert Demo and all June 1998 demo certificates are general
+                # region proofs, not SB1-specific ones.
+                general = (name, entry['name']) == ('sb1/eggbert/demo', 'GetBlupiInfo') or name == 'sb1/blupi/demo'
                 self.assertEqual(entry.get('proof_method'), None if general else 'sb1-local')
                 self.assertTrue(entry['certificate'].startswith('evidence/equivalence/'+t.slug+'/'))
+
+
+class VariantCheckerTests(unittest.TestCase):
+    """tools/equivalence_variant.py: only declaring targets use it, and its extent rule is narrow."""
+
+    def test_only_declaring_targets_use_the_variant(self):
+        import equivalence_variant as variant
+        for name in targets.names():
+            t = targets.load(name)
+            declared = targets.registry()['targets'][name].get('equivalence_checker')
+            self.assertIn(declared, (None, variant.NAME))
+            self.assertIs(variant.checker_for(t), variant if declared else equiv)
+        self.assertEqual([n for n in targets.names()
+                          if targets.registry()['targets'][n].get('equivalence_checker')], ['sb1/blupi/demo'])
+
+    def test_unequal_extents_must_be_declared_and_use_the_general_proof(self):
+        import equivalence_variant as variant
+        entry = dict(name='F', size=528)
+        self.assertEqual(variant.extents(entry, dict(code_size=528)), (528, 528))
+        with self.assertRaisesRegex(ValueError, 'extent changed'):
+            variant.extents(entry, dict(code_size=544))
+        self.assertEqual(variant.extents(dict(entry, candidate_size=544), dict(code_size=544)), (528, 544))
+        with self.assertRaisesRegex(ValueError, 'equal extents'):
+            variant.extents(dict(entry, candidate_size=528), dict(code_size=528))
+        with self.assertRaisesRegex(ValueError, 'general region proof'):
+            variant.extents(dict(entry, candidate_size=544, proof_method='sb1-local'), dict(code_size=544))
+
+    def test_variant_declarations_name_their_candidate_extent_only_when_it_differs(self):
+        for entry in targets.registry()['targets']['sb1/blupi/demo']['equivalent_functions']:
+            if 'candidate_size' in entry:
+                self.assertNotEqual(entry['candidate_size'], entry['size'])
+            self.assertTrue(entry['certificate'].startswith('evidence/equivalence/sb1-blupi-demo/'))
 
 
 if __name__ == '__main__':
