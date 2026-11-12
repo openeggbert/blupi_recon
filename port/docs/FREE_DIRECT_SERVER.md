@@ -149,6 +149,22 @@ In the browser: https://openeggbert.github.io/blupi_recon/, a program, the multi
 "Internet through a Free Direct server": the server is filled in; OK with an empty room creates one and
 the page shows a link for the other players.
 
+## "This web page may not use the server"
+
+The server refused the page's origin (error 7). `--allow-origin` must be the page's origin exactly as
+the browser sends it: scheme and host, no path and no trailing slash, so `https://openeggbert.github.io`
+for GitHub Pages (not `https://openeggbert.github.io/blupi_recon/`). The log names the origin it
+refused:
+
+```bash
+systemctl cat free-direct-server | grep ExecStart
+journalctl -u free-direct-server | grep refused
+```
+
+After changing the unit: `sudo systemctl daemon-reload && sudo systemctl restart free-direct-server`.
+Leaving `--allow-origin` out accepts every page; it is not an access control (room IDs are), it only
+keeps other sites from using the server.
+
 ## Notes
 
 - Behind nginx the server sees every browser player as 127.0.0.1, so its per-address limits (wrong room
