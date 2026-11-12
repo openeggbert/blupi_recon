@@ -55,6 +55,8 @@ void Usage(const Game& game)
         "  --net-server ADDRESS  Free Direct server for multiplayer through a server\n"
         "                      (name or IP[:port], ws:// or wss:// URL; prefills its screen)\n"
         "  --net-room ID       room on that server (prefills its screen; empty: a new room)\n"
+        "  --net-server-default ADDRESS  the server's screen shows this one when no server\n"
+        "                      is remembered (the web page's default server)\n"
         "  --version           print the version and exit\n"
         "  --language CODE     built-in pack or a pack in the user folder languages/\n"
         "test options:\n"
@@ -140,6 +142,7 @@ bool ParseOptions(int argc, char** argv, Options& o, Game& game)
         else if (a == "--net-test-sync") o.net.testSync=true;
         else if (a == "--net-server") { o.settings.netServer = next(); o.setNetServer = true; }
         else if (a == "--net-room") { o.settings.netRoom = next(); o.setNetRoom = true; }
+        else if (a == "--net-server-default") o.netServerDefault = next();
         else if (a == "--net-room-file") o.net.roomFile = next();
         else if (a == "--frames") o.ticks = atol(next());
         else if (a == "--trace") o.trace = next();
@@ -422,6 +425,7 @@ int Run(int argc, char** argv, Game& game)
         set.fullscreen = o.setFullscreen; set.scale = o.setScale; set.integerScale = o.setIntegerScale;
         set.language = o.setLanguage; set.netServer = o.setNetServer; set.netRoom = o.setNetRoom;
         o.settings = PortSettingsMerge(fromFile, o.settings, set);
+        if (o.settings.netServer.empty()) o.settings.netServer = o.netServerDefault;
         (*game.settings) = o.settings;
     }
     o.host.fullscreen = (*game.settings).fullscreen;

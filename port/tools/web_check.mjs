@@ -301,13 +301,15 @@ async function relayCheck() {
   await mkdir(user, {recursive: true});
   const client = spawn(path.resolve(options["relay-client"]), ["--data", path.resolve(dir), "--user", user, "--windowed",
     "--net-server", ws, "--net-room", room, "--input", path.join(inputs, "sb1_browser_client.input"),
-    "--frames", "1300", "--trace", path.join(output, "relay-client.trace")],
+    // Real time on both sides: the browser hosts at its own pace (slower on a busy machine), so the client
+    // runs well past the host's start at its frame 1000.
+    "--frames", "2000", "--trace", path.join(output, "relay-client.trace")],
     {stdio: ["ignore", "pipe", "pipe"], env: {...process.env, SDL_VIDEODRIVER: "offscreen", SDL_AUDIODRIVER: "dummy"}});
   browsers.push(client);
   let clientLog = "";
   client.stdout.on("data", (c) => clientLog += c);
   client.stderr.on("data", (c) => clientLog += c);
-  const exited = await Promise.race([once(client, "exit").then(([code]) => code), new Promise((r) => setTimeout(() => r("timeout"), 180000))]);
+  const exited = await Promise.race([once(client, "exit").then(([code]) => code), new Promise((r) => setTimeout(() => r("timeout"), 240000))]);
   await writeFile(path.join(output, "relay-client.log"), clientLog);
   await writeFile(path.join(output, "relay-server.log"), serverLog);
   const browserLog = await page.evaluate("document.querySelector('#log').textContent");

@@ -43,6 +43,7 @@ struct Options
     bool        setFullscreen = false, setScale = false, setIntegerScale = false;
     bool        setLanguage = false;
     bool        setNetServer = false, setNetRoom = false;
+    std::string netServerDefault;            // --net-server-default: when the settings have none
     bool        checkView = false;
     bool        checkWide = false;
     int         presentRepeat = 0;           // --present-repeat (test)

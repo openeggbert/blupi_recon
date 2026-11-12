@@ -22,6 +22,9 @@ const GAME_DIRS = new Set(["data", "image", "image08", "image16", "sound", "musi
 const MAX_EXE = 4 << 20;   // executables are read for their size and hash only (the installed language)
 
 const params = new URLSearchParams(location.search);
+// The Free Direct server the game's server screen offers until the player has used another one
+// (port/docs/MULTIPLAYER.md; on an https:// page a plain name means wss:// on port 443).
+const DEFAULT_SERVER = "fds.openeggbert.com";
 const program = params.get("program");
 const info = PROGRAMS[program];
 const $ = (id) => document.getElementById(id);
@@ -186,6 +189,7 @@ async function play() {
   // Multiplayer through a Free Direct server (port/docs/MULTIPLAYER.md): ?server= and ?room= fill the
   // game's server screen, so a link can bring a friend straight to a room.
   if (params.get("server")) args.push("--net-server", params.get("server"));
+  else args.push("--net-server-default", DEFAULT_SERVER);
   if (params.get("room")) args.push("--net-room", params.get("room"));
   const testInput = params.get("test-input");   // tests: a scripted input (port/tools/web_check.mjs)
   if (testInput) {

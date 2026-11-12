@@ -11,9 +11,12 @@
 
 namespace blupi::net {
 // A server address as players type it: a host name or IP, optionally :port, or a ws:// / wss:// URL.
-// Fills a ws:// or wss:// URL with the port (default 51325) and the path; false if it is not one.
-// A plain address becomes wss:// when secureDefault is set (a page served over https://).
+// Fills a ws:// or wss:// URL with the port and the path; false if it is not one. Without a port:
+// wss:// means 443 and ws:// 80; a plain address means the server's own 51325 (ws://), or, on a page
+// served over https:// (secureDefault), wss:// on 443, where a TLS proxy serves it (since 1.5.1).
 bool ServerUrl(const std::string& text, bool secureDefault, std::string& url);
+// The port a plain address gets: 443 on an https:// page, else 51325.
+unsigned DefaultServerPort(bool secureDefault);
 
 class WebSocket {
 public:

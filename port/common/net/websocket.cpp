@@ -32,6 +32,8 @@ bool StartsWith(const std::string& s, const char* prefix)
 }
 } // namespace
 
+unsigned DefaultServerPort(bool secureDefault) { return secureDefault ? 443 : kRelayPort; }
+
 bool ServerUrl(const std::string& typed, bool secureDefault, std::string& url)
 {
     size_t a = typed.find_first_not_of(" \t"), b = typed.find_last_not_of(" \t");
@@ -47,8 +49,9 @@ bool ServerUrl(const std::string& typed, bool secureDefault, std::string& url)
     for (char c : path) if ((unsigned char)c <= ' ' || c == '#') return false;
     size_t colon = hostPort.rfind(':');
     std::string host = hostPort.substr(0, colon);
-    // A URL without a port means its scheme's port (a TLS proxy on 443); a bare address the server's.
-    unsigned long port = explicitScheme ? (scheme == "wss" ? 443 : 80) : kRelayPort;
+    // A URL without a port means its scheme's port; a plain address the server's own port, or on an
+    // https:// page (wss://) 443, where a TLS proxy (nginx, Caddy) passes it on to the server.
+    unsigned long port = scheme == "wss" ? 443 : explicitScheme ? 80 : kRelayPort;
     if (colon != std::string::npos) {
         std::string digits = hostPort.substr(colon + 1);
         if (digits.empty() || digits.size() > 5 || digits.find_first_not_of("0123456789") != std::string::npos) return false;

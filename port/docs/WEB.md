@@ -40,8 +40,9 @@ unchanged, apart from the few points below. This is separate from the repository
   browser's WebSocket (`common/net/websocket.cpp`). The page's `?server=` and `?room=` fill the game's
   server screen; when the game creates a room, the page shows a link with both, for the other players.
   A page served over `https://` (GitHub Pages) can only reach a server over `wss://`, that is a server
-  with a TLS certificate or behind a TLS proxy (`free-direct-server --tls-cert`, or Caddy or nginx in
-  front of it). Desktop and browser players can share a room. [EVIDENCE] `port/tools/web_check.mjs
+  with a TLS certificate or behind a TLS proxy; there a plain name means `wss://` on port 443 (since
+  1.5.1). The page offers `fds.openeggbert.com` (`DEFAULT_SERVER` in `web/loader.js`), run as described
+  in [FREE_DIRECT_SERVER.md](FREE_DIRECT_SERVER.md). Desktop and browser players can share a room. [EVIDENCE] `port/tools/web_check.mjs
   --relay`: Chrome hosts, a native Linux program joins, both reach PLAY.
 - **No folder dialog in the program** (`host::choose_folder` returns nothing). The page does it
   before the start.
