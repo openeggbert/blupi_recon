@@ -3,9 +3,9 @@
 The single current status page for every historical executable and the SDL3 port, as of
 **2026-10-25** on branch `sb2-matching`. The rows for the Speedy Eggbert Demo and Valueware were added on
 **2026-11-11** (branch `editions`), fresh on that day. The function-matching, certificate and relink figures of the 14 earlier targets were
-re-run on that day with identical results; the port section was not re-run. On **2026-11-12** the
+re-run on that day with identical results. On **2026-11-12** the
 Russian edition was documented ([EGGBERT_RU.md](EGGBERT_RU.md)), the port's provenance map was
-updated, and this page moved to `main`.
+updated, this page moved to `main`, and the port section (5) was re-run for port 1.5.0.
  Each figure is marked **fresh** (re-run for this page) or
 **doc** (taken from the cited document). Progress is reported per executable; no figure here is a
 combined metric. The previous SB1-only page is preserved as
@@ -142,17 +142,28 @@ Fresh: consolidation stage 1, on commit `a4a2352`. Details are in [BUILDING.md](
 
 ## 5. SDL3 port
 
-The port is two native programs, `blupi-sdl3` (SB1, Eggbert 1) and `blupi2-sdl3` (Blupi 2, Eggbert 2).
-They compile the historical game TUs unchanged: 12 from `src/` and 11 from `games/sb2/src/`
-([port/README.md](../port/README.md)).
+The port is five native programs: `blupi-sdl3` (SB1, Eggbert 1), `blupi2-sdl3` (Blupi 2, Eggbert 2),
+and since 1.3.0 `eggbert-demo-sdl3`, `eggbert-value-sdl3` and `blupi-demo-sdl3` (the editions with
+source of their own). They compile the historical game TUs unchanged: 12 from `src/` and 11 from
+`games/sb2/src/` ([port/README.md](../port/README.md)). Release 1.5.0 has Windows, Linux, Android and
+web packages.
 
-**Fresh results (2026-10-25):**
+**Fresh results (2026-11-12, port 1.5.0, branch `port-1.5.0`):**
 
-- **Windows test suite: 269 / 269 passed**, serially, in 2,303 s: `ctest --test-dir build/port`
-  with the MinGW-x64 Ninja build. Linux and Android were not re-run (doc: the release receipts in
-  port/docs/RELEASING.md and ROADMAP.md).
-- **The provenance map passes:** `port/tools/check_fidelity.py --check`, with 139 edges and 0 issues
-  (fresh 2026-11-12: 141 edges and 0 issues, after the edges F473 and F474 of the two eGames editions).
+- **Linux test suite: 279 / 279 passed** (`ctest -j 4`, 1,436 s), with unplayed copies of every
+  edition's data, Blupi 2 included, and the Free Direct server tests (`net_sb1_relay`, `net_sb2_relay`).
+- **Windows:** the suite of the MinGW-w64 cross build under Wine (`port/tools/windows_release.sh`):
+  see port/docs/RELEASING.md, 1.5.0. On Windows 10 (VM), 1.4.0's package replayed the tour, editor and
+  German tour goldens and Speedy Eggbert 2's attract mode exactly.
+- **Web:** all five programs import a game folder, start and start again from the browser's storage in
+  Chrome and in Firefox 140 ESR (`port/tools/web_check.mjs`); a browser and a native Linux program
+  play one game through a Free Direct server in both browsers (`--relay`).
+- **Android:** the APK is built and signed, not run (no device or emulator on this host).
+- **Goldens:** recorded on unplayed data since 2026-11-12. Five of them had been recorded on a copy
+  whose `DATA` held the game's own player and user-mission files (`INFO001.BLP`, `U001-*.BLP`), which
+  the game reads too; they were re-recorded after showing that 1.2.0 and the current code give the
+  same traces on unplayed data (port commit messages of `port-tests`).
+- **The provenance map passes:** `port/tools/check_fidelity.py --check`, with 141 edges and 0 issues.
   The categories describe source relationships, not percentages of fidelity:
 
 | Target | Direct shared | Verified derivative | Verified platform replacement | Intentional difference | Unverified | Edges |
@@ -177,9 +188,10 @@ These are bounded receipts, not whole-game certification.
 
 - **Multiplayer:** both games have native multiplayer since port 1.2.0
   ([port/docs/MULTIPLAYER.md](../port/docs/MULTIPLAYER.md)): two to four players across Windows, Linux
-  and Android, with LAN discovery, a content check and `--net-join`. Tested automatically (two and four
-  players on one machine) and, for each game, by the user between real devices; little other
-  real-world play. No in-game address entry: Android joins LAN sessions only.
+  and Android, with LAN discovery, a content check and `--net-join`; an in-game address entry since
+  1.3.0; and since 1.5.0 play through a Free Direct server (rooms with secret IDs, no open ports), which
+  is also the browser's way. Tested automatically on one machine and, for each game, by the user between
+  real devices (1.2.0); little other real-world play.
 - **AVI movies:** not played; the phase is skipped.
 - **SB2 CD audio:** plays ripped tracks the player supplies (`music/trackNN.wav`, port 1.3.0); without
   them it fails and logs once. No archive holds the tracks.
@@ -199,6 +211,7 @@ These are bounded receipts, not whole-game certification.
 - **Consolidation.** Stages 1 (ordinary builds), 2 (this documentation) and 3 (port cleanup: Linux
   release and test portability, Android import, port docs; `083944a`) are done. Stages 4 and 5 are
   optional (docs/CONSOLIDATION_PLAN.md).
-- **Port.** 1.2.0 ships both games with native multiplayer (roadmap stage 10). Open: an in-game
-  address entry for internet play, real-network fault tests, and the optional consolidation stage 4
-  (shared language, pixmap and audio services).
+- **Port.** 1.5.0 ships the five programs on Windows, Linux and the web (the two games on Android),
+  with multiplayer on a LAN, by address, and through a Free Direct server. Open: running the Android
+  build on a device, real-network fault tests, and the optional consolidation stage 4 (shared
+  language, pixmap and audio services).
