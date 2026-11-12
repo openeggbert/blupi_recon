@@ -96,7 +96,8 @@ std::map<CNetwork*,std::unique_ptr<State>> states;
 bool internetSet=false;
 native::Endpoint internetEndpoint;
 // The Free Direct server provider's connection: one per program, kept while that provider stays
-// chosen, so its room outlives the sessions played in it.
+// chosen, so its room outlives the sessions played in it. Each game makes one CNetwork (DoInit), so
+// one session uses it at a time.
 native::Relay relay;
 long tick=0;
 FILE* audit=nullptr;

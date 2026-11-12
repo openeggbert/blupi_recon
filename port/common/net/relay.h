@@ -40,6 +40,8 @@ public:
     bool Data(uint8_t route, uint32_t target, const std::vector<uint8_t>& payload);
     void Service();                            // reads messages; events queue up
     bool Next(RelayEvent& event);
+    // Drops what is queued: events of a session that has been left (session.cpp, Close).
+    void DropEvents() { events.clear(); }
     void Disconnect();
     bool Connected() const { return connected; }
     const std::string& Room() const { return room; }

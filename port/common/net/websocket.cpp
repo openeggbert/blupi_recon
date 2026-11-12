@@ -214,6 +214,7 @@ struct WebSocket::Impl {
     uint16_t port = 0;
     ENetSocket socket = ENET_SOCKET_NULL;
     std::vector<uint8_t> in, out, partial;
+    bool fragmented = false;   // a data message continues in the next frames
     std::deque<std::vector<uint8_t>> messages;
     Clock::time_point deadline;
 
@@ -308,6 +309,7 @@ struct WebSocket::Impl {
         while (socket != ENET_SOCKET_NULL && in.size() >= 2) {
             const uint8_t b0 = in[0], b1 = in[1];
             if (b1 & 0x80) { Fail("the server masked a frame"); return; }
+            if (b0 & 0x70) { Fail("the server used a WebSocket extension"); return; }
             uint64_t length = b1 & 0x7f;
             size_t header = 2;
             if (length == 126) {
@@ -326,6 +328,11 @@ struct WebSocket::Impl {
             in.erase(in.begin(), in.begin() + header + size_t(length));
             const uint8_t opcode = b0 & 0x0f;
             const bool fin = (b0 & 0x80) != 0;
+            // Control frames are whole and short; a data message is one frame or a start frame and
+            // continuation frames, never interleaved with another (RFC 6455, 5.4 and 5.5).
+            if ((opcode & 0x8) && (!fin || length > 125)) { Fail("invalid control frame from the server"); return; }
+            if ((opcode == 0x1 || opcode == 0x2) && fragmented) { Fail("invalid fragments from the server"); return; }
+            if (opcode == 0x0 && !fragmented) { Fail("invalid fragments from the server"); return; }
             if (opcode == 0x9) { Frame(0xA, payload.data(), payload.size()); continue; }   // ping -> pong
             if (opcode == 0xA) continue;
             if (opcode == 0x8) {
@@ -342,6 +349,7 @@ struct WebSocket::Impl {
                 partial.insert(partial.end(), payload.begin(), payload.end());
                 if (partial.size() > kMaxMessage) { Fail("too large a message from the server"); return; }
             } else { Fail("unknown frame from the server"); return; }
+            fragmented = !fin;
             if (fin) messages.push_back(std::move(partial)), partial.clear();
         }
     }
@@ -432,6 +440,7 @@ void WebSocket::Close()
     p->in.clear();
     p->out.clear();
     p->partial.clear();
+    p->fragmented = false;
     p->messages.clear();
 }
 

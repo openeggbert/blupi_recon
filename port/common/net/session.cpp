@@ -448,6 +448,9 @@ void Session::Close(unsigned deadlineMs) {
         if (p->host) p->relay->CloseSession();
         else if (p->relayHost) p->relay->LeaveSession();
     }
+    // Whatever the server still sends about the old session (a late SessionEnded after a refusal, a
+    // peer's last message) must not reach the next one: Create and Join start with Close.
+    if (p->relay) { p->relay->Service(); p->relay->DropEvents(); }
     if (p->socket) {
         if (p->host) for (auto& [peer,state]:p->peers) enet_peer_disconnect_later(reinterpret_cast<ENetPeer*>(peer),0);
         else if (p->server) enet_peer_disconnect_later(p->server,0);

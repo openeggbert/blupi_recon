@@ -186,6 +186,7 @@ bool Relay::ListSessions(std::vector<RelaySession>& out)
             s.maxPlayers = r.U32(); s.players = r.U32(); s.name = r.Str();
             if (r.ok) out.push_back(s);
         }
+        if (!r.ok) { out.clear(); error = "the server's session list is not understood"; }
         return r.ok;
     }
     error = "the server does not answer";
@@ -208,6 +209,8 @@ bool Relay::JoinSession(const std::array<uint8_t, 16>& instance, uint32_t& host)
     return r.ok;
 }
 
+// The next four do not wait for an answer and ignore a failed send: when the connection is gone,
+// the server ends the session or drops the member itself, and Service() reports the broken connection.
 void Relay::CloseSession() { if (connected) socket.Send(Writer(CloseSessionMsg).b); }
 void Relay::LeaveSession() { if (connected) socket.Send(Writer(LeaveSessionMsg).b); }
 void Relay::Admit(uint32_t member) { if (connected) socket.Send(Writer(AdmitMsg).U32(member).b); }
