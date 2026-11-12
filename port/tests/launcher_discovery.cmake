@@ -1,6 +1,8 @@
 # Build a minimal installed-folder layout, without any original executables.
 # Prefer hard links; restricted NTFS ACLs may require copies of these startup files.
-# All game writes go to separate user directories.
+# All game writes go to separate user directories. A fresh folder each run: links left from an earlier
+# run (another data folder, or files the game wrote into one) would change what the program finds.
+file(REMOVE_RECURSE "${WORK}")
 file(MAKE_DIRECTORY "${WORK}/installed" "${WORK}/empty")
 get_filename_component(exe_name "${EXE}" NAME)
 configure_file("${EXE}" "${WORK}/installed/${exe_name}" COPYONLY)

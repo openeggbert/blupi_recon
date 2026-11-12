@@ -392,7 +392,9 @@ PEs use GUI subsystem 2 and their expected resource names. Details and remaining
 platform limits: `scratch/w-launcher/REPORT.md`.
 
 [EVIDENCE] Each game's recognizer now requires its own data marker in addition to
-config/title files: `data/demo200.blp` for SB1 and `data/bench.blp` for SB2. Wrong-game
+config/title files: `data/demo200.blp` for SB1 and `data/demo300.blp` for SB2 (until 1.4.0
+`data/bench.blp`, which the game only writes on its first run, so an unplayed Blupi 2 was
+rejected). Wrong-game
 folders are rejected before initialization, including executable-folder discovery
 and explicit `--data` with a valid fallback environment. Error and chooser text
 names the requested game family. The marker/variant audit and the explanation of

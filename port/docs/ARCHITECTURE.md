@@ -406,7 +406,8 @@ is final), the game's environment variable, remembered settings folder, executab
 folder, host data directories, then current folder. Desktop failure opens the shared
 first-run folder chooser, including immediate subfolders, and saves a valid choice.
 Both games require config/title files plus a per-game marker: SB1's recognizer
-requires `data/demo200.blp`, SB2's requires `data/bench.blp`. This prevents either
+requires `data/demo200.blp`, SB2's requires `data/demo300.blp` (shipped by both SB2 editions; not
+`bench.blp`, which the game writes on its first run). This prevents either
 launcher from accepting the other game's installed folder. Chooser and rejection
 messages name the requested game family.
 CD language-folder SOUND lookup is shared too. Headless runs neither load nor save

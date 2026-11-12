@@ -14,12 +14,12 @@ public final class GameFolderCheck {
         deleteTree(work);
         File sb1 = tree(work, "sb1", "DATA/Config.def", "DATA/DEMO200.BLP", "IMAGE08/INIT.BLP");
         File lower = tree(work, "lower", "data/config.def", "data/demo200.blp", "image08/init.blp");
-        File sb2 = tree(work, "sb2", "DATA/config.def", "DATA/bench.blp", "IMAGE08/init.blp");
+        File sb2 = tree(work, "sb2", "DATA/config.def", "DATA/demo300.blp", "IMAGE08/init.blp");
         File folders = tree(work, "folders", "DATA/", "IMAGE08/");
         File noMarker = tree(work, "nomarker", "DATA/CONFIG.DEF", "IMAGE08/INIT.BLP");
         File cd = tree(work, "cd", "ENGLISH/DATA/CONFIG.DEF", "ENGLISH/DATA/DEMO200.BLP",
                 "ENGLISH/IMAGE08/INIT.BLP", "SETUP/");
-        File sb2cd = tree(work, "sb2cd", "Game/DATA/config.def", "Game/DATA/bench.blp", "Game/IMAGE08/init.blp");
+        File sb2cd = tree(work, "sb2cd", "Game/DATA/config.def", "Game/DATA/demo300.blp", "Game/IMAGE08/init.blp");
         File empty = tree(work, "empty", "readme.txt");
 
         expect("SB1", GameFolder.recognize(sb1) == GameFolder.Kind.SB1);

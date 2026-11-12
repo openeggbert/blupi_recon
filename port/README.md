@@ -134,7 +134,7 @@ adapters and presentation remain in each game's `main.cpp`.
 Without `--data` the launcher tries `BLUPI_DATA` (SB1) or `BLUPI2_DATA` (SB2), the folder kept
 in that game's settings file, the executable's folder, `host::data_dirs()` and the current
 folder. Recognition also checks the game's marker (`data/demo200.blp` for SB1,
-`data/bench.blp` for SB2), so the other game's folder is rejected. An invalid explicit
+`data/demo300.blp` for SB2), so the other game's folder is rejected. An invalid explicit
 `--data` fails without falling back. When none holds the game,
 a desktop build asks for the folder (a
 message, then the system's folder dialog; a folder that contains the game, like the CD, works

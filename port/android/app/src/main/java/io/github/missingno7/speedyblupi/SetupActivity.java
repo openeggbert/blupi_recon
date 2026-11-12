@@ -126,7 +126,7 @@ public class SetupActivity extends Activity {
                 deleteTree(temp);
                 report(why == GameFolder.Kind.INCOMPLETE
                         ? "That folder's game files are incomplete (DATA/CONFIG.DEF, IMAGE08/INIT.BLP and "
-                          + "DATA/DEMO200.BLP or DATA/BENCH.BLP are needed)."
+                          + "DATA/DEMO200.BLP or DATA/DEMO300.BLP are needed)."
                         : "That folder does not contain the game (no DATA and IMAGE08 folders).", true);
                 return;
             }
