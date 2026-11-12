@@ -81,6 +81,15 @@ uninstall the debug build first, which also removes its imported game data.
 6. Tag `port-v<version>` on the release commit and publish a GitHub release with the three
    packages, `SHA256SUMS.txt` and the notes from `docs/RELEASE_NOTES.md`.
 
+## 1.3.0
+
+Only the Linux package was built for 1.3.0, on the release host itself (Debian 13, glibc 2.41), with
+`BLUPI_LINUX_WORK` inside the repository's `build/`. The SDL 3.4.16 sources came from the shared
+`~/deps/SDL3` checkout (its `release-3.4.16` tag). The test run excluded `fidelity_map` (it is run on the
+real tree), and the three goldens that fail on that host on `main` too (`golden_editor8/16`,
+`golden_tour16_de`). The package therefore needs glibc 2.41, not 2.35. Windows and Android packages of
+1.3.0 have not been built.
+
 ## The Ubuntu 22.04 build distro
 
 Installed once with `wsl --install -d Ubuntu-22.04 --no-launch` and used as root. Its packages:
