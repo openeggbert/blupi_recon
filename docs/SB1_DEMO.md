@@ -63,9 +63,7 @@ unchanged base.
 - [EVIDENCE] **`MockeryDetect`** (528 bytes): the same declaration-count effect as in the Speedy
   Eggbert Demo ([EGGBERT_DEMO.md](EGGBERT_DEMO.md)).
 - **32 bytes** of DirectX import thunks and padding, as in every target.
-- [OPEN] **No equivalence certificates.** `tools/equivalence_target.py` binds a retail pixmap getter
-  (`GetTrueColorBack`) for every SB1 target, and the June pixmap class has none. Changing the checker
-  would change the hash pinned in every existing certificate, so it was left as it is.
+- **All four functions have EQUIVALENT certificates since 2026-11-12** (next section).
 
 **Whole image** ([EVIDENCE], relink of the verified objects): same file size, same import order
 (128 imports), `.rsrc` equal except the 71 resource-directory timestamps, and `.data`
@@ -73,6 +71,44 @@ initialized content equal except 19 pointers into code that the relink places di
 `.data` is 32 bytes larger in virtual size, and `.text` 32 bytes larger: the folded destructor copy
 that LINK keeps and `ChangePhase` (16 bytes longer) move the code after them.
 
+
+## Equivalence certificates (2026-11-12)
+
+[EVIDENCE] The four residues above are EQUIVALENT: static local behavioural equivalence, with each
+byte status still MISMATCH ([VERIFYING.md](VERIFYING.md)). They were checked by
+`tools/verify.py --target sb1/blupi/demo` and counted with `tools/target_coverage.py`. The
+certificates are in `evidence/equivalence/sb1-blupi-demo/`.
+
+| Function | Original / candidate extent | Proof | Regions | Verified relocations |
+|---|---:|---|---:|---:|
+| `GetBlupiInfo` | 80 / 80 | region proof | 1 | 0 |
+| `QuickIcon` | 784 / 784 | region proof | 2 | 29 |
+| `MockeryDetect` | 528 / 544 | region proof | 2 | 1 |
+| `ChangePhase` | 6,688 / 6,704 | region proof with whole-CFG constant invariants (as SB2's `ChangePhase`) | 26 | 227 |
+
+| Tier | Bytes of game `.text` (140,784) |
+|---|---:|
+| STRICT + FOLDED | 132,672 (94.2 %) |
+| EQUIVALENT | 8,080 (5.7 %) |
+| Neither | 32 (DirectX import thunks and padding) |
+
+**Why a separate checker.** The certificates are checked by `tools/equivalence_variant.py`, which this
+target declares (`"equivalence_checker": "equivalence_variant"` in `targets.json`).
+`tools/equivalence_target.py` is pinned by hash in every existing certificate, so it stays unchanged.
+The variant uses its proof functions unchanged and differs in exactly two points:
+
+1. **The SB1 getter identity is skipped when it does not apply.** `equivalence_target` binds
+   `CPixmap::GetTrueColorBack` to the STRICT body of `CSound::GetEnable` for every SB1 target. The June
+   pixmap class has no true-colour field and no such method. The variant skips the binding only when no
+   object defines the getter and no relocation names it, so no proof can depend on it.
+2. **Unequal extents are allowed when declared.** `ChangePhase` and `MockeryDetect` are 16 bytes longer
+   than the originals. The region proof already maps the end of one body onto the end of the other. A
+   declaration gives `candidate_size` next to the original's `size`, and only when the two differ.
+   Coverage counts the original's size.
+
+Each certificate pins `equivalence_target.py` (`checker_sha256`) and the variant
+(`variant_checker_sha256`), and records which of the two points applied. All other targets still use
+`equivalence_target.py`, and the all-target regression comparison shows their reports unchanged.
 
 ## Target and toolchain
 

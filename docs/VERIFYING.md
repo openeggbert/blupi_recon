@@ -38,6 +38,10 @@ Masked, normalized or "only relocations differ" results are diagnostics, never m
 primary's two standalone certificates (ChangePhase, TreatEventBase; [STANDALONE.md](STANDALONE.md))
 are checked by `tools/equivalence.py`. `tools/equivalence_target.py` deliberately does not declare
 them as a target tier, so `target_coverage.py` shows no EQUIVALENT bytes for `sb1/blupi/us`.
+Secondary targets are checked by `tools/equivalence_target.py`. The one exception is the June 1998
+demo, which declares `tools/equivalence_variant.py` because it lacks the retail pixmap getter and has
+two functions with unequal extents ([SB1_DEMO.md](SB1_DEMO.md)). `equivalence_target.py` is pinned in
+every existing certificate; never edit it.
 
 ## Commands
 

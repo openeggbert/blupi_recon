@@ -8,6 +8,8 @@ tools/cmpfunc.py -text
 games/sb2/src/** -text
 games/sb2/blupi/** -text
 tools/cmpfunc_target.py -text
+# The June 1998 demo certificates pin the variant checker's raw hash.
+tools/equivalence_variant.py -text
 oracle/functions.csv -text
 oracle/sb2-eggbert-en/functions.csv -text
 # Vendored ENet (port/third_party/enet/README.md): upstream bytes unchanged.

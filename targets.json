@@ -2385,7 +2385,243 @@
       "manifest": "games/sb1-blupi-demo/recon.json",
       "oracle": "oracle/sb1-blupi-demo-tree",
       "defines": [],
-      "game_text_end": "0x235f0"
+      "game_text_end": "0x235f0",
+      "equivalence_checker": "equivalence_variant",
+      "equivalent_functions": [
+        {
+          "name": "GetBlupiInfo",
+          "symbol": "?GetBlupiInfo@CDecor@@QAEXPAH000@Z",
+          "tu": "games/sb1-blupi-demo/src/decblock.cpp",
+          "rva": "0x5690",
+          "size": 80,
+          "certificate": "evidence/equivalence/sb1-blupi-demo/GetBlupiInfo.json",
+          "returns_value": false,
+          "regions": [
+            [
+              "0xc",
+              "0x1a",
+              "0xc",
+              "0x1a"
+            ]
+          ]
+        },
+        {
+          "name": "MockeryDetect",
+          "symbol": "?MockeryDetect@CDecor@@QAEHUtagPOINT@@@Z",
+          "tu": "games/sb1-blupi-demo/src/decmove.cpp",
+          "rva": "0x131c0",
+          "size": 528,
+          "candidate_size": 544,
+          "certificate": "evidence/equivalence/sb1-blupi-demo/MockeryDetect.json",
+          "returns_value": true,
+          "regions": [
+            [
+              "0x4d",
+              "0x7b",
+              "0x4d",
+              "0x78"
+            ],
+            [
+              "0xa5",
+              "0xc8",
+              "0xa2",
+              "0xc3"
+            ]
+          ]
+        },
+        {
+          "name": "ChangePhase",
+          "symbol": "?ChangePhase@CEvent@@QAEHI@Z",
+          "tu": "games/sb1-blupi-demo/src/event.cpp",
+          "rva": "0x192f0",
+          "size": 6688,
+          "candidate_size": 6704,
+          "certificate": "evidence/equivalence/sb1-blupi-demo/ChangePhase.json",
+          "returns_value": true,
+          "constant_invariants": true,
+          "regions": [
+            [
+              "0x62",
+              "0x64",
+              "0x62",
+              "0x64"
+            ],
+            [
+              "0x69",
+              "0x6f",
+              "0x69",
+              "0x6f"
+            ],
+            [
+              "0x71",
+              "0x77",
+              "0x71",
+              "0x77"
+            ],
+            [
+              "0xaa",
+              "0xb1",
+              "0xaa",
+              "0xb1"
+            ],
+            [
+              "0xb3",
+              "0xb5",
+              "0xb3",
+              "0xb5"
+            ],
+            [
+              "0xb7",
+              "0xbd",
+              "0xb7",
+              "0xbd"
+            ],
+            [
+              "0x100",
+              "0x101",
+              "0x100",
+              "0x101"
+            ],
+            [
+              "0x11d",
+              "0x131",
+              "0x11d",
+              "0x131"
+            ],
+            [
+              "0x133",
+              "0x135",
+              "0x133",
+              "0x135"
+            ],
+            [
+              "0x180",
+              "0x187",
+              "0x180",
+              "0x187"
+            ],
+            [
+              "0x194",
+              "0x19a",
+              "0x194",
+              "0x19a"
+            ],
+            [
+              "0x19a",
+              "0x19c",
+              "0x19a",
+              "0x19c"
+            ],
+            [
+              "0x19e",
+              "0x1a4",
+              "0x19e",
+              "0x1a4"
+            ],
+            [
+              "0x1c9",
+              "0x1cb",
+              "0x1c9",
+              "0x1cb"
+            ],
+            [
+              "0x1e6",
+              "0x1e8",
+              "0x1e6",
+              "0x1e8"
+            ],
+            [
+              "0x1f0",
+              "0x1f2",
+              "0x1f0",
+              "0x1f2"
+            ],
+            [
+              "0x24d",
+              "0x24e",
+              "0x24d",
+              "0x24e"
+            ],
+            [
+              "0x250",
+              "0x256",
+              "0x250",
+              "0x256"
+            ],
+            [
+              "0x268",
+              "0x26a",
+              "0x268",
+              "0x26a"
+            ],
+            [
+              "0x26c",
+              "0x26d",
+              "0x26c",
+              "0x26d"
+            ],
+            [
+              "0x287",
+              "0x28e",
+              "0x287",
+              "0x28e"
+            ],
+            [
+              "0x4fc",
+              "0x4fd",
+              "0x4fc",
+              "0x4fd"
+            ],
+            [
+              "0x59f",
+              "0x5a1",
+              "0x59f",
+              "0x5a1"
+            ],
+            [
+              "0x5bd",
+              "0x5be",
+              "0x5bd",
+              "0x5bf"
+            ],
+            [
+              "0x5d6",
+              "0x5dc",
+              "0x5d7",
+              "0x5d9"
+            ],
+            [
+              "0x622",
+              "0x632",
+              "0x61f",
+              "0x62f"
+            ]
+          ]
+        },
+        {
+          "name": "QuickIcon",
+          "symbol": "?QuickIcon@CPixmap@@QAEXHHUtagPOINT@@@Z",
+          "tu": "games/sb1-blupi-demo/src/pixmap.cpp",
+          "rva": "0x21860",
+          "size": 784,
+          "certificate": "evidence/equivalence/sb1-blupi-demo/QuickIcon.json",
+          "returns_value": false,
+          "regions": [
+            [
+              "0x27c",
+              "0x283",
+              "0x27c",
+              "0x283"
+            ],
+            [
+              "0x2a3",
+              "0x2aa",
+              "0x2a3",
+              "0x2aa"
+            ]
+          ]
+        }
+      ]
     },
     "sb1/eggbert/demo": {
       "exe": "assets/downloads/eggbert_demo/WCSUP.DLL",

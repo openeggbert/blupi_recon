@@ -498,8 +498,8 @@ def main() -> int:
             import equivalence
             equivalence.check(manifest, comparison, evidence_objects, BUILD)
         elif TARGET.name.startswith(('sb1/', 'sb2/')):
-            import equivalence_target
-            equivalence_target.check(TARGET, manifest, comparison, evidence_objects, BUILD)
+            import equivalence_variant   # equivalence_target unless the target declares the variant checker
+            equivalence_variant.checker_for(TARGET).check(TARGET, manifest, comparison, evidence_objects, BUILD)
         if regressions:
             print("\nAccepted-function regression(s):")
             for error in regressions:
