@@ -141,6 +141,19 @@ bool PortSettingsLoad(const char* path, PortSettings& settings)
 	return true;
 }
 
+PortSettings PortSettingsMerge(const PortSettings& file, const PortSettings& given, const PortSettingsGiven& set)
+{
+	PortSettings s = file;
+	if (set.widescreen) s.widescreen = given.widescreen;
+	if (set.interpolate) s.interpolate = given.interpolate;
+	if (set.displayRate) s.displayRate = given.displayRate;
+	if (set.fullscreen) s.fullscreen = given.fullscreen;
+	if (set.scale) s.scale = given.scale;
+	if (set.integerScale) s.integerScale = given.integerScale;
+	if (set.language) s.language = given.language;
+	return s;
+}
+
 // The game's own keys (Win32 virtual-key numbers, the vocabulary of CEvent::TreatEvent):
 // Ctrl jumps, Space fires, Pause pauses, Escape leaves, Enter confirms.
 static int GamepadAction(const std::string& name)

@@ -407,16 +407,14 @@ int Run(int argc, char** argv, Game& game)
             (*game.settingsPath) = user + game.settingsFile;
             PortSettingsLoad((*game.settingsPath).c_str(), fromFile);
         }
-        PortSettings& s = o.settings;
-        if (!o.setWide) s.widescreen = fromFile.widescreen;
-        if (!o.setInterpolate) s.interpolate = fromFile.interpolate;
-        if (!o.setPresent) s.displayRate = fromFile.displayRate;
-        if (!o.setFullscreen) s.fullscreen = fromFile.fullscreen;
-        if (!o.setScale) s.scale = fromFile.scale;
-        if (!o.setIntegerScale) s.integerScale = fromFile.integerScale;
-        s.dataFolder = fromFile.dataFolder;
-        if (!o.setLanguage) s.language = fromFile.language;
-        (*game.settings) = s;
+        // Everything from the file (until 1.4.0 only the fields below were taken, so the gamepad keys
+        // and the server address were lost), then this run's options.
+        PortSettingsGiven set;
+        set.widescreen = o.setWide; set.interpolate = o.setInterpolate; set.displayRate = o.setPresent;
+        set.fullscreen = o.setFullscreen; set.scale = o.setScale; set.integerScale = o.setIntegerScale;
+        set.language = o.setLanguage;
+        o.settings = PortSettingsMerge(fromFile, o.settings, set);
+        (*game.settings) = o.settings;
     }
     o.host.fullscreen = (*game.settings).fullscreen;
     o.host.scale = (*game.settings).scale;
