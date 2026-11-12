@@ -6,6 +6,8 @@
 #include <SDL3/SDL.h>
 
 #include <deque>
+#include <map>
+#include <utility>
 #include <vector>
 
 namespace blupi::host
@@ -42,8 +44,100 @@ void open_gamepad(SDL_JoystickID id)
     if (SDL_Gamepad* pad = SDL_OpenGamepad(id)) g_pads.push_back(pad);
 }
 
+// The gamepad as the keyboard (set_gamepad_keys): the keys the pads hold, counted
+// per virtual key so that two sources of one key (the d-pad and the stick, or two
+// buttons mapped alike) press it once and release it with the last.
+bool g_padKeysOn = false;
+GamepadKeys g_padKeys;
+std::map<int, int> g_padHeld;          // virtual key -> sources holding it
+std::map<std::pair<SDL_JoystickID, int>, int> g_padSources;   // (pad, source) -> virtual key
+// Left stick past these magnitudes turns an arrow on, below the second off.
+constexpr int kStickOn = 16384, kStickOff = 12000;
+constexpr int kVkLeft = 0x25, kVkUp = 0x26, kVkRight = 0x27, kVkDown = 0x28;   // VK_LEFT..VK_DOWN
+
+void fill_buttons(Event& e);
+
+void pad_key(int vk, bool down)
+{
+    if (vk == 0) return;
+    int& count = g_padHeld[vk];
+    const int before = count;
+    count += down ? 1 : -1;
+    if (count < 0) count = 0;
+    if ((before == 0) == (count == 0)) return;   // another source still holds it, or none did
+    Event e{count ? EventType::KeyDown : EventType::KeyUp};
+    e.key = vk;
+    fill_buttons(e);
+    g_pending.push_back(e);
+}
+
+// One source (a button, a d-pad direction, a stick direction) of one pad.
+void pad_source(SDL_JoystickID pad, int source, int vk, bool down)
+{
+    const auto key = std::make_pair(pad, source);
+    auto it = g_padSources.find(key);
+    if (down)
+    {
+        if (it != g_padSources.end() || vk == 0) return;
+        g_padSources[key] = vk;
+        pad_key(vk, true);
+    }
+    else if (it != g_padSources.end())
+    {
+        const int held = it->second;
+        g_padSources.erase(it);
+        pad_key(held, false);
+    }
+}
+
+int pad_button_key(int button)
+{
+    const GamepadKeys& k = g_padKeys;
+    switch (button)
+    {
+    case SDL_GAMEPAD_BUTTON_SOUTH: return k.south;
+    case SDL_GAMEPAD_BUTTON_EAST: return k.east;
+    case SDL_GAMEPAD_BUTTON_WEST: return k.west;
+    case SDL_GAMEPAD_BUTTON_NORTH: return k.north;
+    case SDL_GAMEPAD_BUTTON_START: return k.start;
+    case SDL_GAMEPAD_BUTTON_BACK: return k.back;
+    case SDL_GAMEPAD_BUTTON_LEFT_SHOULDER: return k.leftShoulder;
+    case SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER: return k.rightShoulder;
+    case SDL_GAMEPAD_BUTTON_DPAD_LEFT: return k.arrows ? kVkLeft : 0;
+    case SDL_GAMEPAD_BUTTON_DPAD_RIGHT: return k.arrows ? kVkRight : 0;
+    case SDL_GAMEPAD_BUTTON_DPAD_UP: return k.arrows ? kVkUp : 0;
+    case SDL_GAMEPAD_BUTTON_DPAD_DOWN: return k.arrows ? kVkDown : 0;
+    default: return 0;
+    }
+}
+
+// Stick directions are sources above the button numbers.
+void pad_axis(SDL_JoystickID pad, int axis, int value)
+{
+    if (!g_padKeys.arrows || (axis != SDL_GAMEPAD_AXIS_LEFTX && axis != SDL_GAMEPAD_AXIS_LEFTY)) return;
+    const bool x = axis == SDL_GAMEPAD_AXIS_LEFTX;
+    const int negative = 1000 + axis * 2, positive = negative + 1;
+    const int vkNegative = x ? kVkLeft : kVkUp, vkPositive = x ? kVkRight : kVkDown;
+    const bool negativeHeld = g_padSources.count({pad, negative}) != 0;
+    const bool positiveHeld = g_padSources.count({pad, positive}) != 0;
+    pad_source(pad, negative, vkNegative, value <= -kStickOn || (negativeHeld && value <= -kStickOff));
+    pad_source(pad, positive, vkPositive, value >= kStickOn || (positiveHeld && value >= kStickOff));
+}
+
+void pad_release_all(SDL_JoystickID pad, bool everyPad)
+{
+    for (auto it = g_padSources.begin(); it != g_padSources.end();)
+    {
+        if (!everyPad && it->first.first != pad) { ++it; continue; }
+        const int held = it->second;
+        it = g_padSources.erase(it);
+        pad_key(held, false);
+    }
+}
+
 void close_gamepad(SDL_JoystickID id)
 {
+    pad_release_all(id, false);
     for (size_t i = 0; i < g_pads.size(); i++)
     {
         if (SDL_GetGamepadID(g_pads[i]) != id) continue;
@@ -232,6 +326,13 @@ bool translate(SDL_Event& ev, Event& out)
         return false;
     case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
     case SDL_EVENT_GAMEPAD_BUTTON_UP:
+        if (g_padKeysOn)
+        {
+            // The gamepad as the keyboard: the key events wait in g_pending.
+            pad_source(ev.gbutton.which, ev.gbutton.button, pad_button_key(ev.gbutton.button),
+                       ev.type == SDL_EVENT_GAMEPAD_BUTTON_DOWN);
+            return false;
+        }
         // Port convenience, not seen as a joystick button by the game: Start
         // is the Escape key (pause and back), so a gamepad alone can play.
         if (ev.gbutton.button != SDL_GAMEPAD_BUTTON_START) return false;
@@ -239,6 +340,9 @@ bool translate(SDL_Event& ev, Event& out)
         out.key = 0x1B;   // VK_ESCAPE
         fill_buttons(out);
         return true;
+    case SDL_EVENT_GAMEPAD_AXIS_MOTION:
+        if (g_padKeysOn) pad_axis(ev.gaxis.which, ev.gaxis.axis, ev.gaxis.value);
+        return false;
     case SDL_EVENT_KEY_DOWN:
     case SDL_EVENT_KEY_UP:
     {
@@ -410,7 +514,8 @@ bool wait_event(Event& event, uint64_t timeoutNs)
     SDL_Event ev;
     if (!SDL_WaitEventTimeout(&ev, ms)) return false;
     if (translate(ev, event)) return true;
-    return next_text(event);
+    if (next_text(event)) return true;
+    return poll_event(event);   // events translate() queued (touch, the gamepad as the keyboard)
 }
 
 void present(const uint32_t* argb, int width)
@@ -506,6 +611,26 @@ void set_touch_editor_images(const std::vector<uint32_t> released[4], const std:
                              int size)
 {
     touch::set_editor_images(released, pressed, size);
+}
+
+void set_gamepad_keys(const GamepadKeys* keys)
+{
+    if (keys == nullptr)
+    {
+        if (g_padKeysOn) pad_release_all(0, true);
+        g_padKeysOn = false;
+        return;
+    }
+    if (g_padKeysOn && (keys->south != g_padKeys.south || keys->east != g_padKeys.east ||
+                        keys->west != g_padKeys.west || keys->north != g_padKeys.north ||
+                        keys->start != g_padKeys.start || keys->back != g_padKeys.back ||
+                        keys->leftShoulder != g_padKeys.leftShoulder ||
+                        keys->rightShoulder != g_padKeys.rightShoulder || keys->arrows != g_padKeys.arrows))
+    {
+        pad_release_all(0, true);   // a new mapping: nothing stays held under the old one
+    }
+    g_padKeys = *keys;
+    g_padKeysOn = true;
 }
 
 int gamepad_count()

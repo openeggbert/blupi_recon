@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <vector>
+
 static int failures = 0;
 
 static void check(bool ok, const char* what)
@@ -107,6 +109,76 @@ int main()
 	SDL_SetJoystickVirtualButton(joy, SDL_GAMEPAD_BUTTON_START, false);
 	pump(&last);
 	check(last.type == blupi::host::EventType::KeyUp && last.key == 0x1B, "Start released releases Escape");
+
+	// The gamepad as the keyboard (set_gamepad_keys): the default mapping of the settings.
+	blupi::host::GamepadKeys keys;
+	keys.south = 0x11; keys.east = 0x20; keys.west = 0x20; keys.start = 0x13; keys.back = 0x1B;
+	blupi::host::set_gamepad_keys(&keys);
+	auto events = [&]() {
+		std::vector<blupi::host::Event> list;
+		blupi::host::Event e;
+		SDL_UpdateJoysticks();
+		while (blupi::host::poll_event(e)) list.push_back(e);
+		return list;
+	};
+	auto only = [](const std::vector<blupi::host::Event>& list, blupi::host::EventType type, int key) {
+		return list.size() == 1 && list[0].type == type && list[0].key == key;
+	};
+	using T = blupi::host::EventType;
+	SDL_SetJoystickVirtualButton(joy, SDL_GAMEPAD_BUTTON_SOUTH, true);
+	check(only(events(), T::KeyDown, 0x11), "keyboard mode: A presses Ctrl (jump)");
+	SDL_SetJoystickVirtualButton(joy, SDL_GAMEPAD_BUTTON_SOUTH, false);
+	check(only(events(), T::KeyUp, 0x11), "keyboard mode: A released releases Ctrl");
+	joyGetPosEx(0, &info);
+	check(info.dwButtons == 0, "the joystick reading is unchanged by the keyboard mode");
+
+	// B and X both fire: Space is pressed once and released with the last.
+	SDL_SetJoystickVirtualButton(joy, SDL_GAMEPAD_BUTTON_EAST, true);
+	check(only(events(), T::KeyDown, 0x20), "B presses Space (fire)");
+	SDL_SetJoystickVirtualButton(joy, SDL_GAMEPAD_BUTTON_WEST, true);
+	check(events().empty(), "X while B holds Space: no second press");
+	SDL_SetJoystickVirtualButton(joy, SDL_GAMEPAD_BUTTON_EAST, false);
+	check(events().empty(), "B released while X holds Space: still held");
+	SDL_SetJoystickVirtualButton(joy, SDL_GAMEPAD_BUTTON_WEST, false);
+	check(only(events(), T::KeyUp, 0x20), "the last of B and X released releases Space");
+
+	// The d-pad and the stick as the arrow keys, sharing them like the buttons.
+	SDL_SetJoystickVirtualButton(joy, SDL_GAMEPAD_BUTTON_DPAD_LEFT, true);
+	check(only(events(), T::KeyDown, 0x25), "d-pad left presses the left arrow");
+	SDL_SetJoystickVirtualAxis(joy, SDL_GAMEPAD_AXIS_LEFTX, -32768);
+	check(events().empty(), "stick left while the d-pad holds the left arrow: no second press");
+	SDL_SetJoystickVirtualButton(joy, SDL_GAMEPAD_BUTTON_DPAD_LEFT, false);
+	check(events().empty(), "d-pad released while the stick holds left: still held");
+	SDL_SetJoystickVirtualAxis(joy, SDL_GAMEPAD_AXIS_LEFTX, -14000);
+	check(events().empty(), "stick between the thresholds keeps the arrow (hysteresis)");
+	SDL_SetJoystickVirtualAxis(joy, SDL_GAMEPAD_AXIS_LEFTX, 0);
+	check(only(events(), T::KeyUp, 0x25), "stick centred releases the left arrow");
+	SDL_SetJoystickVirtualAxis(joy, SDL_GAMEPAD_AXIS_LEFTY, 32767);
+	check(only(events(), T::KeyDown, 0x28), "stick down presses the down arrow");
+	SDL_SetJoystickVirtualAxis(joy, SDL_GAMEPAD_AXIS_LEFTY, 0);
+	check(only(events(), T::KeyUp, 0x28), "stick centred releases the down arrow");
+
+	// Start pauses and Back leaves in this mode.
+	SDL_SetJoystickVirtualButton(joy, SDL_GAMEPAD_BUTTON_START, true);
+	check(only(events(), T::KeyDown, 0x13), "keyboard mode: Start presses Pause");
+	SDL_SetJoystickVirtualButton(joy, SDL_GAMEPAD_BUTTON_START, false);
+	check(only(events(), T::KeyUp, 0x13), "keyboard mode: Start released releases Pause");
+	SDL_SetJoystickVirtualButton(joy, SDL_GAMEPAD_BUTTON_BACK, true);
+	check(only(events(), T::KeyDown, 0x1B), "keyboard mode: Back presses Escape");
+	SDL_SetJoystickVirtualButton(joy, SDL_GAMEPAD_BUTTON_BACK, false);
+	check(only(events(), T::KeyUp, 0x1B), "keyboard mode: Back released releases Escape");
+
+	// Turning the mode off (the game switched to the joystick) releases what the pad holds.
+	SDL_SetJoystickVirtualButton(joy, SDL_GAMEPAD_BUTTON_SOUTH, true);
+	check(only(events(), T::KeyDown, 0x11), "A held before the mode is turned off");
+	blupi::host::set_gamepad_keys(nullptr);
+	check(only(events(), T::KeyUp, 0x11), "turning the mode off releases Ctrl");
+	SDL_SetJoystickVirtualButton(joy, SDL_GAMEPAD_BUTTON_SOUTH, false);
+	check(events().empty(), "A released after the mode is off: no key event");
+	SDL_SetJoystickVirtualButton(joy, SDL_GAMEPAD_BUTTON_START, true);
+	check(only(events(), T::KeyDown, 0x1B), "mode off: Start is Escape again");
+	SDL_SetJoystickVirtualButton(joy, SDL_GAMEPAD_BUTTON_START, false);
+	check(only(events(), T::KeyUp, 0x1B), "mode off: Start released releases Escape");
 
 	// Unplugged.
 	SDL_CloseJoystick(joy);

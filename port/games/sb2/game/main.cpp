@@ -503,7 +503,7 @@ static bool PortWideWorld(const PortFrame& frame)
 	return frame.world;
 }
 
-#define PORT_EVENT_MEMBERS(X) X(m_index) X(SearchPhase) X(m_buttons) X(m_bDemoPlay) X(m_demoNumber)
+#define PORT_EVENT_MEMBERS(X) X(m_index) X(SearchPhase) X(m_buttons) X(m_bDemoPlay) X(m_demoNumber) X(m_joyIndex)
 BLUPI_MEMBER_ACCESS(PortEventAccess, CEvent, PORT_EVENT_MEMBERS)
 
 // The editor in a wide view: its world is placed like the play view, its
@@ -1221,6 +1221,11 @@ int BlupiMain(int argc, char** argv)
     };
     game.maintenance = []() {
         if (g_pEvent == NULL) return;
+        // The gamepad as the keyboard while the game reads the keyboard (its input device choice;
+        // the joystick choice reads the pad itself), as in SB1. README, "Gamepads".
+        blupi::host::GamepadKeys keys;
+        PortGamepadKeys(g_settings, keys);
+        blupi::host::set_gamepad_keys(g_pEvent->*PortEventAccess::m_joyIndex == 0 ? &keys : nullptr);
         const UINT phase = g_pEvent->GetPhase();
         // Touch screens (Android), as in SB1: the play controls while the game is played; the
         // scroll pad in the editor, its buttons made from the game's own sprites when the editor

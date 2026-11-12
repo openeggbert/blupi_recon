@@ -279,6 +279,15 @@ Not implemented / known gaps (each fails the way the original did when the servi
   session, as in the original). Stick or d-pad move; A, B, X, Y are joystick buttons 1–4;
   Start is Escape (a port addition). Tested with a virtual gamepad (`ctest -R gamepad`), not
   yet with real hardware.
+  While the game is set to the keyboard (its default), a gamepad also works as the keyboard
+  (since 1.3.0, a port addition): the d-pad and the left stick are the arrow keys, A jumps
+  (Ctrl), B and X fire (Space), Start pauses (Pause) and Back leaves (Escape). Each button's
+  action is a key of `blupi-sdl3.json` / `blupi2-sdl3.json`: `gamepadA`, `gamepadB`, `gamepadX`,
+  `gamepadY`, `gamepadStart`, `gamepadBack`, `gamepadLeftShoulder`, `gamepadRightShoulder`, each
+  one of `jump`, `fire`, `pause`, `escape`, `enter`, `left`, `right`, `up`, `down` or `none`;
+  `gamepadArrows` (true/false) turns the arrow keys off. Once the gamepad is chosen as the input
+  device, the game reads it as its joystick as above and this mode is off. On Android this code
+  is built but untested.
 - **MouseType 2/3** (Windows cursors): mapped to SDL system cursors, not the original `.cur`
   shapes. The default MouseType 1 (game-drawn cursor) is exact.
 - The cross-build oracle covers the attract mode, the screen tour and an editor session, plus a
