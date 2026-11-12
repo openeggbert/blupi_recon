@@ -1,16 +1,40 @@
-# Speedy Blupi SDL3 port 1.2.0
+# Speedy Blupi SDL3 port 1.3.0
 
 The native port of **Speedy Blupi** (Epsitec, 1998) and **Speedy Blupi 2** (2001), and of their
 eGames editions **Speedy Eggbert** and **Speedy Eggbert 2**, for Windows, Linux and Android. It is
 built from this repository's reconstruction of the original programs' source, compiled unchanged with
 a modern compiler, plus a small platform layer on SDL3.
 
-Version 1.2 brings Speedy Blupi 2 and Speedy Eggbert 2, and the original multiplayer of all four
-games on a native network layer. It follows the release candidates 1.2.0-rc1 and 1.2.0-rc2; since
-rc2, Speedy Blupi 2 and Speedy Eggbert 2 have multiplayer too.
+Version 1.3 adds the Speedy Eggbert Demo, Speedy Eggbert SE Valueware and the June 1998 Speedy Blupi
+Demo as programs of their own, internet games from the game's own multiplayer screens, the gamepad as
+the keyboard, and Speedy Blupi 2's CD music from tracks you rip yourself. Version 1.2 brought Speedy
+Blupi 2 and Speedy Eggbert 2, and the original multiplayer of all four games.
 
 **The original games' files are not included.** You need your own copy of the game: the CD or the
 installed game. On the first start the port asks for its folder and remembers it.
+
+## New in 1.3
+
+- **Three more editions, each as a program of its own:** `eggbert-demo-sdl3` (Speedy Eggbert Demo,
+  eGames 1999), `eggbert-value-sdl3` (Speedy Eggbert SE Valueware v1.0) and `blupi-demo-sdl3` (Speedy
+  Blupi Demo v0.8, Epsitec, June 1998). Each is built from that edition's own reconstructed source and
+  plays it with its own title screen and its own restrictions, exactly as the original did. Each keeps
+  its own settings and saves. Point it at the edition's own folder (the demo's or the Valueware's).
+  Windows and Linux; not in the Android app.
+- **Internet games from the game itself:** the multiplayer provider list has a second entry, "Internet
+  (enter an address)". Choosing it asks for the address of the computer that created the game, then
+  lists and joins that game, as the original's Internet provider did. The address is remembered. The
+  host's game port (28640 by default) must be reachable from the joining computer. `--net-join` still
+  works.
+- **The gamepad as the keyboard:** while the game is set to the keyboard (its default), a gamepad also
+  works as the keyboard. The d-pad and the left stick are the arrow keys, A jumps, B and X fire, Start
+  pauses and Back leaves. Each button can be changed in the settings file (`gamepadA` …
+  `gamepadArrows`). Choosing the gamepad as the game's input device still uses it as the original's
+  joystick.
+- **Speedy Blupi 2's CD music:** with `CDAudio=1` in the game's `data/config.def`, Speedy Blupi 2 and
+  Speedy Eggbert 2 play the CD's music tracks, which you supply as WAV files ripped from your disc:
+  `music/track02.wav` and so on, in the game folder. The CD's audio tracks are not data files, so they
+  are not in your installed game or in disc images.
 
 ## New in 1.2
 
@@ -36,13 +60,16 @@ installed game. On the first start the port asks for its folder and remembers it
 
 | File | For |
 |---|---|
-| `speedy-blupi-sdl3-1.2.0-windows-x64.zip` | 64-bit Windows (tested on Windows 11): `blupi-sdl3.exe` and `blupi2-sdl3.exe` |
-| `speedy-blupi-sdl3-1.2.0-linux-x86_64.tar.gz` | x86-64 Linux with glibc 2.35 or newer (Ubuntu 22.04, Debian 12, Fedora 36 and later), X11 or Wayland |
-| `speedy-blupi-sdl3-1.2.0-android.apk` | Android 7.0 or newer, arm64 phones and tablets (and x86_64); all four games |
+| `speedy-blupi-sdl3-1.3.0-linux-x86_64.tar.gz` | x86-64 Linux with glibc 2.38 or newer (Debian 13, Ubuntu 24.04, Fedora 39 and later), X11 or Wayland: `blupi-sdl3`, `blupi2-sdl3`, `eggbert-demo-sdl3`, `eggbert-value-sdl3`, `blupi-demo-sdl3` |
 | `SHA256SUMS.txt` | checksums |
 
+For 1.3.0 only the Linux package was built, on Debian 13 (it needs glibc 2.38; the 1.2.0 package,
+built on Ubuntu 22.04, needed 2.35). Windows and Android packages of 1.3.0 have not been built yet;
+the 1.2.0 ones remain available.
+
 - **Windows and Linux:** unpack anywhere and start `blupi-sdl3` (Speedy Blupi, Speedy Eggbert) or
-  `blupi2-sdl3` (Speedy Blupi 2, Speedy Eggbert 2). The Windows executables are not code-signed, so
+  `blupi2-sdl3` (Speedy Blupi 2, Speedy Eggbert 2); for the demos and Valueware, `eggbert-demo-sdl3`,
+  `eggbert-value-sdl3` or `blupi-demo-sdl3`. The Windows executables are not code-signed, so
   SmartScreen may ask for confirmation ("More info", "Run anyway").
 - **Android:** install the APK; it updates 1.1.0 and the 1.2 release candidates in place and keeps your
   imported games.
@@ -76,16 +103,17 @@ installed game. On the first start the port asks for its folder and remembers it
 
 - **The intro and ending movies.** The original skipped them when the system could not play AVI, and
   the installed games do not include them.
-- **Speedy Blupi 2's CD audio tracks.**
+- **Speedy Blupi 2's CD audio tracks** themselves: supply them as WAV files ripped from your disc (above).
 
 ## Known limitations
 
 - **Multiplayer** is tested automatically (two and four players on one machine, Windows and Linux)
   and was played between real devices for both games, but has had little real-world play beyond that.
   Also:
-  - there is no in-game field for a host's address: use `--net-join`, or the local-network list;
   - an Android player who switches away from the game is likely to drop out of a session.
 - **Android:** a player's own language file goes into a `languages` folder inside the game folder before
-  importing it. Gamepads and running in the background have had little testing.
+  importing it. Gamepads and running in the background have had little testing. The 1.3 additions (the
+  Internet address screen, the gamepad as the keyboard) are built for Android but untested there, and the
+  edition programs are desktop only.
 - **Linux:** the first-run folder dialog needs the desktop's file chooser portal (or `zenity`). Without
   it, start the game with `--data "<game folder>"`, or put the port's files into the game's folder.

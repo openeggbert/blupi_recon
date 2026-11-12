@@ -9,7 +9,7 @@ and builds from the historical sources in `../src` and `../games/sb2/src` **with
 anything here. Rules for working in this directory: [AGENTS.md](AGENTS.md). Design and analysis:
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-Current release: **1.1.0** for Windows x64, Linux x86-64 and Android
+Current release: **1.3.0** (Linux x86-64 package; 1.2.0 for Windows x64 and Android)
 ([release notes](docs/RELEASE_NOTES.md); how a release is built and packed:
 [docs/RELEASING.md](docs/RELEASING.md)). Players use their own copy of the game.
 

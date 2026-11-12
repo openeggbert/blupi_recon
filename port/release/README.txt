@@ -5,13 +5,18 @@ Native versions of Speedy Blupi 1 (Epsitec, 1998) and Speedy Blupi 2 (2001),
 and of their eGames editions Speedy Eggbert 1 and Speedy Eggbert 2, for
 today's Windows and Linux. They are built from a reconstruction of the original
 programs' source. The games play like the originals, at their original 640x480
-and timing, and add optional widescreen, smooth motion and display settings.
-Multiplayer is not available yet.
+and timing, and add optional widescreen, smooth motion and display settings,
+and the original multiplayer on a native network layer.
 
 The original games' files are NOT included: you need your own copy of the
 game (the CD, or the game installed from it).
   - blupi-sdl3: Speedy Blupi 1 (version 1.0) or Speedy Eggbert 1 (1.1).
   - blupi2-sdl3: Speedy Blupi 2 or Speedy Eggbert 2.
+  - eggbert-demo-sdl3: the Speedy Eggbert Demo (eGames, 1999).
+  - eggbert-value-sdl3: Speedy Eggbert SE Valueware (eGames, 1999).
+  - blupi-demo-sdl3: the Speedy Blupi Demo (version 0.8, June 1998).
+    The demos and Valueware are built from their own reconstructed source
+    and keep their own restrictions; give each its own edition's folder.
 
 The version number at the top is the port's own. The game's own version is
 shown on its title screen.
@@ -43,8 +48,8 @@ Windows: 64-bit Windows (tested on Windows 11). The program is not
 code-signed, so SmartScreen may warn about an unknown publisher: choose
 "More info", then "Run anyway".
 
-Linux: x86-64 with glibc 2.35 or newer (for example Ubuntu 22.04, Debian 12
-or Fedora 36 and later), under X11 or Wayland. The SDL3 library comes with
+Linux: x86-64 with glibc 2.38 or newer (for example Debian 13, Ubuntu 24.04
+or Fedora 39 and later), under X11 or Wayland. The SDL3 library comes with
 the game (libSDL3.so.0, next to the program).
 
 
@@ -53,8 +58,12 @@ Playing
 
 Everything works as in the original: the keyboard (arrow keys, Ctrl to jump,
 Space to fire, Escape to pause), the mouse in the menus and the editor, and
-gamepads (choose the gamepad under "Choose input device" in the game's
-settings; Start pauses). Alt+Enter switches between window and full screen.
+gamepads. A gamepad works as the keyboard while the game is set to the
+keyboard: the d-pad or left stick moves, A jumps, B and X fire, Start pauses,
+Back leaves (change them with gamepadA ... gamepadArrows in the settings
+file). Choosing the gamepad under "Choose input device" in the game's
+settings makes it the original's joystick instead. Alt+Enter switches
+between window and full screen.
 
 The port's own options are on the game's settings screen, under
 "Display options":
@@ -84,7 +93,9 @@ Android players can play together if they have the same game and edition
 (Speedy Blupi, Speedy Eggbert, Speedy Blupi 2 or Speedy Eggbert 2) and the
 same multiplayer levels; the language may differ.
 
-To join a host over the internet, start with --net-join HOST[:PORT]. A host
+To join a host over the internet, choose the provider "Internet (enter an
+address)" and type the host's address (with :port if it is not 28640), or
+start with --net-join HOST[:PORT]. A host
 uses UDP ports 28640 (game) and 28641 (discovery): allow them in your
 firewall (and forward them on your router for internet play). --net-port N
 chooses other ports. If the host leaves, the session ends for everyone.
