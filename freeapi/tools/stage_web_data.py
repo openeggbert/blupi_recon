@@ -1,0 +1,111 @@
+#!/usr/bin/env python3
+"""Copy one installation's game data into an isolated Emscripten preload tree."""
+import argparse
+import hashlib
+import json
+import re
+import shutil
+from pathlib import Path
+
+
+ASSET_EXTENSIONS = {'.blp', '.bmp', '.wav', '.mid', '.midi', '.pal', '.png', '.jpg', '.jpeg'}
+DIRECTORIES = {'DATA': 'data_seed', 'IMAGE08': 'image08', 'IMAGE16': 'image16', 'SOUND': 'sound'}
+
+
+def stage_hires(pack, output, files):
+    """Copy a higher-resolution image pack (IMAGE08/IMAGE16 laid out like the
+    game) to output/hires; without a pack, remove a previously staged one."""
+    target_root = output / 'hires'
+    if pack is None:
+        if target_root.is_dir():
+            shutil.rmtree(target_root)
+        return
+    folders = {p.name.lower(): p for p in pack.iterdir() if p.is_dir()}
+    destinations = set()
+    for original in ('IMAGE08', 'IMAGE16'):
+        directory = folders.get(original.lower())
+        if directory is None:
+            continue
+        for file in sorted(directory.rglob('*')):
+            if not file.is_file() or file.suffix.lower() not in ASSET_EXTENSIONS:
+                continue
+            destination = f'hires/{original.lower()}/{file.relative_to(directory).as_posix().lower()}'
+            if destination in destinations:
+                raise ValueError(f'Case-insensitive filename collision: {destination}')
+            destinations.add(destination)
+            content = file.read_bytes()
+            target = output / destination
+            target.parent.mkdir(parents=True, exist_ok=True)
+            if not target.is_file() or target.read_bytes() != content:
+                target.write_bytes(content)
+            files.append({'source': 'hires:' + file.relative_to(pack).as_posix(), 'path': destination,
+                          'size': len(content), 'sha256': hashlib.sha256(content).hexdigest()})
+    if not destinations:
+        raise ValueError(f'No IMAGE08/IMAGE16 images in the hires pack {pack}')
+    for target in target_root.rglob('*'):
+        if target.is_file() and target.relative_to(output).as_posix() not in destinations:
+            target.unlink()
+
+
+def stage(source, output, hires=None):
+    repo = Path(__file__).resolve().parents[2]
+    if not any(output.is_relative_to(repo / name) for name in ('build', 'scratch')):
+        raise ValueError('Stage game data inside the repository build/ or scratch/ directory')
+    sources = {p.name.lower(): p for p in source.iterdir() if p.is_dir()}
+    files, excluded, destinations = [], [], set()
+    for original, virtual in DIRECTORIES.items():
+        directory = sources.get(original.lower())
+        if directory is None:
+            raise ValueError(f'Missing {original} in {source}')
+        count = 0
+        for file in sorted(directory.rglob('*')):
+            if not file.is_file():
+                continue
+            relative = file.relative_to(directory).as_posix().lower()
+            # Seed official levels and replays, without installation-specific
+            # player profiles, saved games, benchmark output or user missions.
+            accepted = (bool(re.fullmatch(r'(?:world\d{3}|demo\d{3})\.blp|config\.def', relative))
+                        if original == 'DATA' else file.suffix.lower() in ASSET_EXTENSIONS)
+            if not accepted:
+                excluded.append(file.relative_to(source).as_posix())
+                continue
+            destination = f'{virtual}/{relative}'
+            if destination in destinations:
+                raise ValueError(f'Case-insensitive filename collision: {destination}')
+            destinations.add(destination)
+            content = file.read_bytes()
+            target = output / destination
+            target.parent.mkdir(parents=True, exist_ok=True)
+            if not target.is_file() or target.read_bytes() != content:
+                target.write_bytes(content)
+            files.append({'source': file.relative_to(source).as_posix(), 'path': destination,
+                          'size': len(content), 'sha256': hashlib.sha256(content).hexdigest()})
+            count += 1
+        if not count:
+            raise ValueError(f'No supported game data in {directory}')
+    if 'data_seed/config.def' not in destinations:
+        raise ValueError(f'Missing DATA/config.def in {source}')
+    # Prune only the four generated subtrees, never the source installation.
+    for virtual in DIRECTORIES.values():
+        for target in (output / virtual).rglob('*'):
+            if target.is_file() and target.relative_to(output).as_posix() not in destinations:
+                target.unlink()
+    stage_hires(hires, output, files)
+    manifest = {'source': str(source), 'files': files, 'excluded': excluded}
+    if hires is not None:
+        manifest['hires'] = str(hires)
+    (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
+    print(f'Staged {len(files)} files ({sum(f["size"] for f in files)} bytes) from {source}')
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--source', type=Path, required=True)
+    parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--hires', type=Path, help='optional higher-resolution image pack (IMAGE08/IMAGE16)')
+    args = parser.parse_args()
+    stage(args.source.resolve(), args.output.resolve(), args.hires.resolve() if args.hires else None)
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,257 @@
+# Separate from the matching build and the SDL3 port. Historical files are
+# compiled unchanged against sibling Free API / Free Direct checkouts.
+cmake_minimum_required(VERSION 3.23)
+project(BLUPI_RECON_FREEAPI LANGUAGES C CXX)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "" FORCE)
+endif()
+set_property(GLOBAL PROPERTY JOB_POOLS compile_pool=4)
+set(CMAKE_JOB_POOL_COMPILE compile_pool)
+
+set(BLUPI_GAME sb1 CACHE STRING "Game: sb1 or sb2")
+set_property(CACHE BLUPI_GAME PROPERTY STRINGS sb1 sb2)
+set(BLUPI_DEFINES "" CACHE STRING "Build-wide target defines, separated by ';'")
+set(BLUPI_DEFAULT_EDITION blupi)
+# The prototype selected Eggbert with BLUPI_DEFINES=_EGAMES=1. Retain that
+# selection when an existing native build directory is first reconfigured.
+if("_EGAMES=1" IN_LIST BLUPI_DEFINES)
+    set(BLUPI_DEFAULT_EDITION eggbert)
+endif()
+set(BLUPI_EDITION "${BLUPI_DEFAULT_EDITION}" CACHE STRING "Edition: blupi or eggbert")
+set_property(CACHE BLUPI_EDITION PROPERTY STRINGS blupi eggbert)
+if(NOT BLUPI_GAME MATCHES "^sb[12]$" OR NOT BLUPI_EDITION MATCHES "^(blupi|eggbert)$")
+    message(FATAL_ERROR "Use BLUPI_GAME=sb1|sb2 and BLUPI_EDITION=blupi|eggbert")
+endif()
+get_filename_component(BLUPI_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE)
+if(BLUPI_GAME STREQUAL "sb1")
+    set(BLUPI_HIST_SRC "${BLUPI_ROOT}/src")
+    set(BLUPI_DEFAULT_RC "${BLUPI_HIST_SRC}/res/blupi.rc")
+    set(BLUPI_EXE blupi-freeapi)
+else()
+    set(BLUPI_HIST_SRC "${BLUPI_ROOT}/games/sb2/src")
+    set(BLUPI_DEFAULT_RC "${BLUPI_ROOT}/games/sb2/res/sb2-${BLUPI_EDITION}-en.rc")
+    set(BLUPI_EXE blupi2-freeapi)
+endif()
+set(BLUPI_TARGET_DEFINES _EGAMES=0)
+if(BLUPI_EDITION STREQUAL "eggbert")
+    set(BLUPI_TARGET_DEFINES _EGAMES=1)
+    if(BLUPI_GAME STREQUAL "sb1")
+        set(BLUPI_DEFAULT_RC "${BLUPI_HIST_SRC}/res/sb1-eggbert-en.rc")
+    endif()
+endif()
+if(("_EGAMES=1" IN_LIST BLUPI_DEFINES AND BLUPI_EDITION STREQUAL "blupi") OR
+   ("_EGAMES=0" IN_LIST BLUPI_DEFINES AND BLUPI_EDITION STREQUAL "eggbert"))
+    message(FATAL_ERROR "BLUPI_DEFINES _EGAMES conflicts with BLUPI_EDITION")
+endif()
+if(BLUPI_DEFINES)
+    list(APPEND BLUPI_TARGET_DEFINES ${BLUPI_DEFINES})
+    list(REMOVE_DUPLICATES BLUPI_TARGET_DEFINES)
+endif()
+set(BLUPI_RC_FILE "${BLUPI_DEFAULT_RC}" CACHE FILEPATH "String-table resource script")
+set(BLUPI_FREE_API_DIR "${BLUPI_ROOT}/../free-api" CACHE PATH "Free API checkout")
+set(BLUPI_FREE_DIRECT_DIR "${BLUPI_ROOT}/../free-direct" CACHE PATH "Free Direct checkout")
+
+if(EMSCRIPTEN)
+    # Every object, including dependencies, must use the same pthread ABI.
+    add_compile_options(-pthread)
+    add_link_options(-pthread)
+endif()
+find_package(SDL3 3.4.0 REQUIRED CONFIG)
+find_package(SDL3_image 3.4.0 REQUIRED CONFIG)
+find_package(SDL3_mixer 3.2.0 REQUIRED CONFIG)
+set(FREE_API_BUILD_TESTS OFF CACHE BOOL "")
+set(FREE_API_BUILD_EXAMPLES OFF CACHE BOOL "")
+set(FREE_DIRECT_BUILD_TESTS OFF CACHE BOOL "")
+set(FREE_API_TARGET_GAME blupi-recon CACHE STRING "" FORCE)
+set(FREE_API_BLUPI_RECON_RC "${BLUPI_RC_FILE}" CACHE FILEPATH "" FORCE)
+set(FREE_DIRECT_HONOR_DISPLAY_BPP ON CACHE BOOL "" FORCE)
+# Internet multiplayer through a Free Direct server (../../free-direct/docs/free-direct-server.md):
+# the game's provider list gains "FreeDirect server". The web build needs nothing else; a native
+# build needs IXWebSocket (FREE_DIRECT_IXWEBSOCKET_SOURCE_DIR, or an installed package).
+option(BLUPI_NET_SERVER "Offer Internet multiplayer through a Free Direct server" ON)
+set(BLUPI_NET_SERVER_ENABLED OFF)
+if(BLUPI_NET_SERVER)
+    if(EMSCRIPTEN OR FREE_DIRECT_IXWEBSOCKET_SOURCE_DIR)
+        set(BLUPI_NET_SERVER_ENABLED ON)
+    else()
+        find_package(ixwebsocket CONFIG QUIET)
+        if(TARGET ixwebsocket::ixwebsocket)
+            set(BLUPI_NET_SERVER_ENABLED ON)
+        else()
+            message(WARNING "No IXWebSocket: this native build has no \"FreeDirect server\" provider. "
+                    "Set FREE_DIRECT_IXWEBSOCKET_SOURCE_DIR to an IXWebSocket checkout, or BLUPI_NET_SERVER=OFF.")
+        endif()
+    endif()
+endif()
+set(FREE_DIRECT_ENABLE_RELAY ${BLUPI_NET_SERVER_ENABLED} CACHE BOOL "" FORCE)
+# Local-network multiplayer in native builds: the provider "FreeDirect" over Free Direct's ENet
+# backend, with LAN discovery (../../free-direct/docs/networking-backends.md). Without ENet that
+# provider only reaches the same process. Needs an ENet checkout (FREE_DIRECT_ENET_SOURCE_DIR,
+# or free-direct's third_party/enet) or a system libenet. Browsers have no UDP: web builds use
+# a Free Direct server instead.
+option(BLUPI_NET_LAN "Offer local-network multiplayer (ENet) in native builds" ON)
+set(BLUPI_NET_LAN_ENABLED OFF)
+if(BLUPI_NET_LAN AND NOT EMSCRIPTEN)
+    if(FREE_DIRECT_USE_SYSTEM_ENET OR
+       (FREE_DIRECT_ENET_SOURCE_DIR AND EXISTS "${FREE_DIRECT_ENET_SOURCE_DIR}/CMakeLists.txt") OR
+       EXISTS "${BLUPI_FREE_DIRECT_DIR}/third_party/enet/CMakeLists.txt")
+        set(BLUPI_NET_LAN_ENABLED ON)
+    else()
+        find_package(PkgConfig QUIET)
+        if(PkgConfig_FOUND)
+            pkg_check_modules(BLUPI_SYSTEM_ENET QUIET libenet)
+        endif()
+        if(BLUPI_SYSTEM_ENET_FOUND)
+            set(FREE_DIRECT_USE_SYSTEM_ENET ON CACHE BOOL "" FORCE)
+            set(BLUPI_NET_LAN_ENABLED ON)
+        else()
+            message(WARNING "No ENet: this native build has no local-network multiplayer. Set "
+                    "FREE_DIRECT_ENET_SOURCE_DIR to an ENet checkout, install libenet, or BLUPI_NET_LAN=OFF.")
+        endif()
+    endif()
+endif()
+set(FREE_DIRECT_ENABLE_ENET ${BLUPI_NET_LAN_ENABLED} CACHE BOOL "" FORCE)
+# Rooms admit only the same game, edition and string table (language).
+get_filename_component(BLUPI_RC_NAME "${BLUPI_RC_FILE}" NAME_WE)
+set(FREE_DIRECT_RELAY_COMPAT "blupi_recon/${BLUPI_GAME}-${BLUPI_EDITION}/${BLUPI_RC_NAME}/1" CACHE STRING "" FORCE)
+add_subdirectory("${BLUPI_FREE_API_DIR}" free-api EXCLUDE_FROM_ALL)
+add_subdirectory("${BLUPI_FREE_DIRECT_DIR}" free-direct EXCLUDE_FROM_ALL)
+
+# Stage SB2 Blupi's complete tree so all quoted includes see edition headers,
+# as in tools/source_tree.py. Preserve original bytes, including CP1252 text.
+if(BLUPI_GAME STREQUAL "sb2" AND BLUPI_EDITION STREQUAL "blupi")
+    file(GLOB BLUPI_BASE_FILES CONFIGURE_DEPENDS "${BLUPI_HIST_SRC}/*.cpp" "${BLUPI_HIST_SRC}/*.h")
+    file(GLOB BLUPI_OVERLAY_FILES CONFIGURE_DEPENDS "${BLUPI_ROOT}/games/sb2/blupi/*.cpp" "${BLUPI_ROOT}/games/sb2/blupi/*.h")
+    set(BLUPI_EFFECTIVE_SRC "${CMAKE_CURRENT_BINARY_DIR}/historical")
+    set(BLUPI_LOGICAL_FILES "")
+    foreach(source IN LISTS BLUPI_BASE_FILES BLUPI_OVERLAY_FILES)
+        get_filename_component(name "${source}" NAME)
+        list(APPEND BLUPI_LOGICAL_FILES "${name}")
+    endforeach()
+    list(REMOVE_DUPLICATES BLUPI_LOGICAL_FILES)
+    foreach(name IN LISTS BLUPI_LOGICAL_FILES)
+        set(source "${BLUPI_ROOT}/games/sb2/blupi/${name}")
+        if(NOT EXISTS "${source}")
+            set(source "${BLUPI_HIST_SRC}/${name}")
+        endif()
+        configure_file("${source}" "${BLUPI_EFFECTIVE_SRC}/${name}" COPYONLY)
+    endforeach()
+else()
+    set(BLUPI_EFFECTIVE_SRC "${BLUPI_HIST_SRC}")
+endif()
+set(BLUPI_CASE_DIR "${CMAKE_CURRENT_BINARY_DIR}/compat_case")
+file(MAKE_DIRECTORY "${BLUPI_CASE_DIR}")
+if(NOT CMAKE_HOST_WIN32)
+    file(CONFIGURE OUTPUT "${BLUPI_CASE_DIR}/DEF.H" CONTENT "#include \"${BLUPI_EFFECTIVE_SRC}/def.h\"\n" @ONLY)
+    file(CONFIGURE OUTPUT "${BLUPI_CASE_DIR}/WTypes.h" CONTENT "#include <wtypes.h>\n" @ONLY)
+    file(CONFIGURE OUTPUT "${BLUPI_CASE_DIR}/Windows.h" CONTENT "#include <windows.h>\n" @ONLY)
+endif()
+
+add_library(blupi_msvc_crt STATIC compat/msvc_crt.cpp)
+target_link_libraries(blupi_msvc_crt PRIVATE free-api)
+file(GLOB BLUPI_HIST_TUS CONFIGURE_DEPENDS "${BLUPI_EFFECTIVE_SRC}/*.cpp")
+add_executable(${BLUPI_EXE} ${BLUPI_HIST_TUS})
+target_include_directories(${BLUPI_EXE} PRIVATE "${BLUPI_CASE_DIR}" "${BLUPI_EFFECTIVE_SRC}")
+target_link_libraries(${BLUPI_EXE} PRIVATE blupi_msvc_crt free-api free-direct)
+target_compile_definitions(${BLUPI_EXE} PRIVATE WIN32 _WINDOWS NDEBUG ${BLUPI_TARGET_DEFINES})
+target_compile_options(${BLUPI_EXE} PRIVATE
+    "SHELL:-include \"${CMAKE_CURRENT_SOURCE_DIR}/compat/msvc_crt.h\""
+    -fno-strict-aliasing -fwrapv -fsigned-char -w
+    $<$<CXX_COMPILER_ID:GNU>:-finput-charset=CP1252;-fexec-charset=CP1252;-fpermissive>
+    $<$<CXX_COMPILER_ID:Clang>:-fms-extensions;-Wno-c++11-narrowing>)
+
+if(WIN32)
+    # Windows (cmake/mingw-w64-x86_64.cmake, tools/build_windows.sh): a GUI program that sets
+    # its defaults from the folder it sits in (windows/entry.cpp), and needs no MinGW DLLs.
+    # SDL3 and SDL3_image stay DLLs (deps/CMakeLists.txt says why).
+    target_sources(${BLUPI_EXE} PRIVATE windows/entry.cpp)
+    set_source_files_properties(windows/entry.cpp PROPERTIES COMPILE_OPTIONS "-DBLUPI_MSVC_CRT_IMPLEMENTATION")
+    target_link_libraries(${BLUPI_EXE} PRIVATE SDL3::SDL3)
+    set_target_properties(${BLUPI_EXE} PROPERTIES WIN32_EXECUTABLE ON)
+    target_link_options(${BLUPI_EXE} PRIVATE -static)
+endif()
+
+option(BLUPI_FREEAPI_PRESENTATION_TESTS "Build native coordinate/presentation regression" OFF)
+if(BLUPI_FREEAPI_PRESENTATION_TESTS AND NOT EMSCRIPTEN)
+    add_executable(blupi_presentation_test tests/presentation.cpp)
+    target_link_libraries(blupi_presentation_test PRIVATE free-api free-direct SDL3::SDL3)
+endif()
+
+if(EMSCRIPTEN)
+    # The user-authorized installations are read-only build inputs. Only
+    # generated copies under build/ enter the web package; never any EXE/DLL.
+    set(BLUPI_WEB_DATA_ROOT /rv/tmp/speedy-blupi-games CACHE PATH "Installed game data for web packages")
+    if(BLUPI_GAME STREQUAL "sb1" AND BLUPI_EDITION STREQUAL "blupi")
+        set(BLUPI_WEB_DATA_NAME Speedy_Blupi_I)
+    elseif(BLUPI_GAME STREQUAL "sb1")
+        set(BLUPI_WEB_DATA_NAME "Speedy Eggbert/Game")
+    elseif(BLUPI_EDITION STREQUAL "blupi")
+        set(BLUPI_WEB_DATA_NAME Speedy_Blupi_II)
+    else()
+        set(BLUPI_WEB_DATA_NAME Speedy_Eggbert_2)
+    endif()
+    set(BLUPI_WEB_DATA_DIR "" CACHE PATH "Optional override for this edition's installed data")
+    set(BLUPI_WEB_INSTALL "${BLUPI_WEB_DATA_ROOT}/${BLUPI_WEB_DATA_NAME}")
+    if(BLUPI_WEB_DATA_DIR)
+        set(BLUPI_WEB_INSTALL "${BLUPI_WEB_DATA_DIR}")
+    endif()
+    if(NOT IS_DIRECTORY "${BLUPI_WEB_INSTALL}")
+        message(FATAL_ERROR "Missing game data: ${BLUPI_WEB_INSTALL} (set BLUPI_WEB_DATA_ROOT or BLUPI_WEB_DATA_DIR)")
+    endif()
+    find_package(Python3 3.9 REQUIRED COMPONENTS Interpreter)
+    set(BLUPI_WEB_ASSETS "${CMAKE_CURRENT_BINARY_DIR}/assets")
+    file(GLOB_RECURSE BLUPI_WEB_INPUTS CONFIGURE_DEPENDS "${BLUPI_WEB_INSTALL}/*")
+    # Optional higher-resolution images (README.md, "Higher-resolution images"):
+    # a folder with IMAGE08/IMAGE16 laid out like the game's, every image
+    # BLUPI_WEB_HIRES_SCALE times the original's size. Staged as /hires.
+    set(BLUPI_WEB_HIRES_PACK "" CACHE PATH "Optional higher-resolution image pack for this edition")
+    set(BLUPI_WEB_HIRES_SCALE 2 CACHE STRING "Scale of BLUPI_WEB_HIRES_PACK's images (2..4)")
+    set(BLUPI_WEB_STAGE_HIRES "")
+    set(BLUPI_WEB_HIRES_INPUTS "")
+    set(BLUPI_WEB_HIRES_ATTRIBUTE 0)
+    if(BLUPI_WEB_HIRES_PACK)
+        if(NOT IS_DIRECTORY "${BLUPI_WEB_HIRES_PACK}" OR NOT BLUPI_WEB_HIRES_SCALE MATCHES "^[2-4]$")
+            message(FATAL_ERROR "BLUPI_WEB_HIRES_PACK must be a folder and BLUPI_WEB_HIRES_SCALE 2..4")
+        endif()
+        file(GLOB_RECURSE BLUPI_WEB_HIRES_INPUTS CONFIGURE_DEPENDS "${BLUPI_WEB_HIRES_PACK}/*")
+        set(BLUPI_WEB_STAGE_HIRES --hires "${BLUPI_WEB_HIRES_PACK}")
+        set(BLUPI_WEB_HIRES_ATTRIBUTE "${BLUPI_WEB_HIRES_SCALE}")
+    endif()
+    add_custom_command(OUTPUT "${BLUPI_WEB_ASSETS}/manifest.json"
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tools/stage_web_data.py"
+            --source "${BLUPI_WEB_INSTALL}" --output "${BLUPI_WEB_ASSETS}" ${BLUPI_WEB_STAGE_HIRES}
+        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/tools/stage_web_data.py" ${BLUPI_WEB_INPUTS} ${BLUPI_WEB_HIRES_INPUTS}
+        VERBATIM)
+    add_custom_target(blupi_web_data DEPENDS "${BLUPI_WEB_ASSETS}/manifest.json")
+    add_dependencies(${BLUPI_EXE} blupi_web_data)
+    set_property(TARGET ${BLUPI_EXE} APPEND PROPERTY LINK_DEPENDS "${BLUPI_WEB_ASSETS}/manifest.json")
+    target_sources(${BLUPI_EXE} PRIVATE web/entry.cpp)
+    set_source_files_properties(web/entry.cpp PROPERTIES COMPILE_OPTIONS "-DBLUPI_MSVC_CRT_IMPLEMENTATION")
+    set_target_properties(${BLUPI_EXE} PROPERTIES
+        OUTPUT_NAME game SUFFIX ".js" RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/web")
+    target_link_options(${BLUPI_EXE} PRIVATE
+        -sALLOW_MEMORY_GROWTH=1 -sINITIAL_MEMORY=134217728 -sSTACK_SIZE=8388608
+        -sPTHREAD_POOL_SIZE=4 -sASYNCIFY -sASYNCIFY_STACK_SIZE=1048576
+        -sFORCE_FILESYSTEM=1 -lidbfs.js
+        "-sEXPORTED_RUNTIME_METHODS=['FS','IDBFS','callMain']"
+        -sEXIT_RUNTIME=1 -sENVIRONMENT=web,worker
+        -Wl,--wrap=PeekMessageA -Wl,--wrap=WaitMessage)
+    set(BLUPI_WEB_PRELOAD data_seed image08 image16 sound)
+    if(BLUPI_WEB_HIRES_PACK)
+        list(APPEND BLUPI_WEB_PRELOAD hires)
+    endif()
+    foreach(directory IN LISTS BLUPI_WEB_PRELOAD)
+        target_link_options(${BLUPI_EXE} PRIVATE "SHELL:--preload-file \"${BLUPI_WEB_ASSETS}/${directory}@/${directory}\"")
+    endforeach()
+    add_custom_command(TARGET ${BLUPI_EXE} POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E true
+        BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/web/game.data")
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/web")
+    configure_file(web/game.html.in "${CMAKE_CURRENT_BINARY_DIR}/web/index.html" @ONLY)
+    configure_file(web/player.js "${CMAKE_CURRENT_BINARY_DIR}/web/player.js" COPYONLY)
+    configure_file(web/style.css "${CMAKE_CURRENT_BINARY_DIR}/web/style.css" COPYONLY)
+    configure_file("${BLUPI_ROOT}/LICENSE" "${CMAKE_CURRENT_BINARY_DIR}/web/COPYING.txt" COPYONLY)
+endif()

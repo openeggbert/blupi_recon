@@ -14,6 +14,9 @@ code. The same sources also drive a native SDL3 port for Windows, Linux and Andr
 - **SDL3 port.** [port/README.md](port/README.md): the faithful 640×480 games, plus optional
   widescreen and smooth motion. They compile the historical game sources unchanged. Players use their
   own copy of the game data. Multiplayer is not available yet; it is a required upcoming milestone.
+- **Web through Free API / Free Direct.** [freeapi/README.md](freeapi/README.md): all four games
+  compiled to WebAssembly from their historical sources, with bundled game data and browser saves.
+  Build with `bash freeapi/tools/build_web.sh` in an activated Emscripten environment.
 
 | Read | For |
 |---|---|
@@ -46,6 +49,7 @@ code. The same sources also drive a native SDL3 port for Windows, Linux and Andr
 | `oracle/`, `evidence/`, `tests/` | Oracle inventories, equivalence certificates, tests |
 | `msvc5kb/`, `steering/` | MSVC 5 code-generation knowledge base; a steering demonstration (never canonical source) |
 | `port/` | The SDL3 port: `common/`, `games/sb1/`, `games/sb2/`, its own build, docs and provenance map |
+| `freeapi/` | Separate native/web builds on the sibling `free-api` and `free-direct` compatibility libraries |
 
 **Not in the repository:**
 
