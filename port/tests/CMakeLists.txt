@@ -1,6 +1,16 @@
 # Port tests. Unit tests need nothing but the build; the replay tests need the
 # original game data: configure with -DBLUPI_TEST_DATA=<folder with DATA/ ...>.
 
+# A Windows build made on Linux (port/tools/windows_release.sh) runs its tests through
+# CMAKE_CROSSCOMPILING_EMULATOR (Wine). CTest adds it where a test's command is a target; the
+# drivers below start programs by path instead, $<TARGET_FILE:...>${BLUPI_TEST_LAUNCHER}. In such a
+# build that path is a launcher script next to the program (<program>.exe.sh, made at the end of
+# this file); elsewhere BLUPI_TEST_LAUNCHER is empty and the path is the program itself.
+set(BLUPI_TEST_LAUNCHER "")
+if(WIN32 AND CMAKE_CROSSCOMPILING AND CMAKE_CROSSCOMPILING_EMULATOR)
+    set(BLUPI_TEST_LAUNCHER ".sh")
+endif()
+
 add_executable(test_render test_render.cpp)
 target_link_libraries(test_render PRIVATE blupi_render)
 add_test(NAME render COMMAND test_render)
@@ -38,14 +48,14 @@ if(BLUPI_TEST_DATA)
     function(blupi_golden name every args)
         add_test(NAME golden_${name}
             COMMAND ${CMAKE_COMMAND}
-                -DEXE=$<TARGET_FILE:blupi> -DDATA=${BLUPI_TEST_DATA}
+                -DEXE=$<TARGET_FILE:blupi>${BLUPI_TEST_LAUNCHER} -DDATA=${BLUPI_TEST_DATA}
                 -DWORK=${CMAKE_CURRENT_BINARY_DIR}/golden_${name}
                 -DGOLDEN=${golden}/${name}.trace -DEVERY=${every} "-DARGS=${args}"
                 -DUPDATE=${BLUPI_UPDATE_GOLDEN}
                 -P ${CMAKE_CURRENT_SOURCE_DIR}/golden_check.cmake)
         add_test(NAME golden_${name}_reference
             COMMAND ${CMAKE_COMMAND}
-                -DEXE=$<TARGET_FILE:blupi> -DDATA=${BLUPI_TEST_DATA}
+                -DEXE=$<TARGET_FILE:blupi>${BLUPI_TEST_LAUNCHER} -DDATA=${BLUPI_TEST_DATA}
                 -DWORK=${CMAKE_CURRENT_BINARY_DIR}/golden_${name}_reference
                 -DGOLDEN=${golden}/${name}.trace -DEVERY=${every} "-DARGS=--reference ${args}"
                 -DUPDATE=OFF
@@ -54,7 +64,7 @@ if(BLUPI_TEST_DATA)
         # must give the same trace (stage-4 gate).
         add_test(NAME golden_${name}_rerender
             COMMAND ${CMAKE_COMMAND}
-                -DEXE=$<TARGET_FILE:blupi> -DDATA=${BLUPI_TEST_DATA}
+                -DEXE=$<TARGET_FILE:blupi>${BLUPI_TEST_LAUNCHER} -DDATA=${BLUPI_TEST_DATA}
                 -DWORK=${CMAKE_CURRENT_BINARY_DIR}/golden_${name}_rerender
                 -DGOLDEN=${golden}/${name}.trace -DEVERY=${every} "-DARGS=--render-repeat 3 ${args}"
                 -DUPDATE=OFF
@@ -63,7 +73,7 @@ if(BLUPI_TEST_DATA)
         # the cursor 3 extra times per tick must give the same trace.
         add_test(NAME golden_${name}_present
             COMMAND ${CMAKE_COMMAND}
-                -DEXE=$<TARGET_FILE:blupi> -DDATA=${BLUPI_TEST_DATA}
+                -DEXE=$<TARGET_FILE:blupi>${BLUPI_TEST_LAUNCHER} -DDATA=${BLUPI_TEST_DATA}
                 -DWORK=${CMAKE_CURRENT_BINARY_DIR}/golden_${name}_present
                 -DGOLDEN=${golden}/${name}.trace -DEVERY=${every} "-DARGS=--present-repeat 3 ${args}"
                 -DUPDATE=OFF
@@ -73,7 +83,7 @@ if(BLUPI_TEST_DATA)
         # faithful frame's commands (--check-view, exit code 5).
         add_test(NAME golden_${name}_interp
             COMMAND ${CMAKE_COMMAND}
-                -DEXE=$<TARGET_FILE:blupi> -DDATA=${BLUPI_TEST_DATA}
+                -DEXE=$<TARGET_FILE:blupi>${BLUPI_TEST_LAUNCHER} -DDATA=${BLUPI_TEST_DATA}
                 -DWORK=${CMAKE_CURRENT_BINARY_DIR}/golden_${name}_interp
                 -DGOLDEN=${golden}/${name}.trace -DEVERY=${every}
                 "-DARGS=--interpolate --check-view --present-repeat 3 ${args}"
@@ -83,7 +93,7 @@ if(BLUPI_TEST_DATA)
         # tick; the wide view changes no state.
         add_test(NAME golden_${name}_wide
             COMMAND ${CMAKE_COMMAND}
-                -DEXE=$<TARGET_FILE:blupi> -DDATA=${BLUPI_TEST_DATA}
+                -DEXE=$<TARGET_FILE:blupi>${BLUPI_TEST_LAUNCHER} -DDATA=${BLUPI_TEST_DATA}
                 -DWORK=${CMAKE_CURRENT_BINARY_DIR}/golden_${name}_wide
                 -DGOLDEN=${golden}/${name}.trace -DEVERY=${every}
                 "-DARGS=--wide 16:9 --interpolate --check-view --present-repeat 3 ${args}"
@@ -150,7 +160,7 @@ if(BLUPI_TEST_DATA)
         # mapping goes through the frame), so every editor frame is compared.
         add_test(NAME wide_editor${depth}
             COMMAND ${CMAKE_COMMAND}
-                -DEXE=$<TARGET_FILE:blupi> -DDATA=${BLUPI_TEST_DATA}
+                -DEXE=$<TARGET_FILE:blupi>${BLUPI_TEST_LAUNCHER} -DDATA=${BLUPI_TEST_DATA}
                 -DWORK=${CMAKE_CURRENT_BINARY_DIR}/wide_e${depth}
                 "-DARGS=--color ${depth} --frames 360 --input ${golden}/editor.input --wide 21:9 --check-wide"
                 -P ${CMAKE_CURRENT_SOURCE_DIR}/run_fresh.cmake)
@@ -162,7 +172,7 @@ if(BLUPI_TEST_DATA)
     # reaches the game (options_baseline.input), without the screen.
     add_test(NAME golden_options16
         COMMAND ${CMAKE_COMMAND}
-            -DEXE=$<TARGET_FILE:blupi> -DDATA=${BLUPI_TEST_DATA}
+            -DEXE=$<TARGET_FILE:blupi>${BLUPI_TEST_LAUNCHER} -DDATA=${BLUPI_TEST_DATA}
             -DWORK=${CMAKE_CURRENT_BINARY_DIR}/golden_options16
             -DGOLDEN=${golden}/options16.trace -DEVERY=5
             "-DARGS=--color 16 --frames 800 --input ${golden}/tour.input --input ${golden}/options_baseline.input"
@@ -170,7 +180,7 @@ if(BLUPI_TEST_DATA)
             -P ${CMAKE_CURRENT_SOURCE_DIR}/golden_check.cmake)
     add_test(NAME golden_options16_screen
         COMMAND ${CMAKE_COMMAND}
-            -DEXE=$<TARGET_FILE:blupi> -DDATA=${BLUPI_TEST_DATA}
+            -DEXE=$<TARGET_FILE:blupi>${BLUPI_TEST_LAUNCHER} -DDATA=${BLUPI_TEST_DATA}
             -DWORK=${CMAKE_CURRENT_BINARY_DIR}/golden_options16_screen
             -DGOLDEN=${golden}/options16.trace -DEVERY=5
             "-DARGS=--color 16 --frames 800 --input ${golden}/tour.input --input ${golden}/options.input --present-repeat 1"
@@ -208,7 +218,7 @@ endif()
 if(BLUPI_TEST_DATA AND BLUPI_TEST_SOUNDFONT)
     add_test(NAME music_notify
         COMMAND ${CMAKE_COMMAND}
-            -DEXE=$<TARGET_FILE:blupi> -DDATA=${BLUPI_TEST_DATA} -DSOUNDFONT=${BLUPI_TEST_SOUNDFONT}
+            -DEXE=$<TARGET_FILE:blupi>${BLUPI_TEST_LAUNCHER} -DDATA=${BLUPI_TEST_DATA} -DSOUNDFONT=${BLUPI_TEST_SOUNDFONT}
             -DWORK=${CMAKE_CURRENT_BINARY_DIR}/music_notify
             -P ${CMAKE_CURRENT_SOURCE_DIR}/music_notify.cmake)
 endif()
@@ -259,7 +269,7 @@ set(BLUPI_TEST_DATA_EGGBERT "" CACHE PATH "Speedy Eggbert 1 game root, for its r
 if(BLUPI_TEST_DATA_EGGBERT)
     add_test(NAME golden_eggbert_attract16
         COMMAND ${CMAKE_COMMAND}
-            -DEXE=$<TARGET_FILE:blupi> -DDATA=${BLUPI_TEST_DATA_EGGBERT}
+            -DEXE=$<TARGET_FILE:blupi>${BLUPI_TEST_LAUNCHER} -DDATA=${BLUPI_TEST_DATA_EGGBERT}
             -DWORK=${CMAKE_CURRENT_BINARY_DIR}/golden_eggbert_attract16
             -DGOLDEN=${CMAKE_CURRENT_SOURCE_DIR}/golden/eggbert_attract16.trace -DEVERY=10
             "-DARGS=--color 16 --frames 7500"
@@ -291,14 +301,14 @@ foreach(game sb1 sb2_eggbert sb2_blupi)
     if(oracle_data)
         foreach(depth 8 16)
             add_test(NAME oracle_display_${game}_${depth}
-                COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:${oracle_exe}> -DDATA=${oracle_data}
+                COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:${oracle_exe}>${BLUPI_TEST_LAUNCHER} -DDATA=${oracle_data}
                     -DWORK=${CMAKE_CURRENT_BINARY_DIR}/oracle_${game}_${depth}
                     -DBUILDROOT=${CMAKE_CURRENT_BINARY_DIR} -DDEPTH=${depth}
                     -P ${CMAKE_CURRENT_SOURCE_DIR}/oracle_display.cmake)
         endforeach()
         if(NOT game STREQUAL "sb1")
             add_test(NAME ${game}_mixed_depth
-                COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:${oracle_exe}> -DDATA=${oracle_data}
+                COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:${oracle_exe}>${BLUPI_TEST_LAUNCHER} -DDATA=${oracle_data}
                     -DWORK=${CMAKE_CURRENT_BINARY_DIR}/mixed_depth_${game}
                     -DBUILDROOT=${CMAKE_CURRENT_BINARY_DIR}
                     -P ${CMAKE_CURRENT_SOURCE_DIR}/sb2_mixed_depth.cmake)
@@ -318,7 +328,7 @@ foreach(target blupi blupi2)
         set(extra --demo-log)
     endif()
     add_test(NAME launcher_help_${target}
-        COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:${target}> -DNAME=${app_name}
+        COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:${target}>${BLUPI_TEST_LAUNCHER} -DNAME=${app_name}
             -DENVIRONMENT=${data_env} -DEXTRA=${extra}
             -DVERSION_FILE=${PROJECT_SOURCE_DIR}/VERSION.txt
             -P ${CMAKE_CURRENT_SOURCE_DIR}/launcher_help.cmake)
@@ -343,7 +353,7 @@ function(sb2_mode_goldens name data every args script)
             endif()
         endif()
         add_test(NAME golden_${name}_${mode}
-            COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2> -DDATA=${data}
+            COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2>${BLUPI_TEST_LAUNCHER} -DDATA=${data}
                 -DWORK=${CMAKE_CURRENT_BINARY_DIR}/golden_${name}_${mode}
                 -DGOLDEN=${CMAKE_CURRENT_SOURCE_DIR}/golden/${name}.trace -DEVERY=${every}
                 "-DARGS=${args} ${extra}" -DSCENARIO=${scenario} -DEDITION=${edition}
@@ -370,7 +380,7 @@ foreach(edition eggbert blupi)
                 endif()
                 set(scene_name scene_sb2_${edition}_${scenario}${depth})
                 add_test(NAME ${scene_name}
-                    COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2> -DDATA=${sb2_data}
+                    COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2>${BLUPI_TEST_LAUNCHER} -DDATA=${sb2_data}
                         -DWORK=${CMAKE_CURRENT_BINARY_DIR}/${scene_name}
                         "-DARGS=--color ${depth} ${scene_args}"
                         -P ${CMAKE_CURRENT_SOURCE_DIR}/sb2_scene.cmake)
@@ -378,7 +388,7 @@ foreach(edition eggbert blupi)
             set(name sb2_${edition}_attract${depth})
             sb2_mode_goldens(${name} "${sb2_data}" 10 "--color ${depth} --frames 8000" sb2_golden.cmake)
             add_test(NAME golden_${name}
-                COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2> -DDATA=${sb2_data}
+                COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2>${BLUPI_TEST_LAUNCHER} -DDATA=${sb2_data}
                     -DWORK=${CMAKE_CURRENT_BINARY_DIR}/golden_${name}
                     -DGOLDEN=${CMAKE_CURRENT_SOURCE_DIR}/golden/${name}.trace -DEVERY=10
                     "-DARGS=--color ${depth} --frames 8000" -DUPDATE=${BLUPI2_UPDATE_GOLDEN}
@@ -389,7 +399,7 @@ foreach(edition eggbert blupi)
                     "--color ${depth} --frames 260 --input ${CMAKE_CURRENT_SOURCE_DIR}/golden/sb2_${scenario}.input"
                     sb2_menu.cmake)
                 add_test(NAME golden_${name}
-                    COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2> -DDATA=${sb2_data}
+                    COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2>${BLUPI_TEST_LAUNCHER} -DDATA=${sb2_data}
                         -DWORK=${CMAKE_CURRENT_BINARY_DIR}/golden_${name}
                         -DGOLDEN=${CMAKE_CURRENT_SOURCE_DIR}/golden/${name}.trace -DEVERY=5
                         "-DARGS=--color ${depth} --frames 260 --input ${CMAKE_CURRENT_SOURCE_DIR}/golden/sb2_${scenario}.input"
@@ -399,21 +409,21 @@ foreach(edition eggbert blupi)
         endforeach()
         foreach(depth 8 16)
             add_test(NAME presentation_sb2_${edition}_${depth}
-                COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2> -DDATA=${sb2_data}
+                COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2>${BLUPI_TEST_LAUNCHER} -DDATA=${sb2_data}
                     -DWORK=${CMAKE_CURRENT_BINARY_DIR}/presentation_sb2_${edition}_${depth}
                     -DDEPTH=${depth} -P ${CMAKE_CURRENT_SOURCE_DIR}/sb2_presentation.cmake)
         endforeach()
         add_test(NAME preferences_sb2_${edition}
-            COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2> -DDATA=${sb2_data}
+            COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2>${BLUPI_TEST_LAUNCHER} -DDATA=${sb2_data}
                 -DWORK=${CMAKE_CURRENT_BINARY_DIR}/preferences_sb2_${edition}
                 -P ${CMAKE_CURRENT_SOURCE_DIR}/sb2_preferences.cmake)
         add_test(NAME sb2_${edition}_save
-            COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2> -DDATA=${sb2_data}
+            COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2>${BLUPI_TEST_LAUNCHER} -DDATA=${sb2_data}
                 -DWORK=${CMAKE_CURRENT_BINARY_DIR}/sb2_${edition}_save
                 -P ${CMAKE_CURRENT_SOURCE_DIR}/sb2_save.cmake)
         foreach(case intro read cache)
             add_test(NAME sb2_${edition}_${case}
-                COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2> -DDATA=${sb2_data}
+                COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2>${BLUPI_TEST_LAUNCHER} -DDATA=${sb2_data}
                     -DWORK=${CMAKE_CURRENT_BINARY_DIR}/sb2_${edition}_${case}
                     -DCASE=${case} -DEDITION=${edition}
                     -P ${CMAKE_CURRENT_SOURCE_DIR}/sb2_editions.cmake)
@@ -469,26 +479,26 @@ set_tests_properties(net_transport PROPERTIES TIMEOUT 20)
 # (net_session.py): SB1, and SB2 in both editions.
 if(BLUPI_TEST_DATA AND BLUPI_TEST_PYTHON)
     add_test(NAME net_sb1_two_instances COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_session.py"
-        --exe $<TARGET_FILE:blupi> --data "${BLUPI_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
+        --exe $<TARGET_FILE:blupi>${BLUPI_TEST_LAUNCHER} --data "${BLUPI_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
         --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb1")
     set_tests_properties(net_sb1_two_instances PROPERTIES TIMEOUT 600 RUN_SERIAL TRUE)
     add_test(NAME net_sb1_four_instances COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_session.py"
-        --exe $<TARGET_FILE:blupi> --data "${BLUPI_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
+        --exe $<TARGET_FILE:blupi>${BLUPI_TEST_LAUNCHER} --data "${BLUPI_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
         --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb1_4" --players 4)
     set_tests_properties(net_sb1_four_instances PROPERTIES TIMEOUT 900 RUN_SERIAL TRUE)
     # The client finds the host only through the provider list's Internet entry and a typed address.
     add_test(NAME net_sb1_internet_address COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_session.py"
-        --exe $<TARGET_FILE:blupi> --data "${BLUPI_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
+        --exe $<TARGET_FILE:blupi>${BLUPI_TEST_LAUNCHER} --data "${BLUPI_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
         --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb1_internet" --internet)
     set_tests_properties(net_sb1_internet_address PROPERTIES TIMEOUT 600 RUN_SERIAL TRUE)
 endif()
 if(BLUPI2_TEST_DATA AND BLUPI_TEST_PYTHON)
     add_test(NAME net_sb2_two_instances COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_session.py"
-        --game sb2 --exe $<TARGET_FILE:blupi2> --data "${BLUPI2_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
+        --game sb2 --exe $<TARGET_FILE:blupi2>${BLUPI_TEST_LAUNCHER} --data "${BLUPI2_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
         --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb2")
     set_tests_properties(net_sb2_two_instances PROPERTIES TIMEOUT 600 RUN_SERIAL TRUE)
     add_test(NAME net_sb2_internet_address COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_session.py"
-        --game sb2 --exe $<TARGET_FILE:blupi2> --data "${BLUPI2_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
+        --game sb2 --exe $<TARGET_FILE:blupi2>${BLUPI_TEST_LAUNCHER} --data "${BLUPI2_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
         --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb2_internet" --internet)
     set_tests_properties(net_sb2_internet_address PROPERTIES TIMEOUT 600 RUN_SERIAL TRUE)
 endif()
@@ -510,7 +520,7 @@ if(BLUPI_TEST_RELAY_SERVER AND BLUPI2_TEST_DATA AND BLUPI_TEST_PYTHON)
 endif()
 if(BLUPI2_TEST_DATA_BLUPI AND BLUPI_TEST_PYTHON)
     add_test(NAME net_sb2_four_instances COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_session.py"
-        --game sb2 --exe $<TARGET_FILE:blupi2> --data "${BLUPI2_TEST_DATA_BLUPI}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
+        --game sb2 --exe $<TARGET_FILE:blupi2>${BLUPI_TEST_LAUNCHER} --data "${BLUPI2_TEST_DATA_BLUPI}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
         --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb2_4" --players 4)
     set_tests_properties(net_sb2_four_instances PROPERTIES TIMEOUT 900 RUN_SERIAL TRUE)
 endif()
@@ -525,8 +535,35 @@ foreach(edition eggbert-demo eggbert-value blupi-demo)
     string(REPLACE "-" "_" key "${key}")
     if(BLUPI_TEST_DATA_${key} AND TARGET ${edition}-sdl3)
         add_test(NAME edition_${edition}_attract COMMAND ${CMAKE_COMMAND}
-            -DEXE=$<TARGET_FILE:${edition}-sdl3> "-DDATA=${BLUPI_TEST_DATA_${key}}"
+            -DEXE=$<TARGET_FILE:${edition}-sdl3>${BLUPI_TEST_LAUNCHER} "-DDATA=${BLUPI_TEST_DATA_${key}}"
             -DWORK=${CMAKE_CURRENT_BINARY_DIR}/edition_${edition}
             -P ${CMAKE_CURRENT_SOURCE_DIR}/edition_smoke.cmake)
     endif()
 endforeach()
+
+# The launcher scripts of a cross build (BLUPI_TEST_LAUNCHER, top of this file): one per program of
+# the project. A launcher copied into another folder (the discovery tests copy the program into a
+# fresh folder) first copies its program next to itself, so the program starts from that folder.
+if(BLUPI_TEST_LAUNCHER)
+    set(emulator "")
+    foreach(part IN LISTS CMAKE_CROSSCOMPILING_EMULATOR)
+        string(APPEND emulator " \"${part}\"")
+    endforeach()
+    function(blupi_test_launchers dir)
+        get_property(targets DIRECTORY ${dir} PROPERTY BUILDSYSTEM_TARGETS)
+        foreach(target IN LISTS targets)
+            get_target_property(type ${target} TYPE)
+            if(type STREQUAL "EXECUTABLE")
+                file(GENERATE OUTPUT "$<TARGET_FILE:${target}>.sh"
+                    CONTENT "#!/bin/sh\n# Made by port/tests/CMakeLists.txt: runs the program next to this script.\nhere=$(cd \"$(dirname \"$0\")\" && pwd)\nexe=\"$here/$(basename \"$0\" .sh)\"\n[ -f \"$exe\" ] || cp \"$<TARGET_FILE:${target}>\" \"$exe\" || exit 126\nexec${emulator} \"$exe\" \"$@\"\n"
+                    FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE
+                                     WORLD_READ WORLD_EXECUTE)
+            endif()
+        endforeach()
+        get_property(subdirs DIRECTORY ${dir} PROPERTY SUBDIRECTORIES)
+        foreach(subdir IN LISTS subdirs)
+            blupi_test_launchers(${subdir})
+        endforeach()
+    endfunction()
+    blupi_test_launchers(${PROJECT_SOURCE_DIR})
+endif()

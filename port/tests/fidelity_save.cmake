@@ -19,7 +19,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         if(data)
             foreach(depth 8 16)
                 add_test(NAME fidelity_save_sb1_${edition}_${depth}
-                    COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:fidelity_save_sb1>
+                    COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:fidelity_save_sb1>${BLUPI_TEST_LAUNCHER}
                     "-DDATA=${data}" "-DWORK=${CMAKE_CURRENT_BINARY_DIR}/fidelity_save_${edition}_${depth}"
                     "-DARGS=--color ${depth} --frames 200 --input ${save_tests}/fidelity_save.input --check-commands"
                     -P "${save_tests}/run_fresh.cmake")
