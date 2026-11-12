@@ -378,7 +378,7 @@ static int PortViewWidth()
 // entry button (game/options_screen.cpp). Into the back buffer.
 static void PortRenderPresentation(double alpha)
 {
-	if (PortOptionsOpen() && !g_frame.world)
+	if ((PortOptionsOpen() || PortAddressOpen()) && !g_frame.world)
 	{
 		RECT clip = g_pPixmap->GetClipping();
 		PortPixmapSubmit(g_frame.background);
@@ -393,6 +393,13 @@ static void PortRenderPresentation(double alpha)
 		RECT clip = g_pPixmap->GetClipping();
 		g_pPixmap->SetClipping(RECT{0, 0, LXIMAGE, LYIMAGE});
 		PortOptionsDraw();
+		g_pPixmap->SetClipping(clip);
+	}
+	if (PortAddressOpen())
+	{
+		RECT clip = g_pPixmap->GetClipping();
+		g_pPixmap->SetClipping(RECT{0, 0, LXIMAGE, LYIMAGE});
+		PortAddressDraw();
 		g_pPixmap->SetClipping(clip);
 	}
 }
@@ -1250,6 +1257,7 @@ int BlupiMain(int argc, char** argv)
         if (!DoInit(NULL, (LPSTR)"", 0)) return 1;
         PortOptionsInit(g_pPixmap, g_pSound, &g_settings, PortApplySettings,
                         !blupi::host::touch_screen());
+        PortAddressInit(g_pPixmap, g_pSound, &g_settings, PortSaveSettings);
         PortPixmapHideCursor(blupi::host::touch_screen());
         Benchmark();
         return 0;
@@ -1273,6 +1281,7 @@ int BlupiMain(int argc, char** argv)
             blupi::host::set_gamepad_keys(g_pEvent->*PortEventAccess::m_joyIndex == 0 ? &keys : nullptr);
             const UINT phase = g_pEvent->GetPhase();
             PortOptionsPhase(phase);
+            PortAddressPhase(phase);
             // Touch screens: the play controls while the game is played; the
             // scroll pad in the editor, its buttons made from the game's own
             // sprites when the editor is entered (the palette in force then).
@@ -1291,7 +1300,7 @@ int BlupiMain(int argc, char** argv)
             {
                 blupi::host::set_text_input(phase == WM_PHASE_NAMEGAMER || phase == WM_PHASE_NAMEDESIGN ||
                                             phase == WM_PHASE_WRITEDESIGN || phase == WM_PHASE_CREATE ||
-                                            phase == WM_PHASE_MULTI);
+                                            phase == WM_PHASE_MULTI || PortAddressOpen());
             }
         }
 

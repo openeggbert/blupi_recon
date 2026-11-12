@@ -11,6 +11,7 @@
 #include "game/port_game.h"
 #include "game/member_access.h"
 #include "net/session.h"
+#include "ui/address_events.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -78,6 +79,7 @@ BLUPI_MEMBER_ACCESS(NetDecor, CDecor, NET_DECOR_MEMBERS)
 struct State {
     native::Session session{PortNetworkRules().protocol,wire::Version};
     bool provider=false, started=false, terminal=false;
+    bool internet=false;   // the provider list's Internet entry was chosen
     std::vector<native::Advertisement> listed;
     std::deque<native::Message> lobby,gameplay;
     std::set<std::string> logged;
@@ -85,6 +87,9 @@ struct State {
     std::set<uint32_t> departed;
 };
 std::map<CNetwork*,std::unique_ptr<State>> states;
+// The server address entered on the port's address screen for the Internet provider.
+bool internetSet=false;
+native::Endpoint internetEndpoint;
 long tick=0;
 FILE* audit=nullptr;
 State& Get(CNetwork* n) { return *states.at(n); }
@@ -183,26 +188,43 @@ CNetwork::~CNetwork() {
     Close(); FreeProviderList(); FreeSessionList(); FreeUnknownList(); states.erase(this);
     if (states.empty() && audit) { fclose(audit); audit=nullptr; }
 }
+// Two providers, as DirectPlay listed its service providers: the local network (LAN
+// discovery and the --net-join addresses), and the Internet entry, which asks for a
+// server address on the port's address screen as DirectPlay's TCP/IP provider asked in
+// a dialog (port addition; port/docs/MULTIPLAYER.md).
 BOOL CNetwork::EnumProviders() {
     FreeProviderList();
     m_providers.pList=(NamedGUID(*)[MAXSESSION])std::calloc(MAXSESSION,sizeof(NamedGUID));
     if (!m_providers.pList) return FALSE;
-    m_providers.nb=1; strcpy((*m_providers.pList)[0].name,"Native network (UDP)"); return TRUE;
+    m_providers.nb=2; strcpy((*m_providers.pList)[0].name,"Native network (UDP)");
+    snprintf((*m_providers.pList)[1].name,sizeof((*m_providers.pList)[1].name),"%s",
+             PortLanguageText(9025,"Internet (enter an address)").c_str());
+    return TRUE;
 }
 int CNetwork::GetNbProviders() { return m_providers.nb; }
 char* CNetwork::GetProviderName(int i) { return i<0 || i>=m_providers.nb ? nullptr : (*m_providers.pList)[i].name; }
 BOOL CNetwork::CreateProvider(int i) {
-    if (i!=0 || m_providers.nb!=1) return FALSE;
-    auto& s=Get(this); s.provider=true;
+    if ((i!=0 && i!=1) || m_providers.nb!=2) return FALSE;
+    auto& s=Get(this); s.provider=true; s.internet=i==1;
+    if (s.internet) { internetSet=false; PortAddressRequest(); }
     const uint64_t content=ContentFingerprint(); s.session.SetContent(content);
-    char note[96]; snprintf(note,sizeof(note),"provider Native network (UDP); content %016llx",(unsigned long long)content);
+    char note[96]; snprintf(note,sizeof(note),"provider %s; content %016llx",
+                            s.internet ? "Internet (address)" : "Native network (UDP)",(unsigned long long)content);
     Note(note); return TRUE;
+}
+bool PortNetworkSetAddress(const char* text) {
+    native::Endpoint endpoint; endpoint.port=native::Configuration().port;   // the game port unless given
+    if (!text || !native::ParseEndpoint(text,endpoint)) return false;
+    internetEndpoint=endpoint; internetSet=true;
+    char note[160]; snprintf(note,sizeof(note),"Internet address %s:%u",endpoint.host.c_str(),unsigned(endpoint.port)); Note(note);
+    return true;
 }
 void CNetwork::FreeProviderList() { std::free(m_providers.pList); m_providers={0,nullptr}; }
 BOOL CNetwork::EnumSessions() {
     FreeSessionList(); auto& s=Get(this); if (!s.provider) return FALSE;
     auto endpoints=native::Configuration().endpoints;
     endpoints.insert(endpoints.begin(),{"127.0.0.1",native::Configuration().port});
+    if (s.internet && internetSet) endpoints.push_back(internetEndpoint);
     // Sessions on the LAN (discovery) and at the configured addresses (--net-join, this machine),
     // each listed once.
     unsigned incompatible=0;

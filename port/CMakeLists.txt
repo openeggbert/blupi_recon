@@ -176,6 +176,7 @@ add_library(blupi_game STATIC
     games/sb1/game/end_of_tick.cpp
     games/sb1/game/editor_wide.cpp
     common/ui/options_screen.cpp
+    common/ui/address_screen.cpp
     common/ui/settings.cpp
     games/sb1/game/language.cpp
     $<TARGET_OBJECTS:blupi_hist>)

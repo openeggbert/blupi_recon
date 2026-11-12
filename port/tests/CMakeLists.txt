@@ -472,12 +472,21 @@ if(BLUPI_TEST_DATA AND BLUPI_TEST_PYTHON)
         --exe $<TARGET_FILE:blupi> --data "${BLUPI_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
         --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb1_4" --players 4)
     set_tests_properties(net_sb1_four_instances PROPERTIES TIMEOUT 900 RUN_SERIAL TRUE)
+    # The client finds the host only through the provider list's Internet entry and a typed address.
+    add_test(NAME net_sb1_internet_address COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_session.py"
+        --exe $<TARGET_FILE:blupi> --data "${BLUPI_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
+        --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb1_internet" --internet)
+    set_tests_properties(net_sb1_internet_address PROPERTIES TIMEOUT 600 RUN_SERIAL TRUE)
 endif()
 if(BLUPI2_TEST_DATA AND BLUPI_TEST_PYTHON)
     add_test(NAME net_sb2_two_instances COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_session.py"
         --game sb2 --exe $<TARGET_FILE:blupi2> --data "${BLUPI2_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
         --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb2")
     set_tests_properties(net_sb2_two_instances PROPERTIES TIMEOUT 600 RUN_SERIAL TRUE)
+    add_test(NAME net_sb2_internet_address COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_session.py"
+        --game sb2 --exe $<TARGET_FILE:blupi2> --data "${BLUPI2_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
+        --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb2_internet" --internet)
+    set_tests_properties(net_sb2_internet_address PROPERTIES TIMEOUT 600 RUN_SERIAL TRUE)
 endif()
 if(BLUPI2_TEST_DATA_BLUPI AND BLUPI_TEST_PYTHON)
     add_test(NAME net_sb2_four_instances COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_session.py"

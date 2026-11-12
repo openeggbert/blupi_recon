@@ -137,6 +137,7 @@ bool PortSettingsLoad(const char* path, PortSettings& settings)
 	ReadString(values, "gamepadLeftShoulder", settings.gamepadLeftShoulder);
 	ReadString(values, "gamepadRightShoulder", settings.gamepadRightShoulder);
 	ReadBool(values, "gamepadArrows", settings.gamepadArrows);
+	ReadString(values, "netAddress", settings.netAddress);
 	return true;
 }
 
@@ -200,6 +201,10 @@ bool PortSettingsSave(const char* path, const PortSettings& settings)
 			Quoted(settings.gamepadY).c_str(), Quoted(settings.gamepadStart).c_str(),
 			Quoted(settings.gamepadBack).c_str(), Quoted(settings.gamepadLeftShoulder).c_str(),
 			Quoted(settings.gamepadRightShoulder).c_str(), b(settings.gamepadArrows));
+	if (!settings.netAddress.empty())
+	{
+		fprintf(file, ",\n  \"netAddress\": %s", Quoted(settings.netAddress).c_str());
+	}
 	fprintf(file, "\n}\n");
 	bool ok = ferror(file) == 0;
 	fclose(file);
