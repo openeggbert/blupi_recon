@@ -1,11 +1,14 @@
-# Speedy Blupi SDL3 port 1.4.0
+# Speedy Blupi SDL3 port 1.5.0
 
 The native port of **Speedy Blupi** (Epsitec, 1998) and **Speedy Blupi 2** (2001), and of their
-eGames editions **Speedy Eggbert** and **Speedy Eggbert 2**, for Windows, Linux and Android. It is
+eGames editions **Speedy Eggbert** and **Speedy Eggbert 2**, for Windows, Linux, Android and web
+browsers. It is
 built from this repository's reconstruction of the original programs' source, compiled unchanged with
 a modern compiler, plus a small platform layer on SDL3.
 
-Version 1.4 runs all five programs in a web browser as well. Version 1.3 added the Speedy Eggbert Demo, Speedy Eggbert SE Valueware and the June 1998 Speedy Blupi
+Version 1.5 plays multiplayer through a Free Direct server, without open ports and also in the browser,
+where it can be played at https://openeggbert.github.io/blupi_recon/. Version 1.4 runs all five programs
+in a web browser as well. Version 1.3 added the Speedy Eggbert Demo, Speedy Eggbert SE Valueware and the June 1998 Speedy Blupi
 Demo as programs of their own, internet games from the game's own multiplayer screens, the gamepad as
 the keyboard, and Speedy Blupi 2's CD music from tracks you rip yourself. Version 1.2 brought Speedy
 Blupi 2 and Speedy Eggbert 2, and the original multiplayer of all four games.
@@ -13,14 +16,45 @@ Blupi 2 and Speedy Eggbert 2, and the original multiplayer of all four games.
 **The original games' files are not included.** You need your own copy of the game: the CD or the
 installed game. On the first start the port asks for its folder and remembers it.
 
+## New in 1.5
+
+- **Multiplayer through a Free Direct server:** the multiplayer provider list has a third entry,
+  "Internet through a Free Direct server". Every player connects out to a
+  [free-direct-server](https://github.com/openeggbert/free-direct/blob/main/docs/free-direct-server.md),
+  which anyone can run, so nobody needs an open port. Type the server's address and leave the room empty:
+  the game creates a room and shows its ID (also on the clipboard). The other players choose the same
+  server and type that ID; the games in the room are then listed as on a local network. Windows, Linux,
+  Android and browser players can share a room. The desktop and Android programs speak `ws://`; a server
+  that only offers `wss://` (TLS) works from the browser. `--net-server` and `--net-room` fill the
+  screen in advance.
+- **Multiplayer in the browser,** through such a server (the browser has no other way). The page passes
+  `?server=` and `?room=` to the game, and when the game creates a room the page shows a link to give to
+  the other players. A page served over `https://`, like GitHub Pages, needs a server with `wss://`.
+- **On GitHub Pages:** https://openeggbert.github.io/blupi_recon/ serves the web package of the latest
+  release. As always, you choose the folder of your own copy of the game; nothing is uploaded.
+- **Windows and Android packages again**, for the first time since 1.2.0 (1.4.0's were added to its
+  release afterwards). The Windows package is cross-compiled on Linux with MinGW-w64. The Android app
+  is signed with a new key (the 1.2.0 key is not available): **uninstall 1.2.0 before installing**; 1.4.0
+  and later update in place.
+- **Fixes:**
+  - An unplayed Speedy Blupi 2, copied from the CD and never started, was not recognised: the port
+    looked for `DATA/BENCH.BLP`, which the game only writes on its first run. It now looks for the first
+    attract-mode demo, which every Speedy Blupi 2 and Speedy Eggbert 2 has.
+  - The settings file's gamepad keys (1.3) and the remembered Internet address were ignored, and a later
+    save of the settings replaced them with the defaults. They are now used and kept.
+  - Windows: `--verbose` output and the launcher's messages reach a redirected output (a file or a pipe)
+    even when the program is not started from a console.
+- **Tested** in Chrome and Firefox (web), on Linux, on Windows (under Wine, and the package on Windows
+  10), and the Android app was built but not run.
+
 ## New in 1.4
 
 - **In a web browser:** `speedy-blupi-sdl3-1.4.0-web.zip` holds all five programs compiled to
   WebAssembly, with a page to choose one. As on the desktop, you use your own copy of the game: on the
   first start the page asks for the game's folder and keeps its files in the browser's storage (nothing
   is uploaded); saves and settings stay there too. Unpack the zip, run `python3 serve.py` in it and open
-  http://localhost:8080/ (or put the folder on any web server). Multiplayer is not available in a
-  browser. Tested in Chrome; see `port/docs/WEB.md`.
+  http://localhost:8080/ (or put the folder on any web server). Multiplayer came to the browser in 1.5.
+  See `port/docs/WEB.md`.
 
 ## New in 1.3
 
@@ -69,20 +103,22 @@ installed game. On the first start the port asks for its folder and remembers it
 
 | File | For |
 |---|---|
-| `speedy-blupi-sdl3-1.4.0-linux-x86_64.tar.gz` | x86-64 Linux with glibc 2.38 or newer (Debian 13, Ubuntu 24.04, Fedora 39 and later), X11 or Wayland: `blupi-sdl3`, `blupi2-sdl3`, `eggbert-demo-sdl3`, `eggbert-value-sdl3`, `blupi-demo-sdl3` |
-| `speedy-blupi-sdl3-1.4.0-web.zip` | a web browser: the five programs as WebAssembly, the page, `serve.py` |
+| `speedy-blupi-sdl3-1.5.0-windows-x64.zip` | 64-bit Windows 10 or 11: `blupi-sdl3`, `blupi2-sdl3`, `eggbert-demo-sdl3`, `eggbert-value-sdl3`, `blupi-demo-sdl3`, `SDL3.dll` |
+| `speedy-blupi-sdl3-1.5.0-linux-x86_64.tar.gz` | x86-64 Linux with glibc 2.38 or newer (Debian 13, Ubuntu 24.04, Fedora 39 and later), X11 or Wayland: the same five programs |
+| `speedy-blupi-sdl3-1.5.0-android.apk` | Android 7.0 or newer (arm64-v8a, x86_64): Speedy Blupi and Speedy Blupi 2 |
+| `speedy-blupi-sdl3-1.5.0-web.zip` | a web browser: the five programs as WebAssembly, the page, `serve.py`; also at https://openeggbert.github.io/blupi_recon/ |
 | `SHA256SUMS.txt` | checksums |
 
-For 1.3.0 and 1.4.0 only the Linux and web packages were built, on Debian 13 (the Linux package
-needs glibc 2.38; the 1.2.0 one, built on Ubuntu 22.04, needed 2.35). Windows and Android packages
-have not been built since 1.2.0; the 1.2.0 ones remain available.
+All packages are built on Debian 13 from the release tag: Linux natively (it needs glibc 2.38; 1.2.0's,
+built on Ubuntu 22.04, needed 2.35), Windows with MinGW-w64, Android with Gradle and the NDK, the web
+package with Emscripten.
 
 - **Windows and Linux:** unpack anywhere and start `blupi-sdl3` (Speedy Blupi, Speedy Eggbert) or
   `blupi2-sdl3` (Speedy Blupi 2, Speedy Eggbert 2); for the demos and Valueware, `eggbert-demo-sdl3`,
   `eggbert-value-sdl3` or `blupi-demo-sdl3`. The Windows executables are not code-signed, so
   SmartScreen may ask for confirmation ("More info", "Run anyway").
-- **Android:** install the APK; it updates 1.1.0 and the 1.2 release candidates in place and keeps your
-  imported games.
+- **Android:** install the APK. It is signed with a new key: uninstall 1.2.0 or older first (that also
+  removes the games you imported; import them again). It updates 1.4.0 in place.
   Choose a game folder to import; the app copies it into its own storage. It tells the two games apart,
   and after a second import it asks which game to start.
 
@@ -117,13 +153,16 @@ have not been built since 1.2.0; the 1.2.0 ones remain available.
 
 ## Known limitations
 
-- **Multiplayer** is tested automatically (two and four players on one machine, Windows and Linux)
-  and was played between real devices for both games, but has had little real-world play beyond that.
-  Also:
-  - an Android player who switches away from the game is likely to drop out of a session.
-- **Android:** a player's own language file goes into a `languages` folder inside the game folder before
-  importing it. Gamepads and running in the background have had little testing. The 1.3 additions (the
-  Internet address screen, the gamepad as the keyboard) are built for Android but untested there, and the
-  edition programs are desktop only.
+- **Multiplayer** is tested automatically (two and four players on one machine, Windows and Linux;
+  through a Free Direct server on one machine, also between a browser and Linux) and was played between
+  real devices for both games, but has had little real-world play beyond that. Also:
+  - an Android player who switches away from the game is likely to drop out of a session;
+  - there is no public Free Direct server: someone in the group runs one (and, for browsers on
+    `https://` pages, gives it a TLS certificate).
+- **Android:** the 1.5.0 APK was built but not run (no device or emulator was available). A player's own
+  language file goes into a `languages` folder inside the game folder before importing it. Gamepads and
+  running in the background have had little testing. The 1.3 and 1.5 additions (the address and server
+  screens, the gamepad as the keyboard) are built for Android but untested there, and the edition programs
+  are desktop only.
 - **Linux:** the first-run folder dialog needs the desktop's file chooser portal (or `zenity`). Without
   it, start the game with `--data "<game folder>"`, or put the port's files into the game's folder.

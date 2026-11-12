@@ -27,11 +27,23 @@ struct PortSettings
 	std::string gamepadLeftShoulder = "none", gamepadRightShoulder = "none";
 	bool gamepadArrows = true;
 	std::string netAddress;     // the last server address of the Internet provider (multiplayer)
+	std::string netServer;      // the last Free Direct server (multiplayer through a server)
+	std::string netRoom;        // and the room last used there
 };
 
 namespace blupi::host { struct GamepadKeys; }
 // The virtual keys of the gamepad settings (an unknown action is none).
 void PortGamepadKeys(const PortSettings& settings, blupi::host::GamepadKeys& keys);
+
+// The settings of one run: everything the file holds (window, language, gamepad keys, server
+// address, data folder), with the values this run's command-line options set taken from given.
+struct PortSettingsGiven
+{
+	bool widescreen = false, interpolate = false, displayRate = false, fullscreen = false;
+	bool scale = false, integerScale = false, language = false;
+	bool netServer = false, netRoom = false;
+};
+PortSettings PortSettingsMerge(const PortSettings& file, const PortSettings& given, const PortSettingsGiven& set);
 
 // path is a host path (the user directory). Missing file or keys keep the
 // values already in settings.

@@ -1,0 +1,18 @@
+# SB1 host in a browser for port/tools/web_check.mjs --relay: as sb1_host_relay.input, in real time. The
+# native client joins once the room exists, so the host waits in the lobby before it starts the game.
+40 click 112 430    # title: dice -> choose player
+70 click 127 431    # choose player: multiplayer service (EnumProviders)
+100 click 160 130   # service: provider row 0, the only one in a browser: the Free Direct server
+110 click 242 407   # service: OK -> CreateProvider(0), EnumSessions (no room yet) -> sessions + server screen
+120 key 13          # server screen: Enter (?server= filled it) -> connect, new room
+130 key 13          # room screen: Enter -> the session screen's refresh
+140 click 182 407   # sessions: create a session
+150 key 82          # R
+151 key 79          # O
+152 key 79          # O
+153 key 77          # M
+170 click 242 346   # create: OK -> CreateSession -> lobby (host, slot 0)
+900 click 308 118   # lobby: host ready (slot 0), after the client
+1000 click 527 407  # lobby: start (both present and ready) -> play
+1040 keydown 39     # play: walk right
+1100 keyup 39

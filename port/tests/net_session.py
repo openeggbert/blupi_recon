@@ -11,6 +11,10 @@ and wait is bounded; children are killed on failure. Never runs an original exec
 --internet: two peers; the client uses another game port and the provider list's Internet entry
 (<game>_client_internet.input), so it finds the host's session only through the address it types on the
 port's address screen ("N type TEXT" lines become one "char" per tick; {port} is the host's port).
+
+--relay SERVER: two peers through a Free Direct server (free-direct-server, started here on a free port):
+both choose the provider list's server entry (<game>_<name>_relay.input). The host's server screen creates
+a room and writes its ID to the room file (--net-room-file); the client's screen reads it from there.
 """
 import argparse
 import os
@@ -50,12 +54,36 @@ def expand(source, target, port):
     return target
 
 
+def start_server(args, work):
+    """free-direct-server on a free TCP port of this machine, once it accepts connections. Both runs use
+    the one server, so their audits (which name its address) can repeat exactly."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("127.0.0.1", 0))
+        server_port = s.getsockname()[1]
+    log = open(work / "server.log", "w", encoding="utf-8")
+    server = subprocess.Popen([args.relay, "--host", "127.0.0.1", "--port", str(server_port)],
+                              stdout=log, stderr=subprocess.STDOUT)
+    deadline = time.monotonic() + 10
+    while time.monotonic() < deadline:
+        try:
+            with socket.create_connection(("127.0.0.1", server_port), timeout=0.2):
+                return server, log, server_port
+        except OSError:
+            if server.poll() is not None:
+                break
+            time.sleep(0.05)
+    server.kill()
+    log.close()
+    raise RuntimeError("free-direct-server did not start (see server.log)")
+
+
 def run(args, work, port):
     if work.exists():
         shutil.rmtree(work)
     control = work / "control"
     control.mkdir(parents=True)
     peers = []
+    server = args.server
     for role, name in enumerate(peer_names(args.players)):
         user = work / name
         user.mkdir()
@@ -64,11 +92,15 @@ def run(args, work, port):
         if args.internet and name != "host":
             script = expand(Path(args.inputs) / f"{args.game}_{name}_internet.input", work / f"{name}.input", port)
             own_port = args.client_port
+        if args.relay:
+            script = Path(args.inputs) / f"{args.game}_{name}_relay.input"
         command = [args.exe, "--headless", "--data", args.data, "--user", str(user), "--color", "16",
                    "--frames", str(args.frames), "--input", str(script),
                    "--trace", str(work / f"{name}.trace"), "--net-test-sync", "--net-port", str(own_port)]
         for frame in args.state_dump:
             command += ["--state-dump", f"{frame}:{work / f'{name}-state-{frame}.txt'}"]
+        if server:
+            command += ["--net-server", f"ws://127.0.0.1:{server[2]}", "--net-room-file", str(control / "room.txt")]
         log = open(work / f"{name}.log", "w", encoding="utf-8")
         peers.append((name, subprocess.Popen(command, env=env, stdout=log, stderr=subprocess.STDOUT), log))
     try:
@@ -100,6 +132,7 @@ def run(args, work, port):
                 process.kill()
                 process.wait()
             log.close()
+
     return {name: process.returncode for name, process, _ in peers}
 
 
@@ -115,7 +148,7 @@ def peer_names(players):
     return ["host", "client", "client2", "client3"][:players]
 
 
-def check(work, codes, players, internet_port=None):
+def check(work, codes, players, internet_port=None, relay=False):
     failures = []
     for name, code in codes.items():
         if code != 0:
@@ -128,6 +161,9 @@ def check(work, codes, players, internet_port=None):
     expect["host"] = ("created session", "START")
     if internet_port is not None:
         expect["client"] = (f"Internet address 127.0.0.1:{internet_port}", "joined session")
+    if relay:
+        expect["host"] = ("provider Free Direct server", "server room created", "created session", "START")
+        expect["client"] = ("provider Free Direct server", "server room joined", "joined session")
     for name, (lines, notes, received, states) in peers.items():
         for note in expect[name]:
             if not any(n.startswith(note) for n in notes):
@@ -160,23 +196,39 @@ def main():
     parser.add_argument("--timeout", type=float, default=240.0, help="seconds per run")
     parser.add_argument("--internet", action="store_true",
                         help="the client joins through the Internet provider and a typed address (two peers)")
+    parser.add_argument("--relay", metavar="SERVER",
+                        help="free-direct-server executable: two peers through it (the server provider)")
     parser.add_argument("--state-dump", type=int, action="append", default=[], metavar="FRAME",
                         help="diagnostic: each peer dumps its hashed state fields after FRAME")
     args = parser.parse_args()
     args.exe = str(Path(args.exe).resolve())
     args.work = args.work.resolve()
     port = free_port()
-    if args.internet:
+    if args.internet or args.relay:
         args.players = 2
         args.client_port = free_port()
         while args.client_port in (port, port + 1) or port in (args.client_port + 1,):
             args.client_port = free_port()
+    args.server = None
+    if args.relay:
+        args.work.mkdir(parents=True, exist_ok=True)
+        args.server = start_server(args, args.work)
     results = []
+    try:
+        return repeat(args, port, results)
+    finally:
+        if args.server:
+            args.server[0].kill()
+            args.server[0].wait()
+            args.server[1].close()
+
+
+def repeat(args, port, results):
     for run_index in (1, 2):
         work = args.work / f"run{run_index}"
         started = time.monotonic()
         codes = run(args, work, port)
-        failures = check(work, codes, args.players, port if args.internet else None)
+        failures = check(work, codes, args.players, port if args.internet else None, bool(args.relay))
         print(f"run {run_index}: {time.monotonic() - started:.1f} s")
         if failures:
             print("\n".join(failures))
@@ -189,6 +241,8 @@ def main():
                 print(f"not repeatable: {item} differs between runs")
                 return 1
     how = " through the Internet provider and a typed address" if args.internet else ""
+    if args.relay:
+        how = " through a Free Direct server and a room"
     print(f"{args.players}-instance session{how}: create/join/lobby/ready/start/play passed; each peer's traces repeat exactly")
     return 0
 

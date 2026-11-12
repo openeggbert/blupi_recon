@@ -18,7 +18,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         endif()
         if(data)
             add_test(NAME fidelity_editor_sb1_${edition}
-                COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:fidelity_editor_sb1>
+                COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:fidelity_editor_sb1>${BLUPI_TEST_LAUNCHER}
                 "-DDATA=${data}" "-DWORK=${CMAKE_CURRENT_BINARY_DIR}/fidelity_editor_sb1_${edition}"
                 "-DARGS=--color 16 --frames 120 --input ${sb1edit_tests}/golden/editor.input"
                 -P "${sb1edit_tests}/run_fresh.cmake")

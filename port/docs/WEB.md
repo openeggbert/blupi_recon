@@ -35,9 +35,14 @@ unchanged, apart from the few points below. This is separate from the repository
 - **The main loop yields to the browser.** It is the launcher's ordinary loop, linked with
   `-sASYNCIFY`: each wait for the next tick (`SDL_WaitEventTimeout`) yields to the browser, which
   then draws the canvas and delivers input.
-- **No multiplayer.** A browser has no UDP. The CNetwork adapter lists no provider on the web
-  (`__EMSCRIPTEN__` in `common/net/cnetwork.cpp`). That is what the original did on a system without
-  a DirectPlay service provider: the multiplayer screen's list stays empty.
+- **Multiplayer only through a Free Direct server** (since 1.5.0, port/docs/MULTIPLAYER.md). A browser
+  has no UDP, so the provider list has one entry, "Internet through a Free Direct server", which uses the
+  browser's WebSocket (`common/net/websocket.cpp`). The page's `?server=` and `?room=` fill the game's
+  server screen; when the game creates a room, the page shows a link with both, for the other players.
+  A page served over `https://` (GitHub Pages) can only reach a server over `wss://`, that is a server
+  with a TLS certificate or behind a TLS proxy (`free-direct-server --tls-cert`, or Caddy or nginx in
+  front of it). Desktop and browser players can share a room. [EVIDENCE] `port/tools/web_check.mjs
+  --relay`: Chrome hosts, a native Linux program joins, both reach PLAY.
 - **No folder dialog in the program** (`host::choose_folder` returns nothing). The page does it
   before the start.
 - **The SoundFont** (GeneralUser GS) is a file of the site (`soundfont/soundfont.sf2`). The loader

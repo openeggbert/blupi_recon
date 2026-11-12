@@ -23,7 +23,7 @@ foreach(game sb1 sb2_eggbert sb2_blupi)
             set(runtime_name $<TARGET_SONAME_FILE_NAME:SDL3::SDL3-shared>)
         endif()
         add_test(NAME launcher_discovery_${game}
-            COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:${target}> -DDATA=${data}
+            COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:${target}>${BLUPI_TEST_LAUNCHER} -DDATA=${data}
                 -DENVIRONMENT=${data_env} -DSDL_RUNTIME=${runtime} -DSDL_NAME=${runtime_name}
                 -DWORK=${CMAKE_CURRENT_BINARY_DIR}/launcher_${game}
                 -P ${CMAKE_CURRENT_SOURCE_DIR}/launcher_discovery.cmake)
@@ -33,7 +33,7 @@ foreach(game sb1 sb2_eggbert sb2_blupi)
             set(entry_y 431)
         endif()
         add_test(NAME launcher_options_keys_${game}
-            COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:${target}> -DDATA=${data}
+            COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:${target}>${BLUPI_TEST_LAUNCHER} -DDATA=${data}
                 -DBUILDROOT=${CMAKE_CURRENT_BINARY_DIR}
                 -DENTRY_Y=${entry_y} -DWORK=${CMAKE_CURRENT_BINARY_DIR}/launcher_keys_${game}
                 -P ${CMAKE_CURRENT_SOURCE_DIR}/launcher_options_keys.cmake)
@@ -66,7 +66,7 @@ foreach(case sb1_eggbert2 sb1_blupi2 sb2_blupi1 sb2_eggbert1)
     endif()
     if(right_data AND wrong_data)
         add_test(NAME launcher_wrong_game_${case}
-            COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:${target}>
+            COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:${target}>${BLUPI_TEST_LAUNCHER}
                 -DRIGHT_DATA=${right_data} -DWRONG_DATA=${wrong_data}
                 -DENVIRONMENT=${data_env} -DDATA_TITLE=${data_title}
                 -DSDL_RUNTIME=${runtime} -DSDL_NAME=${runtime_name}

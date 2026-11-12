@@ -11,6 +11,8 @@
 #include "game/port_game.h"
 #include "game/member_access.h"
 #include "net/session.h"
+#include "net/relay.h"
+#include "net/websocket.h"
 #include "ui/address_events.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -79,7 +81,10 @@ BLUPI_MEMBER_ACCESS(NetDecor, CDecor, NET_DECOR_MEMBERS)
 struct State {
     native::Session session{PortNetworkRules().protocol,wire::Version};
     bool provider=false, started=false, terminal=false;
-    bool internet=false;   // the provider list's Internet entry was chosen
+    // The provider chosen in the list: the local network, an address typed on the address screen
+    // (Internet), or a Free Direct server and a room on it.
+    enum class Kind { Lan, Address, Server } kind=Kind::Lan;
+    uint64_t content=0;
     std::vector<native::Advertisement> listed;
     std::deque<native::Message> lobby,gameplay;
     std::set<std::string> logged;
@@ -90,6 +95,10 @@ std::map<CNetwork*,std::unique_ptr<State>> states;
 // The server address entered on the port's address screen for the Internet provider.
 bool internetSet=false;
 native::Endpoint internetEndpoint;
+// The Free Direct server provider's connection: one per program, kept while that provider stays
+// chosen, so its room outlives the sessions played in it. Each game makes one CNetwork (DoInit), so
+// one session uses it at a time.
+native::Relay relay;
 long tick=0;
 FILE* audit=nullptr;
 State& Get(CNetwork* n) { return *states.at(n); }
@@ -188,34 +197,95 @@ CNetwork::~CNetwork() {
     Close(); FreeProviderList(); FreeSessionList(); FreeUnknownList(); states.erase(this);
     if (states.empty() && audit) { fclose(audit); audit=nullptr; }
 }
-// Two providers, as DirectPlay listed its service providers: the local network (LAN
-// discovery and the --net-join addresses), and the Internet entry, which asks for a
-// server address on the port's address screen as DirectPlay's TCP/IP provider asked in
-// a dialog (port addition; port/docs/MULTIPLAYER.md).
+// The providers, as DirectPlay listed its service providers: the local network (LAN
+// discovery and the --net-join addresses); the Internet entry, which asks for a server
+// address on the port's address screen as DirectPlay's TCP/IP provider asked in a dialog;
+// and a Free Direct server with its rooms (port additions; port/docs/MULTIPLAYER.md).
+// A browser has no UDP: there the server is the only one (port/docs/WEB.md).
+namespace {
+#ifdef __EMSCRIPTEN__
+const State::Kind kProviders[]={State::Kind::Server};
+#else
+const State::Kind kProviders[]={State::Kind::Lan,State::Kind::Address,State::Kind::Server};
+#endif
+constexpr int kProviderCount=int(sizeof(kProviders)/sizeof(kProviders[0]));
+const char* ProviderName(State::Kind kind) {
+    static std::string text;
+    switch (kind) {
+    case State::Kind::Lan: return "Native network (UDP)";
+    case State::Kind::Address: text=PortLanguageText(9025,"Internet (enter an address)"); return text.c_str();
+    default: text=PortLanguageText(9030,"Internet through a Free Direct server"); return text.c_str();
+    }
+}
+// The relay's compatibility identity: the server lets into a room only the kind of build that
+// created it (game, edition, wire protocol and the multiplayer content of ContentFingerprint).
+std::string Compat(uint64_t content) {
+    const blupi::net::game::Rules& rules=PortNetworkRules();
+    char text[160];
+    const std::string edition=PortEdition();
+    snprintf(text,sizeof(text),"blupi-sdl3/%s/%s/%u.%u/%016llx",rules.game,edition.c_str(),unsigned(rules.protocol),
+             unsigned(wire::Version),(unsigned long long)content);
+    return text;
+}
+}
 BOOL CNetwork::EnumProviders() {
     FreeProviderList();
     m_providers.pList=(NamedGUID(*)[MAXSESSION])std::calloc(MAXSESSION,sizeof(NamedGUID));
     if (!m_providers.pList) return FALSE;
-#ifdef __EMSCRIPTEN__
-    // A browser has no UDP: the web build lists no provider, as the original did on a system
-    // without a DirectPlay service provider (port/docs/WEB.md).
-    m_providers.nb=0; Note("no network provider in a browser"); return TRUE;
-#endif
-    m_providers.nb=2; strcpy((*m_providers.pList)[0].name,"Native network (UDP)");
-    snprintf((*m_providers.pList)[1].name,sizeof((*m_providers.pList)[1].name),"%s",
-             PortLanguageText(9025,"Internet (enter an address)").c_str());
+    m_providers.nb=kProviderCount;
+    for (int i=0;i<kProviderCount;++i)
+        snprintf((*m_providers.pList)[i].name,sizeof((*m_providers.pList)[i].name),"%s",ProviderName(kProviders[i]));
     return TRUE;
 }
 int CNetwork::GetNbProviders() { return m_providers.nb; }
 char* CNetwork::GetProviderName(int i) { return i<0 || i>=m_providers.nb ? nullptr : (*m_providers.pList)[i].name; }
 BOOL CNetwork::CreateProvider(int i) {
-    if ((i!=0 && i!=1) || m_providers.nb!=2) return FALSE;
-    auto& s=Get(this); s.provider=true; s.internet=i==1;
-    if (s.internet) { internetSet=false; PortAddressRequest(); }
-    const uint64_t content=ContentFingerprint(); s.session.SetContent(content);
-    char note[96]; snprintf(note,sizeof(note),"provider %s; content %016llx",
-                            s.internet ? "Internet (address)" : "Native network (UDP)",(unsigned long long)content);
+    if (i<0 || i>=kProviderCount || m_providers.nb!=kProviderCount) return FALSE;
+    auto& s=Get(this); s.provider=true; s.kind=kProviders[i];
+    s.content=ContentFingerprint(); s.session.SetContent(s.content);
+    if (s.kind==State::Kind::Server) {
+        s.session.UseRelay(&relay);
+        PortServerRequest();
+    } else {
+        s.session.UseRelay(nullptr);
+        relay.Disconnect();
+        if (s.kind==State::Kind::Address) { internetSet=false; PortAddressRequest(); }
+    }
+    static const char* names[]={"Native network (UDP)","Internet (address)","Free Direct server"};
+    char note[96]; snprintf(note,sizeof(note),"provider %s; content %016llx",names[int(s.kind)],(unsigned long long)s.content);
     Note(note); return TRUE;
+}
+const std::string& PortNetworkRoomFile() { return native::Configuration().roomFile; }
+// The server screen's OK (address_screen.cpp): connects to the server unless already connected to
+// it, then enters the room (an empty room creates one; its ID goes to created). An error message
+// in English, or NULL.
+const char* PortNetworkSetServer(const char* server,const char* room,std::string* created) {
+    static std::string error;
+    std::string url,id;
+    if (!server || !native::ServerUrl(server,native::SecurePage(),url)) {
+        error=PortLanguageText(9037,"This is not a server address."); return error.c_str();
+    }
+    const bool create=!room || !*room;
+    if (!create && !native::RoomId(room,id)) { error=PortLanguageText(9038,"This is not a room ID."); return error.c_str(); }
+    uint64_t content=0;
+    for (auto& [n,state]:states) if (state->kind==State::Kind::Server) content=state->content;
+    if (!relay.Connected() || relay.Url()!=url) {
+        const char* password=getenv("BLUPI_NET_PASSWORD");
+        if (!relay.Connect(url,password ? password : "",Compat(content))) { error=relay.Error(); Note(("server: "+error).c_str()); return error.c_str(); }
+        Note(("server "+url).c_str());
+    }
+    if (create ? !relay.CreateRoom() : !relay.JoinRoom(id)) { error=relay.Error(); Note(("server: "+error).c_str()); return error.c_str(); }
+    if (created) *created=create ? relay.Room() : std::string();
+    Note(create ? "server room created" : "server room joined");
+    const std::string& file=native::Configuration().roomFile;
+    if (create && !file.empty()) {
+        // The test supervisor's way to pass the room to the other instances: written whole, then renamed.
+#pragma push_macro("fopen")
+#undef fopen
+        if (FILE* f=fopen((file+".tmp").c_str(),"w")) { fprintf(f,"%s\n",relay.Room().c_str()); fclose(f); std::rename((file+".tmp").c_str(),file.c_str()); }
+#pragma pop_macro("fopen")
+    }
+    return nullptr;
 }
 bool PortNetworkSetAddress(const char* text) {
     native::Endpoint endpoint; endpoint.port=native::Configuration().port;   // the game port unless given
@@ -227,9 +297,20 @@ bool PortNetworkSetAddress(const char* text) {
 void CNetwork::FreeProviderList() { std::free(m_providers.pList); m_providers={0,nullptr}; }
 BOOL CNetwork::EnumSessions() {
     FreeSessionList(); auto& s=Get(this); if (!s.provider) return FALSE;
+    if (s.kind==State::Kind::Server) {
+        // The sessions in the server's room; nothing before the server screen has entered one.
+        if (relay.Connected()) s.listed=s.session.List();
+        m_sessions.pList=(NamedGUID(*)[MAXSESSION])std::calloc(MAXSESSION,sizeof(NamedGUID));
+        if (!m_sessions.pList) return FALSE;
+        for (const auto& ad:s.listed) {
+            if (m_sessions.nb>=MAXSESSION) break;
+            snprintf((*m_sessions.pList)[m_sessions.nb++].name,100,"%s",ad.name.c_str());
+        }
+        Note(m_sessions.nb ? "enumerated session" : "enumerated no sessions"); return TRUE;
+    }
     auto endpoints=native::Configuration().endpoints;
     endpoints.insert(endpoints.begin(),{"127.0.0.1",native::Configuration().port});
-    if (s.internet && internetSet) endpoints.push_back(internetEndpoint);
+    if (s.kind==State::Kind::Address && internetSet) endpoints.push_back(internetEndpoint);
     // Sessions on the LAN (discovery) and at the configured addresses (--net-join, this machine),
     // each listed once.
     unsigned incompatible=0;

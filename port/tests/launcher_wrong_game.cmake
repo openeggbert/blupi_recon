@@ -1,4 +1,5 @@
 # A different game's valid config/title/marker must fail before adapter init.
+file(REMOVE_RECURSE "${WORK}")
 file(MAKE_DIRECTORY "${WORK}/installed/data" "${WORK}/installed/image08" "${WORK}/empty")
 get_filename_component(exe_name "${EXE}" NAME)
 configure_file("${EXE}" "${WORK}/installed/${exe_name}" COPYONLY)

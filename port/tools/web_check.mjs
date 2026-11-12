@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// Browser check of the web build (port/docs/WEB.md). Node 22+ and Chrome, no npm packages.
+// Browser check of the web build (port/docs/WEB.md). Node 22+ and Chrome (DevTools protocol) or
+// Firefox (--browser firefox, WebDriver BiDi), no npm packages.
 //
 // Serves the assembled site (port/tools/package_web.py) and, for the test only, a game folder as a
 // listing (the loader's test-import). For each program given, one headless Chrome:
@@ -10,6 +11,12 @@
 //
 //   node port/tools/web_check.mjs --site build/port-web/site --output build/port-web/check \
 //        --program blupi-sdl3=/path/to/Speedy_Blupi_I [--program ...] [--attract]
+//
+// With --relay <free-direct-server> --relay-client <native blupi-sdl3> it checks multiplayer between
+// the browser and the desktop instead (the first --program, SB1): the server runs on this machine, the
+// browser's game creates a room and a session (port/tests/net/sb1_browser_host.input), and the native
+// program, started with that room (sb1_browser_client.input, SDL's offscreen video), joins it; both
+// must reach PLAY.
 import {spawn} from "node:child_process";
 import {createServer} from "node:http";
 import {readFile, readdir, stat, mkdir, writeFile, rm} from "node:fs/promises";
@@ -18,7 +25,8 @@ import path from "node:path";
 import {once} from "node:events";
 
 if (typeof WebSocket === "undefined") throw new Error("Use Node 22+.");
-const options = {site: "build/port-web/site", output: "build/port-web/check", chrome: "google-chrome", programs: [], attract: false};
+const options = {site: "build/port-web/site", output: "build/port-web/check", chrome: "google-chrome", firefox: "firefox",
+                 browser: "chrome", programs: [], attract: false, inputs: "port/tests/net"};
 for (let i = 2; i < process.argv.length; i++) {
   const a = process.argv[i];
   if (a === "--attract") options.attract = true;
@@ -41,12 +49,15 @@ async function walk(dir, prefix = "") {
 }
 const types = {".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".wasm": "application/wasm", ".json": "application/json"};
 const testData = Object.fromEntries(options.programs.map((p) => [p.name, path.resolve(p.dir)]));
+const inputs = path.resolve(options.inputs);
 const http = createServer(async (req, res) => {
   try {
     const url = decodeURIComponent(new URL(req.url, "http://x").pathname);
     let file;
     const m = url.match(/^\/test-data\/([^/]+)\/(.*)$/);
-    if (m) {
+    const input = url.match(/^\/test-input\/([A-Za-z0-9_.-]+)$/);
+    if (input) file = path.join(inputs, input[1]);
+    else if (m) {
       const root = testData[m[1]];
       if (!root) throw new Error("no test data");
       if (m[2] === "index.json") {
@@ -74,6 +85,107 @@ const base = `http://127.0.0.1:${http.address().port}`;
 const browsers = [];
 
 async function launch(name) {
+  return options.browser === "firefox" ? launchFirefox(name) : launchChrome(name);
+}
+
+// The checks' view of one page, on top of three browser operations.
+function pageOf(name, {evaluate, navigate, screenshot, errors, consoleLines}) {
+  return {name, errors, consoleLines, evaluate,
+    async waitFor(expression, timeout = 60000) {
+      const deadline = Date.now() + timeout;
+      while (Date.now() < deadline) {
+        // A page that is still loading: Chrome reports its old context gone, Firefox a missing element.
+        try { if (await evaluate(expression)) return; }
+        catch (error) { if (!/context|navigat|discarded|is null|of null/i.test(error.message)) throw error; }
+        await new Promise((r) => setTimeout(r, 200));
+      }
+      const state = await evaluate("({status: document.querySelector('#status')?.textContent, log: document.querySelector('#log')?.textContent.slice(-2000)})");
+      throw new Error(name + " timeout: " + expression + "\n" + JSON.stringify(state, null, 1) +
+        "\nconsole:\n" + consoleLines.slice(-30).join("\n") + "\nexceptions: " + JSON.stringify(errors).slice(0, 1500));
+    },
+    async goto(url) {
+      await navigate(url);
+      await new Promise((r) => setTimeout(r, 500));
+    },
+    async canvasShot(label) {
+      const r = await evaluate("(() => {const b=document.querySelector('#canvas').getBoundingClientRect();return {x:b.x,y:b.y,width:b.width,height:b.height}})()");
+      const png = await screenshot(r);
+      await writeFile(path.join(output, `${name}-${label}.png`), png);
+      return png;
+    },
+  };
+}
+
+// Firefox through WebDriver BiDi: a headless instance with its own profile.
+async function launchFirefox(name) {
+  const profile = path.join(output, "firefox-" + name);
+  await mkdir(profile, {recursive: true});
+  await writeFile(path.join(profile, "user.js"), [
+    'user_pref("browser.shell.checkDefaultBrowser", false);',
+    'user_pref("datareporting.policy.dataSubmissionEnabled", false);',
+    'user_pref("toolkit.telemetry.reportingpolicy.firstRun", false);',
+    'user_pref("browser.aboutwelcome.enabled", false);',
+    'user_pref("media.autoplay.default", 0);',
+  ].join("\n") + "\n");
+  const firefox = spawn(options.firefox, ["--headless", "--no-remote", "--profile", profile, "--remote-debugging-port=0",
+    "--width=1100", "--height=1000"], {stdio: ["ignore", "pipe", "pipe"]});
+  browsers.push(firefox);
+  const endpoint = await new Promise((resolve, reject) => {
+    let text = "";
+    const look = (chunk) => {
+      text += chunk;
+      const match = text.match(/WebDriver BiDi listening on (ws:\/\/[^\s]+)/);
+      if (match) resolve(match[1]);
+    };
+    firefox.stdout.on("data", look);
+    firefox.stderr.on("data", look);
+    firefox.once("exit", () => reject(new Error("Firefox exited before BiDi startup: " + text)));
+  });
+  const socket = new WebSocket(endpoint.replace(/\/$/, "") + "/session");
+  await once(socket, "open");
+  let id = 0;
+  const pending = new Map(), errors = [], consoleLines = [];
+  socket.onmessage = ({data}) => {
+    const message = JSON.parse(data);
+    if (message.id !== undefined && pending.has(message.id)) {
+      const callbacks = pending.get(message.id);
+      pending.delete(message.id);
+      if (message.type === "error") callbacks.reject(new Error(message.error + ": " + message.message));
+      else callbacks.resolve(message.result);
+    } else if (message.method === "log.entryAdded") {
+      const entry = message.params;
+      if (entry.type === "javascript") errors.push(entry.text);
+      else consoleLines.push(entry.level + ": " + entry.text);
+    }
+  };
+  const send = (method, params = {}) => new Promise((resolve, reject) => {
+    const callId = ++id;
+    const timer = setTimeout(() => { pending.delete(callId); reject(new Error(name + ": " + method + " timed out")); }, 60000);
+    pending.set(callId, {resolve: (v) => { clearTimeout(timer); resolve(v); }, reject: (e) => { clearTimeout(timer); reject(e); }});
+    socket.send(JSON.stringify({id: callId, method, params}));
+  });
+  await send("session.new", {capabilities: {}});
+  await send("session.subscribe", {events: ["log.entryAdded"]});
+  const {contexts} = await send("browsingContext.getTree", {});
+  const context = contexts[0].context;
+  await send("browsingContext.setViewport", {context, viewport: {width: 1100, height: 1000}}).catch(() => {});
+  // Results come back as JSON text: BiDi's own value form is not plain JSON.
+  const evaluate = async (expression) => {
+    const result = await send("script.evaluate", {expression: `(async () => JSON.stringify(await (${expression})))()`,
+      target: {context}, awaitPromise: true, resultOwnership: "none"});
+    if (result.type === "exception")
+      throw new Error(name + ": " + (result.exceptionDetails.text || JSON.stringify(result.exceptionDetails).slice(0, 600)));
+    const text = result.result.value;
+    return text === undefined ? undefined : JSON.parse(text);
+  };
+  return pageOf(name, {evaluate, errors, consoleLines,
+    navigate: (url) => send("browsingContext.navigate", {context, url, wait: "none"}),
+    screenshot: async (r) => Buffer.from((await send("browsingContext.captureScreenshot",
+      {context, clip: {type: "box", x: r.x, y: r.y, width: r.width, height: r.height}})).data, "base64"),
+  });
+}
+
+async function launchChrome(name) {
   const chrome = spawn(options.chrome, ["--headless=new", "--no-sandbox", "--disable-dev-shm-usage", "--no-first-run",
     "--no-default-browser-check", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--autoplay-policy=no-user-gesture-required",
     "--disable-background-timer-throttling", "--disable-renderer-backgrounding", "--disable-backgrounding-occluded-windows",
@@ -121,29 +233,10 @@ async function launch(name) {
     if (result.exceptionDetails) throw new Error(name + ": " + JSON.stringify(result.exceptionDetails));
     return result.result.value;
   };
-  return {name, errors, command, evaluate,
-    async waitFor(expression, timeout = 60000) {
-      const deadline = Date.now() + timeout;
-      while (Date.now() < deadline) {
-        try { if (await evaluate(expression)) return; } catch (error) { if (!/context|navigat/i.test(error.message)) throw error; }
-        await new Promise((r) => setTimeout(r, 200));
-      }
-      const state = await evaluate("({status: document.querySelector('#status')?.textContent, log: document.querySelector('#log')?.textContent.slice(-2000)})");
-      throw new Error(name + " timeout: " + expression + "\n" + JSON.stringify(state, null, 1) +
-        "\nconsole:\n" + consoleLines.slice(-30).join("\n") + "\nexceptions: " + JSON.stringify(errors).slice(0, 1500));
-    },
-    async goto(url) {
-      await command("Page.navigate", {url});
-      await new Promise((r) => setTimeout(r, 500));
-    },
-    async canvasShot(label) {
-      const r = await evaluate("(() => {const b=document.querySelector('#canvas').getBoundingClientRect();return {x:b.x,y:b.y,width:b.width,height:b.height}})()");
-      const shot = await command("Page.captureScreenshot", {format: "png", clip: {...r, scale: 1}});
-      const png = Buffer.from(shot.data, "base64");
-      await writeFile(path.join(output, `${name}-${label}.png`), png);
-      return png;
-    },
-  };
+  return pageOf(name, {evaluate, errors, consoleLines,
+    navigate: (url) => command("Page.navigate", {url}),
+    screenshot: async (r) => Buffer.from((await command("Page.captureScreenshot", {format: "png", clip: {...r, scale: 1}})).data, "base64"),
+  });
 }
 
 // Share of pixels that are neither black nor one colour, from an 8-bit RGB(A) PNG.
@@ -178,10 +271,64 @@ function variety(png) {
 }
 
 const failures = [];
+
+// Multiplayer between a browser and the desktop through a Free Direct server (--relay).
+async function relayCheck() {
+  const {name, dir} = options.programs[0];
+  const net = await import("node:net");
+  const probe = net.createServer();
+  probe.listen(0, "127.0.0.1");
+  await once(probe, "listening");
+  const port = probe.address().port;
+  probe.close();
+  const server = spawn(path.resolve(options.relay), ["--host", "127.0.0.1", "--port", String(port)], {stdio: ["ignore", "pipe", "pipe"]});
+  browsers.push(server);
+  let serverLog = "";
+  server.stdout.on("data", (c) => serverLog += c);
+  server.stderr.on("data", (c) => serverLog += c);
+  for (let i = 0; i < 100 && !/listening/.test(serverLog); i++) await new Promise((r) => setTimeout(r, 100));
+  const ws = `ws://127.0.0.1:${port}`;
+  const page = await launch(name + "-relay");
+  await page.goto(`${base}/index.html?program=${name}&test-import=/test-data/${name}&test-play=1` +
+                  `&server=${encodeURIComponent(ws)}&test-input=/test-input/sb1_browser_host.input`);
+  await page.waitFor("!document.querySelector('#canvas').hidden", 240000);
+  await page.waitFor("!document.querySelector('#room').hidden", 120000);
+  const room = await page.evaluate("document.querySelector('#room-id').textContent");
+  const link = await page.evaluate("document.querySelector('#room-link').href");
+  console.log(`${name}: the browser created room ${room}; link ${link}`);
+  if (!link.includes("room=" + room)) failures.push("the room link does not name the room");
+  const user = path.join(output, "relay-client-user");
+  await mkdir(user, {recursive: true});
+  const client = spawn(path.resolve(options["relay-client"]), ["--data", path.resolve(dir), "--user", user, "--windowed",
+    "--net-server", ws, "--net-room", room, "--input", path.join(inputs, "sb1_browser_client.input"),
+    "--frames", "1300", "--trace", path.join(output, "relay-client.trace")],
+    {stdio: ["ignore", "pipe", "pipe"], env: {...process.env, SDL_VIDEODRIVER: "offscreen", SDL_AUDIODRIVER: "dummy"}});
+  browsers.push(client);
+  let clientLog = "";
+  client.stdout.on("data", (c) => clientLog += c);
+  client.stderr.on("data", (c) => clientLog += c);
+  const exited = await Promise.race([once(client, "exit").then(([code]) => code), new Promise((r) => setTimeout(() => r("timeout"), 180000))]);
+  await writeFile(path.join(output, "relay-client.log"), clientLog);
+  await writeFile(path.join(output, "relay-server.log"), serverLog);
+  const browserLog = await page.evaluate("document.querySelector('#log').textContent");
+  await writeFile(path.join(output, "relay-browser-log.txt"), browserLog);
+  await page.canvasShot("relay-play");
+  const trace = await readFile(path.join(output, "relay-client.trace"), "utf8").catch(() => "");
+  const clientPlayed = trace.split("\n").some((line) => line.split(" ")[1] === "1525");
+  console.log(`native client: exit ${exited}; joined: ${clientLog.includes("joined session")}; reached PLAY: ${clientPlayed}`);
+  console.log(`browser host: created session: ${browserLog.includes("created session")}; START: ${browserLog.includes("START")}`);
+  if (exited !== 0) failures.push(`the native client exited with ${exited} (see relay-client.log)`);
+  if (!clientLog.includes("server room joined") || !clientLog.includes("joined session")) failures.push("the native client did not join the browser's session");
+  if (!clientPlayed) failures.push("the native client never reached PLAY");
+  if (!browserLog.includes("created session") || !browserLog.includes("START")) failures.push("the browser did not host and start the game");
+  if (page.errors.length) failures.push(`${page.errors.length} JavaScript exception(s): ` + JSON.stringify(page.errors[0]).slice(0, 400));
+}
+
 const alarm = setTimeout(() => { console.error("web_check exceeded 15 minutes"); cleanup(); process.exit(1); }, 900000);
 function cleanup() { for (const b of browsers) b.kill("SIGKILL"); http.close(); }
 try {
-  for (const {name} of options.programs) {
+  if (options.relay) await relayCheck();
+  else for (const {name} of options.programs) {
     const page = await launch(name);
     const url = `${base}/index.html?program=${name}`;
     // 1. First visit: import from the test listing, then play.
@@ -216,5 +363,7 @@ try {
   clearTimeout(alarm);
   cleanup();
 }
-console.log(failures.length ? "FAIL\n" + failures.join("\n") : "PASS: every program imported its files, started, and started again from the stored files");
+console.log(failures.length ? "FAIL\n" + failures.join("\n") : options.relay
+  ? "PASS: a browser and a native program played one game through a Free Direct server"
+  : "PASS: every program imported its files, started, and started again from the stored files");
 process.exit(failures.length ? 1 : 0);

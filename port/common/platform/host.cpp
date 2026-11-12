@@ -4,6 +4,13 @@
 #include "platform/touch.h"
 
 #include <SDL3/SDL.h>
+#ifdef SDL_PLATFORM_EMSCRIPTEN
+#include <emscripten.h>
+#endif
+#ifdef SDL_PLATFORM_WINDOWS
+#include <io.h>
+#include <sys/stat.h>
+#endif
 
 #include <deque>
 #include <map>
@@ -405,8 +412,11 @@ bool next_text(Event& event)
 }
 }  // namespace
 
+namespace { void PrepareLog(); }   // the log's output on Windows (end of this file)
+
 bool init(const char* title, int logicalWidth, int logicalHeight, const Options& options)
 {
+    PrepareLog();
     g_width = logicalWidth;
     g_height = logicalHeight;
     g_viewWidth = options.viewWidth > logicalWidth ? options.viewWidth : logicalWidth;
@@ -736,6 +746,18 @@ void message_box(const char* title, const char* text)
     if (!g_headless) SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title, text, g_window);
 }
 
+void share_room(const char* room, const char* server)
+{
+    if (!g_headless) SDL_SetClipboardText(room);
+#ifdef SDL_PLATFORM_EMSCRIPTEN
+    EM_ASM({
+        if (typeof Module.blupiRoomCreated === 'function') Module.blupiRoomCreated(UTF8ToString($0), UTF8ToString($1));
+    }, room, server);
+#else
+    (void)server;
+#endif
+}
+
 std::string base_path()
 {
     const char* p = SDL_GetBasePath();
@@ -845,10 +867,46 @@ std::string pref_path(const char* org, const char* app)
     return result;
 }
 
-void log_debug(const char* text) { SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "%s", text); }
-void log_info(const char* text) { SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "%s", text); }
+namespace
+{
+#ifdef SDL_PLATFORM_WINDOWS
+// SDL writes its log to stderr only when it can attach to the parent's console. A program whose
+// stderr is redirected to a file or a pipe by a parent without a console (a test runner started as a
+// service, Wine, a scheduled task) would lose every line: the port then writes it there itself.
+SDL_LogOutputFunction g_sdlLog = nullptr;
+void* g_sdlLogData = nullptr;
+
+void LogOutput(void* data, int category, SDL_LogPriority priority, const char* message)
+{
+    struct _stat64 info;
+    const int fd = _fileno(stderr);
+    if (fd >= 0 && _fstat64(fd, &info) == 0 && ((info.st_mode & _S_IFREG) || (info.st_mode & _S_IFIFO)))
+    {
+        fprintf(stderr, "%s\n", message);
+        fflush(stderr);
+        return;
+    }
+    if (g_sdlLog) g_sdlLog(data, category, priority, message);
+}
+#endif
+
+void PrepareLog()
+{
+#ifdef SDL_PLATFORM_WINDOWS
+    static bool done = false;
+    if (done) return;
+    done = true;
+    g_sdlLog = SDL_GetDefaultLogOutputFunction();
+    SDL_SetLogOutputFunction(LogOutput, g_sdlLogData);
+#endif
+}
+}  // namespace
+
+void log_debug(const char* text) { PrepareLog(); SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "%s", text); }
+void log_info(const char* text) { PrepareLog(); SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "%s", text); }
 void set_verbose(bool verbose)
 {
+    PrepareLog();
     SDL_SetLogPriority(SDL_LOG_CATEGORY_APPLICATION, verbose ? SDL_LOG_PRIORITY_DEBUG : SDL_LOG_PRIORITY_INFO);
 }
 }  // namespace blupi::host

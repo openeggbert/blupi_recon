@@ -126,6 +126,9 @@ void set_system_cursor(Cursor cursor);
 
 void set_title(const char* title);
 void message_box(const char* title, const char* text);
+// A new multiplayer room to pass on (the server screen): on the clipboard, and in a browser also
+// to the page (Module.blupiRoomCreated(room, server), port/web/loader.js), which offers a link.
+void share_room(const char* room, const char* server);
 std::string base_path();   // directory of the executable, with trailing separator
 // Per-user writable directory of a program (SDL_GetPrefPath), with trailing separator.
 std::string pref_path(const char* org, const char* app);

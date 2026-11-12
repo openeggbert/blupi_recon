@@ -45,5 +45,22 @@ int main(int argc, char** argv)
 	}
 	PortSettings none;
 	check(PortSettingsLoad(path, none) && none.dataFolder.empty(), "no data folder");
+
+	// A run's settings: the file's gamepad keys and server address survive, an option wins.
+	PortSettings file;
+	file.gamepadA = "fire";
+	file.gamepadArrows = false;
+	file.netAddress = "example.org:28640";
+	file.scale = 4;
+	file.language = "de";
+	PortSettings given;
+	given.scale = 3;
+	given.language = "fr";
+	PortSettingsGiven set;
+	set.scale = true;
+	PortSettings run = PortSettingsMerge(file, given, set);
+	check(run.gamepadA == "fire" && !run.gamepadArrows, "gamepad keys from the file");
+	check(run.netAddress == "example.org:28640", "server address from the file");
+	check(run.scale == 3 && run.language == "de", "a given option wins, the others come from the file");
 	return failures == 0 ? 0 : 1;
 }

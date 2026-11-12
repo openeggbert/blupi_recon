@@ -1,0 +1,50 @@
+name: Web port on GitHub Pages
+# Publishes the web package of a port release (port/docs/WEB.md) at
+# https://openeggbert.github.io/blupi_recon/: the site from speedy-blupi-sdl3-<version>-web.zip,
+# checked against the release's SHA256SUMS.txt. It holds no game data: players choose the folder
+# of their own copy, which stays in their browser. Runs when a port release is published, or by
+# hand for a release tag (empty: the latest release).
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Port release tag (port-vX.Y.Z); empty for the latest release"
+        required: false
+        default: ""
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  deploy:
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'port-v')
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: The release's web package
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        run: |
+          set -eu
+          if [ -z "$TAG" ]; then TAG=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName --jq .tagName); fi
+          echo "release $TAG"
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --dir dl \
+            --pattern 'speedy-blupi-sdl3-*-web.zip' --pattern 'SHA256SUMS.txt'
+          (cd dl && grep -- '-web\.zip$' SHA256SUMS.txt | sha256sum -c -)
+          unzip -q dl/speedy-blupi-sdl3-*-web.zip -d unpacked
+          mv unpacked/speedy-blupi-sdl3-*-web site
+          rm -f site/serve.py
+          touch site/.nojekyll
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4

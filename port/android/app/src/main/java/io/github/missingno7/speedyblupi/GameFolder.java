@@ -5,7 +5,7 @@ import java.io.File;
 // Which game a folder holds, with the native launcher's recognition rule
 // (common/app/launcher.cpp RecognizesData; games/sb1/game/main.cpp): DATA/CONFIG.DEF,
 // IMAGE08/INIT.BLP and the edition marker, any case. Speedy Blupi 1 and Speedy Eggbert 1
-// carry DATA/DEMO200.BLP (libmain.so); Speedy Blupi 2 and Speedy Eggbert 2 carry DATA/BENCH.BLP
+// carry DATA/DEMO200.BLP (libmain.so); Speedy Blupi 2 and Speedy Eggbert 2 carry DATA/DEMO300.BLP
 // (libblupi2.so, games/sb2/game/main.cpp). No Android dependency, so the rule is tested on the
 // desktop (port/tests/android_game_folder.cmake).
 final class GameFolder {
@@ -22,7 +22,7 @@ final class GameFolder {
             return Kind.INCOMPLETE;
         }
         if (child(data, "DEMO200.BLP", false) != null) return Kind.SB1;
-        if (child(data, "BENCH.BLP", false) != null) return Kind.SB2;
+        if (child(data, "DEMO300.BLP", false) != null) return Kind.SB2;
         return Kind.INCOMPLETE;
     }
 

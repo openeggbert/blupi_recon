@@ -1162,7 +1162,9 @@ int BlupiMain(int argc, char** argv)
     game.settings = &g_settings; game.settingsPath = &g_settingsPath;
     game.quit = &g_bQuit; game.timer = &g_timer; game.arrowHeld = g_portArrowHeld;
     game.recognizesData = [](const std::string& root) {
-        return blupi::app::RecognizesData(root, "data/bench.blp");
+        // DEMO300.BLP, the first attract-mode demo, ships with both SB2 editions and with no SB1
+        // edition. (bench.blp is not a marker: the game writes it on its first run.)
+        return blupi::app::RecognizesData(root, "data/demo300.blp");
     };
 
     extern const unsigned char g_sb2IconPng[];
