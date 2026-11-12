@@ -2,9 +2,15 @@
 
     python port/tools/package_release.py windows   # from build/port (MinGW, tested)
     python port/tools/package_release.py android   # the signed APK from build/port-android
-    python port/tools/package_release.py sums      # SHA256SUMS.txt over build/release
+    python port/tools/package_release.py sums      # SHA256SUMS.txt over build/release (all four packages)
 
-The Linux package is made by port/tools/linux_release.sh. The whole procedure,
+    Options (before or after the actions):
+    --build DIR    the Windows build directory (default: build/port)
+    --runner PROG  runs the Windows programs for their version check (a cross build on Linux:
+                   port/tools/windows_release.sh passes its Wine wrapper)
+
+The Linux package is made by port/tools/linux_release.sh, the web package by
+port/tools/package_web.py, and a Windows build on Linux by port/tools/windows_release.sh. The whole procedure,
 with the builds and tests that come first, is in port/docs/RELEASING.md.
 """
 import hashlib
@@ -35,12 +41,16 @@ def cache_value(build, name):
     return ''
 
 
+OPTIONS = {'--build': os.path.join(ROOT, 'build', 'port'), '--runner': None}
+
+
 def windows():
-    build = os.path.join(ROOT, 'build', 'port')
+    build = OPTIONS['--build']
+    runner = [OPTIONS['--runner']] if OPTIONS['--runner'] else []
     name = 'speedy-blupi-sdl3-%s-windows-x64' % VERSION
     apps = ('blupi-sdl3', 'blupi2-sdl3', 'eggbert-demo-sdl3', 'eggbert-value-sdl3', 'blupi-demo-sdl3')
     for app in apps:
-        out = subprocess.run([os.path.join(build, app + '.exe'), '--version'],
+        out = subprocess.run(runner + [os.path.join(build, app + '.exe'), '--version'],
                              capture_output=True, text=True, check=True).stdout.strip()
         if out != app + ' ' + VERSION:
             sys.exit('%s is not version %s (%r): rebuild first' % (app, VERSION, out))
@@ -87,7 +97,7 @@ def sums():
     lines = []
     for f in sorted(os.listdir(OUT)):
         # Exactly this version's packages: 1.2.0 must not also take 1.2.0-rc2's.
-        if re.fullmatch(r'speedy-blupi-sdl3-%s-(windows-x64\.zip|linux-x86_64\.tar\.gz|android\.apk)'
+        if re.fullmatch(r'speedy-blupi-sdl3-%s-(windows-x64\.zip|linux-x86_64\.tar\.gz|android\.apk|web\.zip)'
                         % re.escape(VERSION), f):
             digest = hashlib.sha256(open(os.path.join(OUT, f), 'rb').read()).hexdigest()
             lines.append('%s  %s\n' % (digest, f))
@@ -98,9 +108,19 @@ def sums():
 def main():
     os.makedirs(OUT, exist_ok=True)
     actions = {'windows': windows, 'android': android, 'sums': sums}
-    if len(sys.argv) < 2 or any(a not in actions for a in sys.argv[1:]):
+    args = sys.argv[1:]
+    chosen = []
+    while args:
+        a = args.pop(0)
+        if a in OPTIONS and args:
+            OPTIONS[a] = os.path.abspath(args.pop(0))
+        elif a in actions:
+            chosen.append(a)
+        else:
+            sys.exit(__doc__)
+    if not chosen:
         sys.exit(__doc__)
-    for a in sys.argv[1:]:
+    for a in chosen:
         actions[a]()
 
 
