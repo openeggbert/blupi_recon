@@ -114,8 +114,17 @@ The worker's Ninja stall was its sandbox's child-process limit; the Makefile bui
   folder is read-only from the game's perspective. A missing data root fails startup.
 - [EVIDENCE] MIDI uses SB2's integer music IDs (`sound/music%03d.blp`, ID minus one), default
   MIDI volume 10, and the existing common synthesizer. Without a SoundFont it fails and
-  reports once; regression runs intentionally load none. CD audio returns failure and logs
-  once when requested. It does not silently replace a requested CD track with MIDI.
+  reports once; regression runs intentionally load none. It does not silently replace a
+  requested CD track with MIDI.
+- [EVIDENCE] **CD audio (since port 1.3.0).** `CDAudio=1` in `data/config.def` selects the
+  CD, as in the original; no shipped configuration sets it (the default is MIDI), and the
+  archived disc images are ISO data tracks without the audio tracks. The port plays a ripped
+  track the player supplies at `music/trackNN.wav` in the game folder or the user folder (NN
+  the track number the game asks for: `PlayCDAudio(hWnd, music)`), once, like MCI_PLAY from the
+  track to the next, and its end posts MM_MCINOTIFY like a MIDI song; the game then restarts
+  it. Without the file the call fails and logs once, as the original's did without a disc.
+  Tested: `ctest -R music_pcm` (decoding, resampling, the end report) and a headless Speedy
+  Eggbert 2 run with `CDAudio=1` and a synthetic `track02.wav` (played, ended, restarted).
 - [EVIDENCE] AVI playback reports disabled and logs once; the historical movie path continues
   without the film. DirectPlay enumerates zero providers, fails session operations, and logs
   once on enumeration. These are the original unavailable-service failure paths.

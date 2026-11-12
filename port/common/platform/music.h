@@ -20,6 +20,11 @@ bool has_soundfont();
 // Starts a Standard MIDI File from the beginning. Returns a non-zero song id,
 // or 0 when the data cannot be parsed or no SoundFont is loaded.
 unsigned play(const uint8_t* data, size_t size);
+// Starts a CD audio track stand-in: a WAV file (any format SDL reads), played
+// once like MCI's cdaudio device played a track to the next. Replaces the
+// current song; ends and ids work as for play(). Needs no SoundFont. Returns 0
+// when the data is not a readable WAV.
+unsigned play_wav(const uint8_t* data, size_t size);
 // Stops and discards the song if it is still the current one. Returns true if
 // it was still playing (the end had not been reached).
 bool stop(unsigned id);
