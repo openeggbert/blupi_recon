@@ -5,6 +5,8 @@ free-direct-server and the TLS front for it, and runs the probe (test_net_tls) o
 a fresh process with its own SSL_CERT_FILE / SSL_CERT_DIR:
   - wss://localhost with the test CA trusted (a file, or a directory): the server's welcome;
   - another CA trusted: "not trusted";  wss://127.0.0.1 (not the certificate's name): "another name";
+  - neither variable set, so the system's trust (on Windows its own chain check): "not trusted", as
+    the test CA is no system's (the system's acceptance of a real server: net_tls_online);
   - a certificate file without certificates: refused before connecting;
   - ws:// to the TLS front, and wss:// to the server's plain port: refused, never hanging.
 Exit 77 (skipped) without openssl. Never runs an original executable.
@@ -48,6 +50,7 @@ def main():
         ("trusted CA directory", f"wss://localhost:{tls}", {"SSL_CERT_DIR": work / "ca-dir"}, ["ok"]),
         ("another CA", f"wss://localhost:{tls}", {"SSL_CERT_FILE": certs["other_ca"]}, ["fail", "not trusted"]),
         ("another name", f"wss://127.0.0.1:{tls}", {"SSL_CERT_FILE": certs["ca"]}, ["fail", "another name"]),
+        ("the system's trust", f"wss://localhost:{tls}", {}, ["fail", "not trusted"]),
         ("no certificates", f"wss://localhost:{tls}", {"SSL_CERT_FILE": work / "empty.pem"},
          ["fail", "no certificates in SSL_CERT_FILE"]),
         ("ws:// to the TLS front", f"ws://localhost:{tls}", {"SSL_CERT_FILE": certs["ca"]},

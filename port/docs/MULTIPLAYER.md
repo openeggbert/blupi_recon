@@ -90,8 +90,10 @@ different games or editions never do (the protocol id and the content check belo
   creates the room and the session and a native Linux program joins it; both reach PLAY.
   `net_tls` (`tests/net_tls.py`, probe `tests/test_net_tls.cpp`): free-direct-server behind a TLS front
   (`tests/tls_front.py`, test certificates made by openssl): welcome with the test CA as a file and as
-  a directory; refused for another CA, another name, a certificate file without certificates, `ws://` to
-  the TLS port and `wss://` to the plain port. `net_sb1_relay_wss`: the `net_sb1_relay` game through
+  a directory; refused for another CA, another name, the system's trust (the test CA is no system's; on
+  Windows the system's chain check, which under Wine first passed it until the chain's own trust status
+  was checked as well), a certificate file without certificates, `ws://` to the TLS port and `wss://` to
+  the plain port. `net_sb1_relay_wss`: the `net_sb1_relay` game through
   `wss://` and the front; both runs repeat exactly. Both also pass in the Windows build under Wine.
   `net_tls_online` (`-DBLUPI_TEST_ONLINE_SERVER=wss://...`): a real server with the system's trust.
   [EVIDENCE, 2026-11-12] `wss://fds.openeggbert.com` welcomed the probe on Linux (CA bundle) and on

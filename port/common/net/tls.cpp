@@ -183,6 +183,32 @@ std::string SystemCheck(const mbedtls_x509_crt* chain, const std::string& host)
     para.RequestedUsage.Usage.rgpszUsageIdentifier = &usage;
     PCCERT_CHAIN_CONTEXT context = nullptr;
     if (leaf && CertGetCertificateChain(nullptr, leaf, nullptr, store, &para, 0, nullptr, &context)) {
+        // The chain's own trust status first, as curl's Schannel check does: under Wine the SSL
+        // policy alone passed a certificate of an unknown CA whose server sent no chain (net_tls,
+        // "the system's trust"). No revocation check is asked for, so its "unknown" bits are no
+        // error; nor is the obsolete time nesting.
+        const DWORD trust = context->TrustStatus.dwErrorStatus &
+                            ~DWORD(CERT_TRUST_IS_NOT_TIME_NESTED | CERT_TRUST_REVOCATION_STATUS_UNKNOWN |
+                                   CERT_TRUST_IS_OFFLINE_REVOCATION);
+        if (trust != CERT_TRUST_NO_ERROR) {
+            if (trust & CERT_TRUST_IS_REVOKED) why = "the server's certificate has been revoked";
+            else if (trust & (CERT_TRUST_IS_PARTIAL_CHAIN | CERT_TRUST_IS_UNTRUSTED_ROOT |
+                              CERT_TRUST_IS_NOT_SIGNATURE_VALID | CERT_TRUST_IS_EXPLICIT_DISTRUST |
+                              CERT_TRUST_IS_CYCLIC))
+                why = "the server's certificate is not trusted";
+            else if (trust & CERT_TRUST_IS_NOT_TIME_VALID) why = "the server's certificate has expired or is not valid yet";
+            else if (trust & CERT_TRUST_IS_NOT_VALID_FOR_USAGE) why = "the server's certificate is not for servers";
+            else {
+                char text[96];
+                std::snprintf(text, sizeof(text), "the server's certificate is not valid (Windows trust 0x%08lX)",
+                              (unsigned long)trust);
+                why = text;
+            }
+            CertFreeCertificateChain(context);
+            CertFreeCertificateContext(leaf);
+            CertCloseStore(store, 0);
+            return why;
+        }
         std::wstring name(host.begin(), host.end());   // a server name is ASCII (ServerUrl)
         SSL_EXTRA_CERT_CHAIN_POLICY_PARA extra{};
         extra.cbSize = sizeof(extra);
