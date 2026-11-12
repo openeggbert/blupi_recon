@@ -29,7 +29,7 @@ ROOT = Path(__file__).resolve().parents[1]
 KEEP = ("src", "games", "targets.json", "recon.json", "toolchains.json",
         "tools/build.py", "tools/targets.py", "tools/source_tree.py", "tools/msvc.py", "tools/buildpath.py",
         # the fixed link clock (targets.json build_time): histlink and its debugger core
-        "tools/histlink.py", "tools/c2trace/c2dbg.py")
+        "tools/histlink.py", "tools/c2trace/c2dbg.py", "tools/c2trace/profiles.py")
 
 
 def export(ref, tree):
