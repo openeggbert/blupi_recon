@@ -498,3 +498,19 @@ if(BLUPI2_TEST_DATA_BLUPI AND BLUPI_TEST_PYTHON)
         --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb2_4" --players 4)
     set_tests_properties(net_sb2_four_instances PROPERTIES TIMEOUT 900 RUN_SERIAL TRUE)
 endif()
+
+# The edition programs (port/docs/EDITIONS.md): each starts with its own edition's data and plays the
+# attract-mode demo (1500 frames: the title screen, then the recorded demo after 1000 idle frames).
+set(BLUPI_TEST_DATA_EGGBERT_DEMO "" CACHE PATH "Speedy Eggbert Demo data folder (eggbert-demo-sdl3 tests)")
+set(BLUPI_TEST_DATA_EGGBERT_VALUE "" CACHE PATH "Speedy Eggbert SE Valueware data folder (eggbert-value-sdl3 tests)")
+set(BLUPI_TEST_DATA_BLUPI_DEMO "" CACHE PATH "Speedy Blupi Demo (June 1998) data folder (blupi-demo-sdl3 tests)")
+foreach(edition eggbert-demo eggbert-value blupi-demo)
+    string(TOUPPER "${edition}" key)
+    string(REPLACE "-" "_" key "${key}")
+    if(BLUPI_TEST_DATA_${key} AND TARGET ${edition}-sdl3)
+        add_test(NAME edition_${edition}_attract COMMAND ${CMAKE_COMMAND}
+            -DEXE=$<TARGET_FILE:${edition}-sdl3> "-DDATA=${BLUPI_TEST_DATA_${key}}"
+            -DWORK=${CMAKE_CURRENT_BINARY_DIR}/edition_${edition}
+            -P ${CMAKE_CURRENT_SOURCE_DIR}/edition_smoke.cmake)
+    endif()
+endforeach()

@@ -134,6 +134,11 @@ bool ReadFile(const std::string& path, std::string& out, long limit)
 
 const char* EditionFromData()
 {
+#if BLUPI_EDITION_KEY == 1 || BLUPI_EDITION_KEY == 2
+	return "eggbert";   // the eGames Demo and Valueware programs (port/docs/EDITIONS.md)
+#elif BLUPI_EDITION_KEY == 3
+	return "blupi";     // the June 1998 demo program
+#endif
 	std::string path = blupi::vfs::resolve_read("image08\\init.blp");
 	std::string bytes;
 	if (path.empty() || !ReadFile(path, bytes, 4 << 20)) return NULL;

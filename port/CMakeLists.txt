@@ -67,6 +67,7 @@ target_link_libraries(blupi_net PRIVATE blupi_enet)
 set(BLUPI_SHARED_TUS
     button.cpp decblock.cpp decblupi.cpp decdesign.cpp decmove.cpp decnet.cpp
     decor.cpp dectables.cpp event.cpp jauge.cpp menu.cpp text.cpp)
+set(BLUPI_SHARED_TU_NAMES ${BLUPI_SHARED_TUS})   # also for the edition programs (games/sb1/editions.cmake)
 list(TRANSFORM BLUPI_SHARED_TUS PREPEND ${BLUPI_HIST_SRC}/)
 
 # Case-sensitive hosts: forward the spellings the historical source uses. The
@@ -161,7 +162,7 @@ target_link_libraries(blupi_app PUBLIC blupi_platform blupi_net)
 
 # Port-owned replacements of the historical platform TUs, plus the shared
 # historical objects: everything that sees the Win32 compatibility names.
-add_library(blupi_game STATIC
+set(BLUPI_SB1_PORT_SOURCES
     common/compat/src/win32.cpp
     common/compat/src/hist_stdio.cpp
     games/sb1/game/main.cpp
@@ -178,8 +179,8 @@ add_library(blupi_game STATIC
     common/ui/options_screen.cpp
     common/ui/address_screen.cpp
     common/ui/settings.cpp
-    games/sb1/game/language.cpp
-    $<TARGET_OBJECTS:blupi_hist>)
+    games/sb1/game/language.cpp)
+add_library(blupi_game STATIC ${BLUPI_SB1_PORT_SOURCES} $<TARGET_OBJECTS:blupi_hist>)
 target_link_libraries(blupi_game PRIVATE blupi_hist_context PUBLIC blupi_platform blupi_app)
 target_compile_definitions(blupi_game PRIVATE BLUPI_PORT_VERSION="${BLUPI_PORT_VERSION}")
 target_include_directories(blupi_game PRIVATE ${BLUPI_GAME_DIR})
@@ -234,6 +235,9 @@ if(NOT EXISTS ${BLUPI_SOUNDFONT_FILE})
 endif()
 # (Android: the APK carries it as an asset, see port/android/app/build.gradle.)
 blupi_package_app(blupi)
+
+# The SB1-family editions with their own historical source, one program each (port/docs/EDITIONS.md).
+include(games/sb1/editions.cmake)
 
 # Speedy Blupi 2 / Speedy Eggbert 2: blupi2-sdl3 on the desktop, libblupi2.so on Android.
 add_subdirectory(games/sb2)
