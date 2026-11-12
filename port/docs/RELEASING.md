@@ -86,8 +86,11 @@ uninstall the debug build first, which also removes its imported game data.
 Only the Linux package was built for 1.3.0, on the release host itself (Debian 13, glibc 2.41), with
 `BLUPI_LINUX_WORK` inside the repository's `build/`. The SDL 3.4.16 sources came from the shared
 `~/deps/SDL3` checkout (its `release-3.4.16` tag). The test run excluded `fidelity_map` (it is run on the
-real tree), and the three goldens that fail on that host on `main` too (`golden_editor8/16`,
-`golden_tour16_de`). The package therefore needs glibc 2.41, not 2.35. Windows and Android packages of
+real tree), and the goldens that fail with that host's copies of the game data on the commit before
+this round's port changes too (`golden_editor8/16`, `golden_tour16_de`, `golden_eggbert_attract16`;
+their state hash differs from the first checkpoint on, so the data differs from the data the goldens
+were recorded with). The Speedy Blupi 2 / Speedy Eggbert 2 tests were not run (that host's SB2 data
+fails their goldens the same way). The package therefore needs glibc 2.41, not 2.35. Windows and Android packages of
 1.3.0 have not been built.
 
 ## The Ubuntu 22.04 build distro
