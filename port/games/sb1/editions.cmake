@@ -5,6 +5,12 @@
 #   BLUPI_EDITION_KEY  1 eggbert-demo, 2 eggbert-value, 3 blupi-demo
 # Desktop only; the historical TUs are never edited, and every edition keeps its own restrictions.
 function(blupi_sb1_edition NAME KEY TREE OVERLAY DESCRIPTION PRODUCT)
+    # A partial copy of the repository (port/tools/linux_*.sh copy only what they need) may lack an
+    # edition's sources: never build it from another tree instead.
+    if(NOT EXISTS ${TREE}/def.h OR (OVERLAY AND NOT EXISTS ${OVERLAY}))
+        message(STATUS "${NAME}: edition sources not found; not built")
+        return()
+    endif()
     set(case_dir ${CMAKE_CURRENT_BINARY_DIR}/compat_case_${NAME})
     file(MAKE_DIRECTORY ${case_dir})
     if(NOT CMAKE_HOST_WIN32)

@@ -38,7 +38,7 @@ def cache_value(build, name):
 def windows():
     build = os.path.join(ROOT, 'build', 'port')
     name = 'speedy-blupi-sdl3-%s-windows-x64' % VERSION
-    apps = ('blupi-sdl3', 'blupi2-sdl3')
+    apps = ('blupi-sdl3', 'blupi2-sdl3', 'eggbert-demo-sdl3', 'eggbert-value-sdl3', 'blupi-demo-sdl3')
     for app in apps:
         out = subprocess.run([os.path.join(build, app + '.exe'), '--version'],
                              capture_output=True, text=True, check=True).stdout.strip()

@@ -17,6 +17,8 @@
 #   BLUPI_LINUX_WORK  work directory (default: ~/blupi-release)
 #   BLUPI_DATA        game folder for the tests (default: assets/Speedy Blupi of this repo)
 #   BLUPI_SDL3_SRC    SDL3 source tree (default: build/third_party/SDL3-3.4.16 of this repo)
+#   BLUPI_TEST_DATA_EGGBERT_DEMO, BLUPI_TEST_DATA_EGGBERT_VALUE, BLUPI_TEST_DATA_BLUPI_DEMO
+#                     the edition programs' data for their tests (port/docs/EDITIONS.md; optional)
 #   BLUPI_TEST_DATA_EGGBERT, BLUPI2_DATA, BLUPI2_TEST_DATA_BLUPI, BLUPI2_TEST_DATA_VARIANTS
 #                     further editions for their tests, as in linux_check.sh (default: assets/, if present)
 #
@@ -39,6 +41,10 @@ mkdir -p "$WORK"
 rsync -a --delete "$REPO/src" "$REPO/port" "$WORK/"
 mkdir -p "$WORK/games/sb2/src"
 rsync -a --delete "$REPO/games/sb2/src/" "$WORK/games/sb2/src/"
+# The edition programs' sources (port/docs/EDITIONS.md).
+for edition in sb1-eggbert-demo sb1-eggbert-value sb1-blupi-demo; do
+    rsync -a --delete "$REPO/games/$edition" "$WORK/games/"
+done
 rsync -a --delete "$DATA/" "$WORK/data/"
 rsync -a --delete "$SDL/" "$WORK/sdl3-src/"
 
@@ -79,6 +85,9 @@ cmake -S "$WORK/port" -B "$B" -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DCMAKE_PREFIX_PATH="$WORK/sdl3" -DBLUPI_PORTABLE=ON -DBLUPI_TEST_DATA="$WORK/data" \
     -DBLUPI2_TEST_DATA="$EGGBERT2_TEST" -DBLUPI2_TEST_DATA_BLUPI="$BLUPI2_TEST" \
     -DBLUPI_TEST_DATA_EGGBERT="$EGGBERT1_TEST" \
+    -DBLUPI_TEST_DATA_EGGBERT_DEMO="${BLUPI_TEST_DATA_EGGBERT_DEMO:-}" \
+    -DBLUPI_TEST_DATA_EGGBERT_VALUE="${BLUPI_TEST_DATA_EGGBERT_VALUE:-}" \
+    -DBLUPI_TEST_DATA_BLUPI_DEMO="${BLUPI_TEST_DATA_BLUPI_DEMO:-}" \
     -DBLUPI2_TEST_DATA_VARIANTS="$VARIANTS2_TEST"
 cmake --build "$B" -j 4
 # The provenance map check needs the complete repository: run it on the real tree
@@ -89,21 +98,23 @@ ctest --test-dir "$B" -j 1 --output-on-failure -E '^fidelity_map$' "$@"
 OUT="$WORK/package/$NAME"
 rm -rf "$WORK/package"
 mkdir -p "$OUT"
-cp "$B/blupi-sdl3" "$B/blupi2-sdl3" "$B/libSDL3.so.0" "$B/soundfont.sf2" "$OUT/"
-strip --strip-unneeded "$OUT/blupi-sdl3" "$OUT/blupi2-sdl3" "$OUT/libSDL3.so.0"
+APPS="blupi-sdl3 blupi2-sdl3 eggbert-demo-sdl3 eggbert-value-sdl3 blupi-demo-sdl3"
+for app in $APPS; do cp "$B/$app" "$OUT/"; done
+cp "$B/libSDL3.so.0" "$B/soundfont.sf2" "$OUT/"
+for app in $APPS; do strip --strip-unneeded "$OUT/$app"; done
+strip --strip-unneeded "$OUT/libSDL3.so.0"
 sed -e 's/\r$//' -e "s/@VERSION@/$VERSION/" "$WORK/port/release/README.txt" > "$OUT/README.txt"
 sed 's/\r$//' "$WORK/port/release/THIRD_PARTY.txt" > "$OUT/THIRD_PARTY.txt"
 sed 's/\r$//' "$WORK/port/release/COPYING.txt" > "$OUT/COPYING.txt"
 sed 's/\r$//' "$WORK/sdl3-src/LICENSE.txt" > "$OUT/LICENSE-SDL3.txt"
 sed 's/\r$//' "$WORK/port/third_party/generaluser-gs/documentation/LICENSE.txt" > "$OUT/LICENSE-GeneralUser-GS.txt"
 chmod 0644 "$OUT"/*.txt "$OUT/soundfont.sf2" "$OUT/libSDL3.so.0"
-chmod 0755 "$OUT/blupi-sdl3" "$OUT/blupi2-sdl3"
+for app in $APPS; do chmod 0755 "$OUT/$app"; done
 mkdir -p "$REPO/build/release"
 tar -C "$WORK/package" --owner=0 --group=0 --numeric-owner -czf "$REPO/build/release/$NAME.tar.gz" "$NAME"
 
 echo "package: build/release/$NAME.tar.gz"
-"$OUT/blupi-sdl3" --version
-"$OUT/blupi2-sdl3" --version
-echo "needs glibc: $(objdump -T "$OUT/blupi-sdl3" "$OUT/blupi2-sdl3" "$OUT/libSDL3.so.0" | grep -o 'GLIBC_[0-9.]*' | sort -uV | tail -n 1)"
+for app in $APPS; do "$OUT/$app" --version; done
+echo "needs glibc: $(cd "$OUT" && objdump -T $APPS libSDL3.so.0 | grep -o 'GLIBC_[0-9.]*' | sort -uV | tail -n 1)"
 echo "libraries:"
-objdump -p "$OUT/blupi-sdl3" "$OUT/blupi2-sdl3" "$OUT/libSDL3.so.0" | grep -E 'NEEDED|RUNPATH' | sort -u
+(cd "$OUT" && objdump -p $APPS libSDL3.so.0 | grep -E 'NEEDED|RUNPATH' | sort -u)
