@@ -38,6 +38,12 @@ SDL=${BLUPI_SDL3_SRC:-$REPO/build/third_party/SDL3-3.4.16}
 VERSION=$(head -n 1 "$REPO/port/VERSION.txt" | tr -d '\r')
 NAME=speedy-blupi-sdl3-$VERSION-linux-x86_64
 
+# The shared compiler cache, where there is one (CLAUDE.md of the openeggbert projects).
+LAUNCH=
+if command -v ccache >/dev/null 2>&1; then
+    LAUNCH="-DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
+fi
+
 mkdir -p "$WORK"
 rsync -a --delete "$REPO/src" "$REPO/port" "$WORK/"
 mkdir -p "$WORK/games/sb2/src"
@@ -75,14 +81,14 @@ if [ -d "$VARIANTS2" ]; then
     VARIANTS2_TEST=$WORK/blupi2-variants
 fi
 
-cmake -S "$WORK/sdl3-src" -B "$WORK/build/sdl3" -G Ninja -DCMAKE_BUILD_TYPE=Release \
+cmake -S "$WORK/sdl3-src" -B "$WORK/build/sdl3" -G Ninja -DCMAKE_BUILD_TYPE=Release $LAUNCH \
     -DCMAKE_INSTALL_PREFIX="$WORK/sdl3" -DCMAKE_INSTALL_LIBDIR=lib \
     -DSDL_SHARED=ON -DSDL_STATIC=OFF -DSDL_TEST_LIBRARY=OFF -DSDL_TESTS=OFF -DSDL_EXAMPLES=OFF
 cmake --build "$WORK/build/sdl3" -j 4
 cmake --install "$WORK/build/sdl3"
 
 B="$WORK/build/release"
-cmake -S "$WORK/port" -B "$B" -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+cmake -S "$WORK/port" -B "$B" -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo $LAUNCH \
     -DCMAKE_PREFIX_PATH="$WORK/sdl3" -DBLUPI_PORTABLE=ON -DBLUPI_TEST_DATA="$WORK/data" \
     -DBLUPI2_TEST_DATA="$EGGBERT2_TEST" -DBLUPI2_TEST_DATA_BLUPI="$BLUPI2_TEST" \
     -DBLUPI_TEST_DATA_EGGBERT="$EGGBERT1_TEST" \
