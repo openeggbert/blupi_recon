@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// Browser check of the web build (port/docs/WEB.md). Node 22+ and Chrome, no npm packages.
+// Browser check of the web build (port/docs/WEB.md). Node 22+ and Chrome (DevTools protocol) or
+// Firefox (--browser firefox, WebDriver BiDi), no npm packages.
 //
 // Serves the assembled site (port/tools/package_web.py) and, for the test only, a game folder as a
 // listing (the loader's test-import). For each program given, one headless Chrome:
@@ -24,8 +25,8 @@ import path from "node:path";
 import {once} from "node:events";
 
 if (typeof WebSocket === "undefined") throw new Error("Use Node 22+.");
-const options = {site: "build/port-web/site", output: "build/port-web/check", chrome: "google-chrome", programs: [], attract: false,
-                 inputs: "port/tests/net"};
+const options = {site: "build/port-web/site", output: "build/port-web/check", chrome: "google-chrome", firefox: "firefox",
+                 browser: "chrome", programs: [], attract: false, inputs: "port/tests/net"};
 for (let i = 2; i < process.argv.length; i++) {
   const a = process.argv[i];
   if (a === "--attract") options.attract = true;
@@ -84,6 +85,104 @@ const base = `http://127.0.0.1:${http.address().port}`;
 const browsers = [];
 
 async function launch(name) {
+  return options.browser === "firefox" ? launchFirefox(name) : launchChrome(name);
+}
+
+// The checks' view of one page, on top of three browser operations.
+function pageOf(name, {evaluate, navigate, screenshot, errors, consoleLines}) {
+  return {name, errors, consoleLines, evaluate,
+    async waitFor(expression, timeout = 60000) {
+      const deadline = Date.now() + timeout;
+      while (Date.now() < deadline) {
+        try { if (await evaluate(expression)) return; } catch (error) { if (!/context|navigat|discarded/i.test(error.message)) throw error; }
+        await new Promise((r) => setTimeout(r, 200));
+      }
+      const state = await evaluate("({status: document.querySelector('#status')?.textContent, log: document.querySelector('#log')?.textContent.slice(-2000)})");
+      throw new Error(name + " timeout: " + expression + "\n" + JSON.stringify(state, null, 1) +
+        "\nconsole:\n" + consoleLines.slice(-30).join("\n") + "\nexceptions: " + JSON.stringify(errors).slice(0, 1500));
+    },
+    async goto(url) {
+      await navigate(url);
+      await new Promise((r) => setTimeout(r, 500));
+    },
+    async canvasShot(label) {
+      const r = await evaluate("(() => {const b=document.querySelector('#canvas').getBoundingClientRect();return {x:b.x,y:b.y,width:b.width,height:b.height}})()");
+      const png = await screenshot(r);
+      await writeFile(path.join(output, `${name}-${label}.png`), png);
+      return png;
+    },
+  };
+}
+
+// Firefox through WebDriver BiDi: a headless instance with its own profile.
+async function launchFirefox(name) {
+  const profile = path.join(output, "firefox-" + name);
+  await mkdir(profile, {recursive: true});
+  await writeFile(path.join(profile, "user.js"), [
+    'user_pref("browser.shell.checkDefaultBrowser", false);',
+    'user_pref("datareporting.policy.dataSubmissionEnabled", false);',
+    'user_pref("toolkit.telemetry.reportingpolicy.firstRun", false);',
+    'user_pref("browser.aboutwelcome.enabled", false);',
+    'user_pref("media.autoplay.default", 0);',
+  ].join("\n") + "\n");
+  const firefox = spawn(options.firefox, ["--headless", "--no-remote", "--profile", profile, "--remote-debugging-port=0",
+    "--width=1100", "--height=1000"], {stdio: ["ignore", "pipe", "pipe"]});
+  browsers.push(firefox);
+  const endpoint = await new Promise((resolve, reject) => {
+    let text = "";
+    const look = (chunk) => {
+      text += chunk;
+      const match = text.match(/WebDriver BiDi listening on (ws:\/\/[^\s]+)/);
+      if (match) resolve(match[1]);
+    };
+    firefox.stdout.on("data", look);
+    firefox.stderr.on("data", look);
+    firefox.once("exit", () => reject(new Error("Firefox exited before BiDi startup: " + text)));
+  });
+  const socket = new WebSocket(endpoint.replace(/\/$/, "") + "/session");
+  await once(socket, "open");
+  let id = 0;
+  const pending = new Map(), errors = [], consoleLines = [];
+  socket.onmessage = ({data}) => {
+    const message = JSON.parse(data);
+    if (message.id !== undefined && pending.has(message.id)) {
+      const callbacks = pending.get(message.id);
+      pending.delete(message.id);
+      if (message.type === "error") callbacks.reject(new Error(message.error + ": " + message.message));
+      else callbacks.resolve(message.result);
+    } else if (message.method === "log.entryAdded") {
+      const entry = message.params;
+      if (entry.type === "javascript") errors.push(entry.text);
+      else consoleLines.push(entry.level + ": " + entry.text);
+    }
+  };
+  const send = (method, params = {}) => new Promise((resolve, reject) => {
+    const callId = ++id;
+    const timer = setTimeout(() => { pending.delete(callId); reject(new Error(name + ": " + method + " timed out")); }, 60000);
+    pending.set(callId, {resolve: (v) => { clearTimeout(timer); resolve(v); }, reject: (e) => { clearTimeout(timer); reject(e); }});
+    socket.send(JSON.stringify({id: callId, method, params}));
+  });
+  await send("session.new", {capabilities: {}});
+  await send("session.subscribe", {events: ["log.entryAdded"]});
+  const {contexts} = await send("browsingContext.getTree", {});
+  const context = contexts[0].context;
+  await send("browsingContext.setViewport", {context, viewport: {width: 1100, height: 1000}}).catch(() => {});
+  // Results come back as JSON text: BiDi's own value form is not plain JSON.
+  const evaluate = async (expression) => {
+    const result = await send("script.evaluate", {expression: `(async () => JSON.stringify(await (${expression})))()`,
+      target: {context}, awaitPromise: true, resultOwnership: "none"});
+    if (result.type === "exception") throw new Error(name + ": " + JSON.stringify(result.exceptionDetails).slice(0, 600));
+    const text = result.result.value;
+    return text === undefined ? undefined : JSON.parse(text);
+  };
+  return pageOf(name, {evaluate, errors, consoleLines,
+    navigate: (url) => send("browsingContext.navigate", {context, url, wait: "none"}),
+    screenshot: async (r) => Buffer.from((await send("browsingContext.captureScreenshot",
+      {context, clip: {type: "box", x: r.x, y: r.y, width: r.width, height: r.height}})).data, "base64"),
+  });
+}
+
+async function launchChrome(name) {
   const chrome = spawn(options.chrome, ["--headless=new", "--no-sandbox", "--disable-dev-shm-usage", "--no-first-run",
     "--no-default-browser-check", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--autoplay-policy=no-user-gesture-required",
     "--disable-background-timer-throttling", "--disable-renderer-backgrounding", "--disable-backgrounding-occluded-windows",
@@ -131,29 +230,10 @@ async function launch(name) {
     if (result.exceptionDetails) throw new Error(name + ": " + JSON.stringify(result.exceptionDetails));
     return result.result.value;
   };
-  return {name, errors, consoleLines, command, evaluate,
-    async waitFor(expression, timeout = 60000) {
-      const deadline = Date.now() + timeout;
-      while (Date.now() < deadline) {
-        try { if (await evaluate(expression)) return; } catch (error) { if (!/context|navigat/i.test(error.message)) throw error; }
-        await new Promise((r) => setTimeout(r, 200));
-      }
-      const state = await evaluate("({status: document.querySelector('#status')?.textContent, log: document.querySelector('#log')?.textContent.slice(-2000)})");
-      throw new Error(name + " timeout: " + expression + "\n" + JSON.stringify(state, null, 1) +
-        "\nconsole:\n" + consoleLines.slice(-30).join("\n") + "\nexceptions: " + JSON.stringify(errors).slice(0, 1500));
-    },
-    async goto(url) {
-      await command("Page.navigate", {url});
-      await new Promise((r) => setTimeout(r, 500));
-    },
-    async canvasShot(label) {
-      const r = await evaluate("(() => {const b=document.querySelector('#canvas').getBoundingClientRect();return {x:b.x,y:b.y,width:b.width,height:b.height}})()");
-      const shot = await command("Page.captureScreenshot", {format: "png", clip: {...r, scale: 1}});
-      const png = Buffer.from(shot.data, "base64");
-      await writeFile(path.join(output, `${name}-${label}.png`), png);
-      return png;
-    },
-  };
+  return pageOf(name, {evaluate, errors, consoleLines,
+    navigate: (url) => command("Page.navigate", {url}),
+    screenshot: async (r) => Buffer.from((await command("Page.captureScreenshot", {format: "png", clip: {...r, scale: 1}})).data, "base64"),
+  });
 }
 
 // Share of pixels that are neither black nor one colour, from an 8-bit RGB(A) PNG.
