@@ -18,7 +18,19 @@ struct PortSettings
 	int  scale = 2;             // initial window size, times 640x480
 	std::string dataFolder;     // the game's files, as chosen on the first run (desktop)
 	std::string language;       // language pack code; empty: the installed language
+	// The gamepad as the keyboard while the game is set to keyboard input (README,
+	// "Gamepads"): each button's action, one of jump, fire, pause, escape, enter,
+	// left, right, up, down or none; with gamepadArrows the d-pad and the left
+	// stick are the arrow keys.
+	std::string gamepadA = "jump", gamepadB = "fire", gamepadX = "fire", gamepadY = "none";
+	std::string gamepadStart = "pause", gamepadBack = "escape";
+	std::string gamepadLeftShoulder = "none", gamepadRightShoulder = "none";
+	bool gamepadArrows = true;
 };
+
+namespace blupi::host { struct GamepadKeys; }
+// The virtual keys of the gamepad settings (an unknown action is none).
+void PortGamepadKeys(const PortSettings& settings, blupi::host::GamepadKeys& keys);
 
 // path is a host path (the user directory). Missing file or keys keep the
 // values already in settings.

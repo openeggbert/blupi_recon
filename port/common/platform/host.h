@@ -87,6 +87,19 @@ int  view_width();
 int  gamepad_count();
 bool gamepad_name(int index, char* name, int size);   // in the game's code page
 bool gamepad_state(int index, int& x, int& y, unsigned& buttons);
+// The gamepad as the keyboard (port addition, for a game set to keyboard input):
+// while set, every gamepad's buttons arrive as KeyDown/KeyUp of these virtual keys
+// (0: none), and with arrows the d-pad and the left stick as the arrow keys. While
+// not set, only Start arrives (as Escape, above) and the game reads the pad through
+// its own joystick option. Turning it off releases every key the pad holds.
+struct GamepadKeys
+{
+    int south = 0, east = 0, west = 0, north = 0;   // A, B, X, Y
+    int start = 0, back = 0;
+    int leftShoulder = 0, rightShoulder = 0;
+    bool arrows = true;
+};
+void set_gamepad_keys(const GamepadKeys* keys);   // nullptr: off
 
 // On-screen touch controls (touch screens: Android, platform/touch.h): the
 // play controls while the game is played, the scroll pad in the editor.

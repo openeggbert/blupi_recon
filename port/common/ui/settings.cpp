@@ -3,6 +3,7 @@
 // whole.
 
 #include "ui/settings.h"
+#include "platform/host.h"
 
 #include <cctype>
 #include <cstdio>
@@ -127,7 +128,45 @@ bool PortSettingsLoad(const char* path, PortSettings& settings)
 	ReadInt(values, "scale", settings.scale, 1, 8);
 	ReadString(values, "dataFolder", settings.dataFolder);
 	ReadString(values, "language", settings.language);
+	ReadString(values, "gamepadA", settings.gamepadA);
+	ReadString(values, "gamepadB", settings.gamepadB);
+	ReadString(values, "gamepadX", settings.gamepadX);
+	ReadString(values, "gamepadY", settings.gamepadY);
+	ReadString(values, "gamepadStart", settings.gamepadStart);
+	ReadString(values, "gamepadBack", settings.gamepadBack);
+	ReadString(values, "gamepadLeftShoulder", settings.gamepadLeftShoulder);
+	ReadString(values, "gamepadRightShoulder", settings.gamepadRightShoulder);
+	ReadBool(values, "gamepadArrows", settings.gamepadArrows);
 	return true;
+}
+
+// The game's own keys (Win32 virtual-key numbers, the vocabulary of CEvent::TreatEvent):
+// Ctrl jumps, Space fires, Pause pauses, Escape leaves, Enter confirms.
+static int GamepadAction(const std::string& name)
+{
+	static const struct { const char* name; int key; } actions[] =
+	{
+		{ "jump", 0x11 }, { "fire", 0x20 }, { "pause", 0x13 }, { "escape", 0x1B }, { "enter", 0x0D },
+		{ "left", 0x25 }, { "up", 0x26 }, { "right", 0x27 }, { "down", 0x28 },
+	};
+	for (const auto& a : actions)
+	{
+		if (name == a.name) return a.key;
+	}
+	return 0;
+}
+
+void PortGamepadKeys(const PortSettings& settings, blupi::host::GamepadKeys& keys)
+{
+	keys.south = GamepadAction(settings.gamepadA);
+	keys.east = GamepadAction(settings.gamepadB);
+	keys.west = GamepadAction(settings.gamepadX);
+	keys.north = GamepadAction(settings.gamepadY);
+	keys.start = GamepadAction(settings.gamepadStart);
+	keys.back = GamepadAction(settings.gamepadBack);
+	keys.leftShoulder = GamepadAction(settings.gamepadLeftShoulder);
+	keys.rightShoulder = GamepadAction(settings.gamepadRightShoulder);
+	keys.arrows = settings.gamepadArrows;
 }
 
 bool PortSettingsSave(const char* path, const PortSettings& settings)
@@ -153,6 +192,14 @@ bool PortSettingsSave(const char* path, const PortSettings& settings)
 	{
 		fprintf(file, ",\n  \"language\": %s", Quoted(settings.language).c_str());
 	}
+	fprintf(file,
+			",\n  \"gamepadA\": %s,\n  \"gamepadB\": %s,\n  \"gamepadX\": %s,\n  \"gamepadY\": %s"
+			",\n  \"gamepadStart\": %s,\n  \"gamepadBack\": %s"
+			",\n  \"gamepadLeftShoulder\": %s,\n  \"gamepadRightShoulder\": %s,\n  \"gamepadArrows\": %s",
+			Quoted(settings.gamepadA).c_str(), Quoted(settings.gamepadB).c_str(), Quoted(settings.gamepadX).c_str(),
+			Quoted(settings.gamepadY).c_str(), Quoted(settings.gamepadStart).c_str(),
+			Quoted(settings.gamepadBack).c_str(), Quoted(settings.gamepadLeftShoulder).c_str(),
+			Quoted(settings.gamepadRightShoulder).c_str(), b(settings.gamepadArrows));
 	fprintf(file, "\n}\n");
 	bool ok = ferror(file) == 0;
 	fclose(file);
