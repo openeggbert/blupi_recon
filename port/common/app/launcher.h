@@ -97,6 +97,7 @@ struct Game
 
 int Run(int argc, char** argv, Game& game);
 // Common installed/CD layout plus the marker supplied by the game's recognizer.
-bool RecognizesData(const std::string& root, const char* marker);
+// title: the title image (the June 1998 SB1 demo keeps its images in one image\\ folder).
+bool RecognizesData(const std::string& root, const char* marker, const char* title = "image08\\init.blp");
 } // namespace blupi::app
 #endif

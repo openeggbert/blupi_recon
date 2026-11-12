@@ -375,6 +375,15 @@ static IDirectDrawSurface* load_bitmap(SurfaceId id, const char* filename, int b
 /////////////////////////////////////////////////////////////////////////////
 
 
+// The June 1998 demo's pixmap class (games/sb1-blupi-demo/src/pixmap.h) has no true-colour field and
+// a Create without its parameter: that program's screen is always 8 bpp with a palette
+// (port/docs/EDITIONS.md).
+#if BLUPI_EDITION_KEY == 3
+#define PORT_TRUE_COLOR_BACK FALSE
+#else
+#define PORT_TRUE_COLOR_BACK m_bTrueColorBack
+#endif
+
 // Constructeur.
 
 CPixmap::CPixmap()
@@ -382,7 +391,9 @@ CPixmap::CPixmap()
 	int		i;
 
 	m_bFullScreen  = FALSE;
+#if BLUPI_EDITION_KEY != 3
 	m_bTrueColorBack   = FALSE;
+#endif
 	m_mouseType    = MOUSETYPEGRA;
 	m_bDebug       = TRUE;
 	m_bPalette     = TRUE;
@@ -452,15 +463,24 @@ void CPixmap::SetDebug(BOOL bDebug)
 // original exclusive-mode format: 16 bpp when bTrueColor, else 8 bpp with
 // palette (the original windowed mode used the desktop format instead).
 
+#if BLUPI_EDITION_KEY == 3
+BOOL CPixmap::Create(HWND hwnd, POINT dim,
+					 BOOL bFullScreen, int mouseType)
+{
+	const BOOL bTrueColor = FALSE;
+#else
 BOOL CPixmap::Create(HWND hwnd, POINT dim,
 					 BOOL bFullScreen, BOOL bTrueColor, int mouseType)
 {
+#endif
 	POINT				pos;
 	int					depth;
 
 	m_hWnd           = hwnd;
 	m_bFullScreen    = bFullScreen;
+#if BLUPI_EDITION_KEY != 3
 	m_bTrueColorBack = bTrueColor;
+#endif
 	m_mouseType      = mouseType;
 	m_dim            = dim;
 
@@ -497,6 +517,7 @@ BOOL CPixmap::Flush()
 	return TRUE;
 }
 
+#if BLUPI_EDITION_KEY != 3
 BOOL CPixmap::GetTrueColorBack()
 {
 	return m_bTrueColorBack;
@@ -506,6 +527,7 @@ BOOL CPixmap::GetTrueColorDecor()
 {
 	return m_bTrueColorBack;
 }
+#endif
 
 // Restitue les bitmaps.
 
@@ -525,7 +547,7 @@ BOOL CPixmap::InitSysPalette()
 
 	if ( !m_bFullScreen )
 	{
-		m_bPalette = !m_bTrueColorBack;
+		m_bPalette = !PORT_TRUE_COLOR_BACK;
 	}
 
 	for ( i=0 ; i<256 ; i++ )

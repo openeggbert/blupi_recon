@@ -27,6 +27,10 @@ mkdir -p "$WORK"
 rsync -a --delete "$REPO/src" "$REPO/port" "$WORK/"
 mkdir -p "$WORK/games/sb2/src"
 rsync -a --delete "$REPO/games/sb2/src/" "$WORK/games/sb2/src/"
+# The edition programs' sources (port/docs/EDITIONS.md).
+for edition in sb1-eggbert-demo sb1-eggbert-value sb1-blupi-demo; do
+    rsync -a --delete "$REPO/games/$edition" "$WORK/games/"
+done
 rsync -a --delete "$DATA/" "$WORK/data/"
 
 # Keep Windows data paths out of the Linux cache. The SB2 tests are optional
@@ -60,6 +64,9 @@ cd "$WORK/port"
 BLUPI_DATA="$WORK/data" cmake --preset linux -S . \
     -DBLUPI2_TEST_DATA="$EGGBERT2_TEST" -DBLUPI2_TEST_DATA_BLUPI="$BLUPI2_TEST" \
     -DBLUPI_TEST_DATA_EGGBERT="$EGGBERT1_TEST" \
+    -DBLUPI_TEST_DATA_EGGBERT_DEMO="${BLUPI_TEST_DATA_EGGBERT_DEMO:-}" \
+    -DBLUPI_TEST_DATA_EGGBERT_VALUE="${BLUPI_TEST_DATA_EGGBERT_VALUE:-}" \
+    -DBLUPI_TEST_DATA_BLUPI_DEMO="${BLUPI_TEST_DATA_BLUPI_DEMO:-}" \
     -DBLUPI2_TEST_DATA_VARIANTS="$VARIANTS2_TEST"
 cmake --build "$WORK/build/port-linux" -j 4
 # Both desktop entry points use common/app; Android still builds SB1 only.

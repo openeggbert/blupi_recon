@@ -123,6 +123,13 @@ int GetNum(char *p)
 // root is a normal installed copy (g_CDPath stays empty, so AddCDPath is a
 // no-op exactly as for a hard-disk installation).
 
+// The images' folder: image08\ (the June 1998 demo program: its single image\ folder).
+#if BLUPI_EDITION_KEY == 3
+#define PORT_IMAGE_DIR "image\\"
+#else
+#define PORT_IMAGE_DIR "image08\\"
+#endif
+
 BOOL ReadConfig(LPSTR lpCmdLine)
 {
 	FILE*       file = NULL;
@@ -170,6 +177,7 @@ BOOL ReadConfig(LPSTR lpCmdLine)
 		if (g_mouseType > 9) g_mouseType = 9;
 	}
 
+#if BLUPI_EDITION_KEY != 1   // the Speedy Eggbert Demo's ReadConfig ends after MouseType=
 	pText = strstr(buffer, "Benchmark=");
 	if (pText != NULL)
 	{
@@ -186,6 +194,7 @@ BOOL ReadConfig(LPSTR lpCmdLine)
 		if (i == 8) g_bTrueColorBack = FALSE;
 		if (i == 16) g_bTrueColorBack = TRUE;
 	}
+#endif
 
 	// Port: command-line override, applied last like a TrueColor= entry.
 	if (g_portColorDepth == 8) g_bTrueColorBack = FALSE;
@@ -847,7 +856,7 @@ static LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				totalDim.y = 96;
 				iconDim.x = DIMLITTLEX;
 				iconDim.y = DIMLITTLEY;
-				g_pPixmap->Cache(CHLITTLE, "image08\\little.blp", totalDim, iconDim, TRUE);
+				g_pPixmap->Cache(CHLITTLE, PORT_IMAGE_DIR "little.blp", totalDim, iconDim, TRUE);
 				g_pPixmap->SetTransparent(CHLITTLE, RGB(0, 0, 255)); // bleu
 
 				g_pPixmap->SavePalette();
@@ -1052,14 +1061,18 @@ static BOOL DoInit(HINSTANCE hInstance, LPSTR lpCmdLine, int nCmdShow)
 	if (g_pPixmap == NULL) return InitFail("New pixmap", TRUE);
 	totalDim.x = LXIMAGE;
 	totalDim.y = LYIMAGE;
+#if BLUPI_EDITION_KEY == 3   // the June 1998 demo: no true-colour parameter (always 8 bpp)
+	if (!g_pPixmap->Create(g_hWnd, totalDim, g_bFullScreen, g_mouseType))
+#else
 	if (!g_pPixmap->Create(g_hWnd, totalDim, g_bFullScreen, g_bTrueColorBack, g_mouseType))
+#endif
 		return InitFail("Create pixmap", TRUE);
 	OutputDebug("Image: init\n");
 	totalDim.x = LXIMAGE;
 	totalDim.y = LYIMAGE;
 	iconDim.x = 0;
 	iconDim.y = 0;
-	if (!g_pPixmap->Cache(0, "image08\\init.blp", totalDim, iconDim, TRUE)) return FALSE;
+	if (!g_pPixmap->Cache(0, PORT_IMAGE_DIR "init.blp", totalDim, iconDim, TRUE)) return FALSE;
 	OutputDebug("SavePalette\n");
 	g_pPixmap->SavePalette();
 	OutputDebug("InitSysPalette\n");
@@ -1075,96 +1088,96 @@ static BOOL DoInit(HINSTANCE hInstance, LPSTR lpCmdLine, int nCmdShow)
 	totalDim.y = 0x500;
 	iconDim.x = 0x40;
 	iconDim.y = 0x40;
-	if (!g_pPixmap->Cache(1, "image08\\object.blp", totalDim, iconDim, FALSE))
+	if (!g_pPixmap->Cache(1, PORT_IMAGE_DIR "object.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache object.blp", TRUE);
 	g_pPixmap->SetTransparent(1, RGB(0, 0, 255));
 	totalDim.x = 0x3c0;
 	totalDim.y = 0x4b0;
 	iconDim.x = 0x3c;
 	iconDim.y = 0x3c;
-	if (!g_pPixmap->Cache(2, "image08\\blupi000.blp", totalDim, iconDim, FALSE))
+	if (!g_pPixmap->Cache(2, PORT_IMAGE_DIR "blupi000.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache blupi.blp", TRUE);
 	g_pPixmap->SetTransparent(2, RGB(0, 0, 255));
 	totalDim.x = 0x3c0;
 	totalDim.y = 0x4b0;
 	iconDim.x = 0x3c;
 	iconDim.y = 0x3c;
-	if (!g_pPixmap->Cache(11, "image08\\blupi001.blp", totalDim, iconDim, FALSE))
+	if (!g_pPixmap->Cache(11, PORT_IMAGE_DIR "blupi001.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache blupi001.blp", TRUE);
 	g_pPixmap->SetTransparent(11, RGB(0, 0, 255));
 	totalDim.x = 0x3c0;
 	totalDim.y = 0x4b0;
 	iconDim.x = 0x3c;
 	iconDim.y = 0x3c;
-	if (!g_pPixmap->Cache(12, "image08\\blupi002.blp", totalDim, iconDim, FALSE))
+	if (!g_pPixmap->Cache(12, PORT_IMAGE_DIR "blupi002.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache blupi002.blp", TRUE);
 	g_pPixmap->SetTransparent(12, RGB(0, 0, 255));
 	totalDim.x = 0x3c0;
 	totalDim.y = 0x4b0;
 	iconDim.x = 0x3c;
 	iconDim.y = 0x3c;
-	if (!g_pPixmap->Cache(13, "image08\\blupi003.blp", totalDim, iconDim, FALSE))
+	if (!g_pPixmap->Cache(13, PORT_IMAGE_DIR "blupi003.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache blupi003.blp", TRUE);
 	g_pPixmap->SetTransparent(13, RGB(0, 0, 255));
 	totalDim.x = 0x40;
 	totalDim.y = 0x40;
 	iconDim.x = 0x40;
 	iconDim.y = 0x40;
-	if (!g_pPixmap->Cache(14, "image08\\temp.blp", totalDim, iconDim, FALSE))
+	if (!g_pPixmap->Cache(14, PORT_IMAGE_DIR "temp.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache temp.blp", TRUE);
 	g_pPixmap->SetTransparent(14, RGB(0, 0, 255));
 	totalDim.x = 0xd0;
 	totalDim.y = 0xa0;
 	iconDim.x = 0xd0;
 	iconDim.y = 0xa0;
-	if (!g_pPixmap->Cache(8, "image08\\map.blp", totalDim, iconDim, FALSE))
+	if (!g_pPixmap->Cache(8, PORT_IMAGE_DIR "map.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache map.blp", TRUE);
 	g_pPixmap->SetTransparent(8, RGB(0, 0, 255));
 	totalDim.x = 0x3c0;
 	totalDim.y = 0x4b0;
 	iconDim.x = 0x3c;
 	iconDim.y = 0x3c;
-	if (!g_pPixmap->Cache(10, "image08\\element.blp", totalDim, iconDim, FALSE))
+	if (!g_pPixmap->Cache(10, PORT_IMAGE_DIR "element.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache element.blp", TRUE);
 	g_pPixmap->SetTransparent(10, RGB(0, 0, 255));
 	totalDim.x = 0x800;
 	totalDim.y = 0x280;
 	iconDim.x = 0x80;
 	iconDim.y = 0x80;
-	if (!g_pPixmap->Cache(9, "image08\\explo.blp", totalDim, iconDim, FALSE))
+	if (!g_pPixmap->Cache(9, PORT_IMAGE_DIR "explo.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache explo.blp", TRUE);
 	g_pPixmap->SetTransparent(9, RGB(0, 0, 255));
 	totalDim.x = LXIMAGE;
 	totalDim.y = LYIMAGE;
 	iconDim.x = 0;
 	iconDim.y = 0;
-	if (!g_pPixmap->Cache(3, "image08\\decor000.blp", totalDim, iconDim, FALSE)) return FALSE;
+	if (!g_pPixmap->Cache(3, PORT_IMAGE_DIR "decor000.blp", totalDim, iconDim, FALSE)) return FALSE;
 	totalDim.x = 0xf0;
 	totalDim.y = 0x348;
 	iconDim.x = 0x28;
 	iconDim.y = 0x28;
-	if (!g_pPixmap->Cache(4, "image08\\button00.blp", totalDim, iconDim, FALSE))
+	if (!g_pPixmap->Cache(4, PORT_IMAGE_DIR "button00.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache button00.blp", TRUE);
 	g_pPixmap->SetTransparent(4, RGB(0, 0, 255));
 	totalDim.x = 0x7c;
 	totalDim.y = 0x58;
 	iconDim.x = 0x7c;
 	iconDim.y = 0x16;
-	if (!g_pPixmap->Cache(5, "image08\\jauge.blp", totalDim, iconDim, FALSE))
+	if (!g_pPixmap->Cache(5, PORT_IMAGE_DIR "jauge.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache jauge.blp", TRUE);
 	g_pPixmap->SetTransparent(5, RGB(0, 0, 255));
 	totalDim.x = 0x100;
 	totalDim.y = 0x180;
 	iconDim.x = 0x10;
 	iconDim.y = 0x10;
-	if (!g_pPixmap->Cache(6, "image08\\text.blp", totalDim, iconDim, FALSE))
+	if (!g_pPixmap->Cache(6, PORT_IMAGE_DIR "text.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache text.blp", TRUE);
 	g_pPixmap->SetTransparent(6, RGB(0, 0, 255));
 	totalDim.x = 0x100;
 	totalDim.y = 0x60;
 	iconDim.x = 0x10;
 	iconDim.y = 0x0c;
-	if (!g_pPixmap->Cache(7, "image08\\little.blp", totalDim, iconDim, FALSE))
+	if (!g_pPixmap->Cache(7, PORT_IMAGE_DIR "little.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache little.blp", TRUE);
 	g_pPixmap->SetTransparent(7, RGB(0, 0, 255));
 
@@ -1205,14 +1218,37 @@ int BlupiMain(int argc, char** argv)
 {
     using blupi::app::Options;
     blupi::app::Game game{};
+#if BLUPI_EDITION_KEY == 1
+    // The editions with their own historical source are programs of their own (port/docs/EDITIONS.md),
+    // with their own settings and user folder: saves of a demo never mix with the full game's.
+    game.name = "eggbert-demo-sdl3"; game.title = TITLE;
+    game.dataTitle = "Speedy Eggbert Demo";
+    game.dataEnvironment = "BLUPI_EGGBERT_DEMO_DATA";
+    game.settingsFile = "eggbert-demo-sdl3.json"; game.userApp = "Speedy Eggbert Demo SDL3";
+#elif BLUPI_EDITION_KEY == 2
+    game.name = "eggbert-value-sdl3"; game.title = TITLE;
+    game.dataTitle = "Speedy Eggbert SE Valueware";
+    game.dataEnvironment = "BLUPI_EGGBERT_VALUE_DATA";
+    game.settingsFile = "eggbert-value-sdl3.json"; game.userApp = "Speedy Eggbert Valueware SDL3";
+#elif BLUPI_EDITION_KEY == 3
+    game.name = "blupi-demo-sdl3"; game.title = TITLE;
+    game.dataTitle = "Speedy Blupi Demo (June 1998)";
+    game.dataEnvironment = "BLUPI_DEMO_DATA";
+    game.settingsFile = "blupi-demo-sdl3.json"; game.userApp = "Speedy Blupi Demo SDL3";
+#else
     game.name = "blupi-sdl3"; game.title = TITLE;
     game.dataTitle = "Speedy Blupi 1 / Speedy Eggbert 1";
     game.dataEnvironment = "BLUPI_DATA";
     game.settingsFile = "blupi-sdl3.json"; game.userApp = "Speedy Blupi SDL3";
+#endif
     game.settings = &g_settings; game.settingsPath = &g_settingsPath;
     game.quit = &g_bQuit; game.timer = &g_timer; game.arrowHeld = g_portArrowHeld;
     game.recognizesData = [](const std::string& root) {
+#if BLUPI_EDITION_KEY == 3   // the June 1998 demo: one image\ folder
+        return blupi::app::RecognizesData(root, "data/demo200.blp", "image\\init.blp");
+#else
         return blupi::app::RecognizesData(root, "data/demo200.blp");
+#endif
     };
 
     std::string exportLanguage, exportPath;

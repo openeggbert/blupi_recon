@@ -12,12 +12,12 @@
 #include <cctype>
 
 namespace blupi::app {
-bool RecognizesData(const std::string& root, const char* marker)
+bool RecognizesData(const std::string& root, const char* marker, const char* title)
 {
     if (root.empty()) return false;
     blupi::vfs::set_roots(root, "");
     return !blupi::vfs::resolve_read("data\\config.def").empty() &&
-           !blupi::vfs::resolve_read("image08\\init.blp").empty() &&
+           !blupi::vfs::resolve_read(title).empty() &&
            !blupi::vfs::resolve_read(marker).empty();
 }
 
