@@ -173,7 +173,8 @@ async function launchFirefox(name) {
   const evaluate = async (expression) => {
     const result = await send("script.evaluate", {expression: `(async () => JSON.stringify(await (${expression})))()`,
       target: {context}, awaitPromise: true, resultOwnership: "none"});
-    if (result.type === "exception") throw new Error(name + ": " + JSON.stringify(result.exceptionDetails).slice(0, 600));
+    if (result.type === "exception")
+      throw new Error(name + ": " + (result.exceptionDetails.text || JSON.stringify(result.exceptionDetails).slice(0, 600)));
     const text = result.result.value;
     return text === undefined ? undefined : JSON.parse(text);
   };
