@@ -69,7 +69,7 @@ set(FREE_API_TARGET_GAME blupi-recon CACHE STRING "" FORCE)
 set(FREE_API_BLUPI_RECON_RC "${BLUPI_RC_FILE}" CACHE FILEPATH "" FORCE)
 set(FREE_DIRECT_HONOR_DISPLAY_BPP ON CACHE BOOL "" FORCE)
 # Internet multiplayer through a Free Direct server (../../free-direct/docs/free-direct-server.md):
-# the game's provider list gains "FreeDirect server". The web build needs nothing else; a native
+# the game's provider list gains "Internet through a Free Direct server". The web build needs nothing else; a native
 # build needs IXWebSocket (FREE_DIRECT_IXWEBSOCKET_SOURCE_DIR, or an installed package).
 option(BLUPI_NET_SERVER "Offer Internet multiplayer through a Free Direct server" ON)
 set(BLUPI_NET_SERVER_ENABLED OFF)
@@ -81,13 +81,13 @@ if(BLUPI_NET_SERVER)
         if(TARGET ixwebsocket::ixwebsocket)
             set(BLUPI_NET_SERVER_ENABLED ON)
         else()
-            message(WARNING "No IXWebSocket: this native build has no \"FreeDirect server\" provider. "
+            message(WARNING "No IXWebSocket: this native build has no \"Internet through a Free Direct server\" provider. "
                     "Set FREE_DIRECT_IXWEBSOCKET_SOURCE_DIR to an IXWebSocket checkout, or BLUPI_NET_SERVER=OFF.")
         endif()
     endif()
 endif()
 set(FREE_DIRECT_ENABLE_RELAY ${BLUPI_NET_SERVER_ENABLED} CACHE BOOL "" FORCE)
-# Local-network multiplayer in native builds: the provider "FreeDirect" over Free Direct's ENet
+# Local-network multiplayer in native builds: the provider "Local network (Free Direct)" over Free Direct's ENet
 # backend, with LAN discovery (../../free-direct/docs/networking-backends.md). Without ENet that
 # provider only reaches the same process. Needs an ENet checkout (FREE_DIRECT_ENET_SOURCE_DIR,
 # or free-direct's third_party/enet) or a system libenet. Browsers have no UDP: web builds use

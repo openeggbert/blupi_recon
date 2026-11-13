@@ -4,7 +4,7 @@
 // Starts a local free-direct-server with a password, serves the generated site, and runs two
 // independent browsers (separate Chrome processes, so neither tab is throttled in the
 // background). Both go through the game's own screens: choose player, the provider list
-// ("FreeDirect server"), the session list, create / join, the lobby, ready, start, play.
+// ("Internet through a Free Direct server"), the session list, create / join, the lobby, ready, start, play.
 // The host fills the connection dialog through Module.freeApiServerPrompt and learns the room
 // ID through Module.freeApiShowRoomCreated; the client types into the real HTML dialog with
 // keyboard events, which also proves those keys reach the form and not the game.
