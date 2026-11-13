@@ -86,6 +86,7 @@ def main():
     ap.add_argument("--dump-every", type=int, default=0)
     ap.add_argument("--work", type=Path, required=True)
     ap.add_argument("--display", default=":78")
+    ap.add_argument("--keep-game", action="store_true", help="keep the run's game folder (default: removed)")
     a = ap.parse_args()
 
     rebuilt = a.rebuilt.resolve()
@@ -100,9 +101,14 @@ def main():
     run = a.work.resolve() / f"{name}-{a.color}-{time.strftime('%Y%m%d-%H%M%S')}"
     game = run / "game"
     game.mkdir(parents=True)
-    for f in a.data.iterdir():   # the data folders only: no program of the data folder is copied
+    # The data folders only, no program of the data folder: DATA, which the game writes, is copied; the
+    # image and sound folders are linked (read-only use), which spares a copy of each per run.
+    for f in a.data.iterdir():
         if f.is_dir():
-            shutil.copytree(f, game / f.name)
+            if f.name.lower() == "data":
+                shutil.copytree(f, game / f.name)
+            else:
+                (game / f.name).symlink_to(f.resolve(), target_is_directory=True)
     exe = game / (rebuilt.stem + ".EXE")
     shutil.copy(rebuilt, exe)
     shutil.copy(proxy, game / "ddraw.dll")
@@ -169,6 +175,8 @@ def main():
                    first_difference=differ[0] if differ else -1, differing=differ[:50])
     receipt["status"] = "MATCH" if n == a.frames and not differ else ("DIFFERENT" if differ else "INCOMPLETE")
     (run / "compare.json").write_text(json.dumps(receipt, indent=2) + "\n")
+    if not a.keep_game:
+        shutil.rmtree(game)
     print(run)
     print(json.dumps({k: receipt[k] for k in ("status", "hist_frames", "port_frames", "identical_frames",
                                                "first_difference", "exit_code", "port_exit_code")}))
