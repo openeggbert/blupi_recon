@@ -14,8 +14,16 @@ Eggbert 2) and `libSDL3.so`; SDL's Java activities run them (`BlupiActivity`, an
   Speedy Eggbert 2 to `files/game2`. Later runs show the imported games and a button to import
   another. SB2 keeps its saves and settings in `files/sb2`. Uninstalling the app deletes the
   copies, the saves and the settings.
+- **The editions with programs of their own** (since after 1.5.2; `../docs/EDITIONS.md`): the
+  Speedy Eggbert Demo (`libeggbert_demo.so`), Speedy Eggbert SE Valueware (`libeggbert_value.so`) and
+  the June 1998 Speedy Blupi Demo (`libblupi_demo.so`), each with its own activity and process
+  (`EditionActivity`). The importer recognises them by their installed files (the demo's `WCSUP.DLL`,
+  Valueware's `SpeedyEggbertSEValueware*.exe`, the June demo's one `IMAGE` folder) and copies them to
+  `files/game-eggbert-demo`, `files/game-eggbert-value` and `files/game-blupi-demo`; their saves are in
+  `files/eggbert_demo`, `files/eggbert_value` and `files/blupi_demo`. Built, not yet run on a device.
 - **Development:** data pushed with adb to the app's external files folder (`files/game`,
-  `files/game2`) is used as well; `--es game sb1` or `--es game sb2` starts that game directly.
+  `files/game2`, `files/game-<edition>`) is used as well; `--es game sb1`, `sb2`, `eggbert-demo`,
+  `eggbert-value` or `blupi-demo` starts that game directly.
 - **Full screen, landscape**, with the 4:3 game frame centred. Widescreen (Display options)
   uses the whole screen.
 - **Touch:**

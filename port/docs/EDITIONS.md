@@ -42,11 +42,36 @@ reconstruction. The port builds each as a program of its own, next to `blupi-sdl
 (`BLUPI_TEST_DATA_EGGBERT_DEMO`, `BLUPI_TEST_DATA_EGGBERT_VALUE`, `BLUPI_TEST_DATA_BLUPI_DEMO`), shows
 the title screen and plays the attract-mode demo.
 
+**Fidelity (after 1.5.2, 2026-11-13):**
+
+- [EVIDENCE] **Cross-build oracle.** Each edition's ordinary historical build (`tools/build.py`, from
+  this repository's source in the win10 VM; never the original) ran under Wine against the port
+  (`tools/oracle_wine.py`, [ORACLE.md](ORACLE.md) "Under Wine"): the title screen, then the attract-mode
+  demo, 2,200 displays.
+
+  | Edition | Depth | Identical displays |
+  |---|---|---:|
+  | Speedy Eggbert Demo | 8 bpp (its only depth) | 2,200 / 2,200 |
+  | Speedy Eggbert SE Valueware | 16 bpp | 2,200 / 2,200 |
+  | Speedy Eggbert SE Valueware | 8 bpp | 2,200 / 2,200 |
+  | Speedy Blupi Demo, June 1998 | 8 bpp (its only depth) | 2,200 / 2,200 |
+
+  The same harness first reproduced the Windows result for Speedy Blupi 1 US (2,200 / 2,200 at 16 and
+  8 bpp), and gave 2,200 / 2,200 for Speedy Eggbert 1 at 16 bpp. Wine's DirectDraw and GDI stand in for
+  Windows'; these runs are bounded receipts, not whole-game certification.
+- **Golden traces:** `golden_eggbert-demo_attract8`, `golden_eggbert-value_attract16`,
+  `golden_eggbert-value_attract8`, `golden_blupi-demo_attract8` (`tests/golden/`, 7,500 frames,
+  a checkpoint every 10), recorded on unplayed data from the code that matched the oracle. They are the
+  regression gate for these programs, as the other goldens are for theirs.
+- **Android (after 1.5.2):** the app has the three editions too: `libeggbert_demo.so`,
+  `libeggbert_value.so` and `libblupi_demo.so`, each run by its own activity in a process of its own,
+  with its import in `files/game-<edition>` and its saves in a folder of its own. The importer tells
+  the editions apart by their installed files (`GameFolder.java`, `ctest -R android_game_folder`): the
+  Speedy Eggbert Demo's `WCSUP.DLL`, Valueware's `SpeedyEggbertSEValueware*.exe`, and the June demo's one
+  `IMAGE` folder. Built, not run on a device.
+
 **Not claimed:**
 
-- **No fidelity review beyond that.** These editions are outside the port's supported catalog
-  (`provenance.json`: excluded targets; edges F454, F473, F474 keep their follow-ups):
-  - no golden traces;
-  - no oracle comparison;
-  - no multiplayer tests.
-- **Desktop only.** The Android app does not include them.
+- These editions stay outside the port's supported catalog (`provenance.json`: excluded targets; edges
+  F454, F473, F474): the oracle covers the title and the attract mode only (no menus, editor or saves),
+  and there are no multiplayer tests.

@@ -20,26 +20,41 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 // Launcher. The game data is not part of the app: each player supplies their own copy of
-// Speedy Blupi or Speedy Eggbert (files/game, the SB1 program libmain.so) and of Speedy Blupi 2
-// or Speedy Eggbert 2 (files/game2, libblupi2.so). On first run they choose the game's folder
+// Speedy Blupi or Speedy Eggbert (files/game, the SB1 program libmain.so), of Speedy Blupi 2
+// or Speedy Eggbert 2 (files/game2, libblupi2.so), or of an edition with a program of its own
+// (files/game-<edition>, EditionActivity: the Speedy Eggbert Demo, Valueware, the 1998 demo). On first run they choose the game's folder
 // (the one with DATA, IMAGE08, IMAGE16 and SOUND, or a folder above it); the files are copied
 // into the app's private storage once and the game starts. Later runs show the imported games
 // and a button to import another. For development, data pushed with adb to the app's external
-// files directory (files/game, files/game2) is used as well, and the extra "game" (sb1 or sb2)
-// starts that game directly.
+// files directory (files/game, files/game2, ...) is used as well, and the extra "game" (sb1, sb2,
+// eggbert-demo, eggbert-value, blupi-demo) starts that game directly.
 public class SetupActivity extends Activity {
     private static final int PICK_FOLDER = 1;
 
     private TextView status;
     private Button choose;
 
+    // The games the launcher offers, in its order: the kind, its button, its "game" extra (adb).
+    private static final Object[][] GAMES = {
+        { GameFolder.Kind.SB1, "Speedy Blupi / Speedy Eggbert", "sb1" },
+        { GameFolder.Kind.SB2, "Speedy Blupi 2 / Speedy Eggbert 2", "sb2" },
+        { GameFolder.Kind.EGGBERT_DEMO, "Speedy Eggbert Demo", "eggbert-demo" },
+        { GameFolder.Kind.EGGBERT_VALUE, "Speedy Eggbert SE Valueware", "eggbert-value" },
+        { GameFolder.Kind.BLUPI_DEMO, "Speedy Blupi Demo (1998)", "blupi-demo" },
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final boolean sb1 = imported(GameFolder.Kind.SB1), sb2 = imported(GameFolder.Kind.SB2);
+        boolean any = false, stale = false;
         String forced = getIntent() != null ? getIntent().getStringExtra("game") : null;
-        if ("sb1".equals(forced) && sb1) { startGame(GameFolder.Kind.SB1); return; }
-        if ("sb2".equals(forced) && sb2) { startGame(GameFolder.Kind.SB2); return; }
+        for (Object[] g : GAMES) {
+            GameFolder.Kind kind = (GameFolder.Kind) g[0];
+            boolean has = imported(kind);
+            if (has && g[2].equals(forced)) { startGame(kind); return; }
+            any |= has;
+            stale |= !has && new File(getFilesDir(), folderName(kind)).exists();
+        }
 
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -51,17 +66,18 @@ public class SetupActivity extends Activity {
         status.setTextColor(Color.WHITE);
         status.setTextSize(18);
         status.setGravity(Gravity.CENTER);
-        if (sb1 || sb2) {
+        if (any) {
             status.setText("Choose a game.");
         } else {
             status.setText("This app needs your own copy of the game: Speedy Blupi or Speedy Eggbert, "
-                    + "or Speedy Blupi 2 or Speedy Eggbert 2.\n\n"
+                    + "Speedy Blupi 2 or Speedy Eggbert 2, the Speedy Eggbert Demo, Speedy Eggbert SE "
+                    + "Valueware or the 1998 Speedy Blupi Demo.\n\n"
                     + "Choose the folder of an installed game (the one that contains DATA, IMAGE08, "
                     + "IMAGE16 and SOUND). Its files are copied into the app once.");
         }
         // An earlier import that the game would not start (incomplete, or another game): say so.
         // Saves and settings live outside the game folders and are kept.
-        if ((!sb1 && new File(getFilesDir(), "game").exists()) || (!sb2 && new File(getFilesDir(), "game2").exists())) {
+        if (stale) {
             status.setText(status.getText() + "\n\nAn earlier import is incomplete; choose its folder again. "
                     + "Your saves are kept.");
         }
@@ -70,9 +86,11 @@ public class SetupActivity extends Activity {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         params.topMargin = 36;
-        if (sb1) addButton(layout, params, "Speedy Blupi / Speedy Eggbert", () -> startGame(GameFolder.Kind.SB1));
-        if (sb2) addButton(layout, params, "Speedy Blupi 2 / Speedy Eggbert 2", () -> startGame(GameFolder.Kind.SB2));
-        choose = addButton(layout, params, sb1 || sb2 ? "Import another game folder" : "Choose game folder", () -> {
+        for (Object[] g : GAMES) {
+            final GameFolder.Kind kind = (GameFolder.Kind) g[0];
+            if (imported(kind)) addButton(layout, params, (String) g[1], () -> startGame(kind));
+        }
+        choose = addButton(layout, params, any ? "Import another game folder" : "Choose game folder", () -> {
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
             startActivityForResult(intent, PICK_FOLDER);
         });
@@ -88,9 +106,15 @@ public class SetupActivity extends Activity {
         return button;
     }
 
-    // The game's import folder: files/game (SB1) or files/game2 (SB2).
+    // The game's import folder: files/game (SB1), files/game2 (SB2), files/game-<edition> (the editions).
     static String folderName(GameFolder.Kind kind) {
-        return kind == GameFolder.Kind.SB2 ? "game2" : "game";
+        switch (kind) {
+            case SB2: return "game2";
+            case EGGBERT_DEMO: return "game-eggbert-demo";
+            case EGGBERT_VALUE: return "game-eggbert-value";
+            case BLUPI_DEMO: return "game-blupi-demo";
+            default: return "game";
+        }
     }
 
     private boolean imported(GameFolder.Kind kind) {
@@ -118,9 +142,12 @@ public class SetupActivity extends Activity {
             String rootId = DocumentsContract.getTreeDocumentId(tree);
             int[] count = { 0 };
             copyTree(getContentResolver(), tree, rootId, temp, 0, count);
-            GameFolder.Kind kind = GameFolder.Kind.SB1;
-            File game = GameFolder.find(temp, kind);
-            if (game == null) { kind = GameFolder.Kind.SB2; game = GameFolder.find(temp, kind); }
+            GameFolder.Kind kind = null;
+            File game = null;
+            for (Object[] g : GAMES) {
+                game = GameFolder.find(temp, (GameFolder.Kind) g[0]);
+                if (game != null) { kind = (GameFolder.Kind) g[0]; break; }
+            }
             if (game == null) {
                 GameFolder.Kind why = GameFolder.explain(temp);
                 deleteTree(temp);
@@ -192,7 +219,15 @@ public class SetupActivity extends Activity {
     }
 
     private void startGame(GameFolder.Kind kind) {
-        Intent game = new Intent(this, kind == GameFolder.Kind.SB2 ? Blupi2Activity.class : BlupiActivity.class);
+        Class<?> activity = BlupiActivity.class;
+        switch (kind) {
+            case SB2: activity = Blupi2Activity.class; break;
+            case EGGBERT_DEMO: activity = EggbertDemoActivity.class; break;
+            case EGGBERT_VALUE: activity = EggbertValueActivity.class; break;
+            case BLUPI_DEMO: activity = BlupiDemoActivity.class; break;
+            default: break;
+        }
+        Intent game = new Intent(this, activity);
         String args = getIntent() != null ? getIntent().getStringExtra("args") : null;
         if (args != null) game.putExtra("args", args);   // development: the game's options
         startActivity(game);

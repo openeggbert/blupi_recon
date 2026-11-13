@@ -29,6 +29,8 @@ installed game. On the first start the port asks for its folder and remembers it
 - **Android: a game survives a short trip to the background:** switching to another app no longer drops
   you from a multiplayer game; the connection is kept alive while the game is paused (tested on the
   desktop; not yet on a device).
+- **The Speedy Eggbert Demo, Speedy Eggbert SE Valueware and the 1998 Speedy Blupi Demo on Android:**
+  the app recognises their folders and plays them as on the desktop (built, not yet tested on a device).
 - **The original Windows cursors with `MouseType=2` or `3`:** the games' own arrows, hourglass and
   hand from their resources, instead of the system's cursors, enlarged with the window.
 

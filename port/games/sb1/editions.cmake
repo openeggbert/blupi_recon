@@ -3,7 +3,8 @@
 # replacing a tree file of the same name (tools/source_tree.py's rule), and the port's SB1 code
 # (games/sb1/game) once more in that context, with its edition's identity:
 #   BLUPI_EDITION_KEY  1 eggbert-demo, 2 eggbert-value, 3 blupi-demo
-# Desktop only; the historical TUs are never edited, and every edition keeps its own restrictions.
+# On the desktop a program each, on Android a library each (since after 1.5.2); the historical TUs are
+# never edited, and every edition keeps its own restrictions.
 function(blupi_sb1_edition NAME KEY TREE OVERLAY DESCRIPTION PRODUCT)
     # A partial copy of the repository (port/tools/linux_*.sh copy only what they need) may lack an
     # edition's sources: never build it from another tree instead.
@@ -60,8 +61,17 @@ function(blupi_sb1_edition NAME KEY TREE OVERLAY DESCRIPTION PRODUCT)
     target_include_directories(${NAME}_game PRIVATE ${BLUPI_GAME_DIR} ${CMAKE_CURRENT_BINARY_DIR}/generated)
     target_sources(${NAME}_game PRIVATE ${BLUPI_LANGUAGE_INC})
 
-    add_executable(${NAME} ${BLUPI_COMMON}/platform/entry.cpp)
-    set_target_properties(${NAME} PROPERTIES OUTPUT_NAME ${NAME})
+    if(ANDROID)
+        # On Android a library its own SDL activity loads (port/android: the edition activities), as
+        # SB2's libblupi2.so: libeggbert_demo.so, libeggbert_value.so, libblupi_demo.so.
+        string(REPLACE "-sdl3" "" library ${NAME})
+        string(REPLACE "-" "_" library ${library})
+        add_library(${NAME} SHARED ${BLUPI_COMMON}/platform/entry.cpp)
+        set_target_properties(${NAME} PROPERTIES OUTPUT_NAME ${library})
+    else()
+        add_executable(${NAME} ${BLUPI_COMMON}/platform/entry.cpp)
+        set_target_properties(${NAME} PROPERTIES OUTPUT_NAME ${NAME})
+    endif()
     target_link_libraries(${NAME} PRIVATE ${NAME}_game SDL3::SDL3)
     if(WIN32)
         set(BLUPI_RC_ICON ${CMAKE_CURRENT_SOURCE_DIR}/res/icon.ico)
@@ -74,12 +84,10 @@ function(blupi_sb1_edition NAME KEY TREE OVERLAY DESCRIPTION PRODUCT)
     blupi_package_app(${NAME})
 endfunction()
 
-if(NOT ANDROID)
-    set(BLUPI_REPO ${CMAKE_CURRENT_SOURCE_DIR}/..)
-    blupi_sb1_edition(eggbert-demo-sdl3 1 ${BLUPI_HIST_SRC} ${BLUPI_REPO}/games/sb1-eggbert-demo
-        "Speedy Eggbert Demo (SDL3 port)" "Speedy Eggbert Demo SDL3 port")
-    blupi_sb1_edition(eggbert-value-sdl3 2 ${BLUPI_HIST_SRC} ${BLUPI_REPO}/games/sb1-eggbert-value
-        "Speedy Eggbert SE Valueware (SDL3 port)" "Speedy Eggbert SE Valueware SDL3 port")
-    blupi_sb1_edition(blupi-demo-sdl3 3 ${BLUPI_REPO}/games/sb1-blupi-demo/src ""
-        "Speedy Blupi Demo, June 1998 (SDL3 port)" "Speedy Blupi Demo SDL3 port")
-endif()
+set(BLUPI_REPO ${CMAKE_CURRENT_SOURCE_DIR}/..)
+blupi_sb1_edition(eggbert-demo-sdl3 1 ${BLUPI_HIST_SRC} ${BLUPI_REPO}/games/sb1-eggbert-demo
+    "Speedy Eggbert Demo (SDL3 port)" "Speedy Eggbert Demo SDL3 port")
+blupi_sb1_edition(eggbert-value-sdl3 2 ${BLUPI_HIST_SRC} ${BLUPI_REPO}/games/sb1-eggbert-value
+    "Speedy Eggbert SE Valueware (SDL3 port)" "Speedy Eggbert SE Valueware SDL3 port")
+blupi_sb1_edition(blupi-demo-sdl3 3 ${BLUPI_REPO}/games/sb1-blupi-demo/src ""
+    "Speedy Blupi Demo, June 1998 (SDL3 port)" "Speedy Blupi Demo SDL3 port")

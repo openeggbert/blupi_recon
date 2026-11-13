@@ -598,6 +598,23 @@ foreach(edition eggbert-demo eggbert-value blupi-demo)
             -DEXE=$<TARGET_FILE:${edition}-sdl3>${BLUPI_TEST_LAUNCHER} "-DDATA=${BLUPI_TEST_DATA_${key}}"
             -DWORK=${CMAKE_CURRENT_BINARY_DIR}/edition_${edition}
             -P ${CMAKE_CURRENT_SOURCE_DIR}/edition_smoke.cmake)
+        # Golden traces of the attract mode (after 1.5.2): the regression gate for the edition's frames
+        # and state, at the depths the edition has (the demos are 8 bpp only). The first 2,200 displays
+        # equal the edition's historical rebuild under Wine (docs/EDITIONS.md, docs/ORACLE.md).
+        set(depths 16 8)
+        if(edition MATCHES "demo")
+            set(depths 8)
+        endif()
+        foreach(depth ${depths})
+            add_test(NAME golden_${edition}_attract${depth}
+                COMMAND ${CMAKE_COMMAND}
+                    -DEXE=$<TARGET_FILE:${edition}-sdl3>${BLUPI_TEST_LAUNCHER} "-DDATA=${BLUPI_TEST_DATA_${key}}"
+                    -DWORK=${CMAKE_CURRENT_BINARY_DIR}/golden_${edition}_attract${depth}
+                    -DGOLDEN=${CMAKE_CURRENT_SOURCE_DIR}/golden/${edition}_attract${depth}.trace -DEVERY=10
+                    "-DARGS=--color ${depth} --frames 7500"
+                    -DUPDATE=${BLUPI_UPDATE_GOLDEN}
+                    -P ${CMAKE_CURRENT_SOURCE_DIR}/golden_check.cmake)
+        endforeach()
     endif()
 endforeach()
 

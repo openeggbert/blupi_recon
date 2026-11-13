@@ -184,7 +184,7 @@ web packages.
 | Eggbert 1 (each language) | 12 | 24 | 16 | 14 | 6 | 72 |
 | Blupi 2 (each language) | 11 | 30 | 17 | 15 | 7 | 80 |
 | Eggbert 2 | 11 | 27 | 17 | 15 | 7 | 77 |
-| SB1 demo | not supported by the port (F454) | | | | | |
+| SB1 demo | outside the supported catalog (F454); goldens and the Wine oracle since after 1.5.2 | | | | | |
 
 **Runtime evidence** (doc: [port/docs/ORACLE.md](../port/docs/ORACLE.md) and
 [port/oracle/SB1_SAVE.md](../port/oracle/SB1_SAVE.md)):
@@ -193,6 +193,10 @@ web packages.
   2,200 frames identical for SB1 and for each SB2 edition, at 8 and 16 bpp.
 - **SB1 screen tour:** identical except for the multiplayer provider list.
 - **SB1 US save interchange:** identical in one recorded scenario, at both depths.
+- **Under Wine on Linux (after 1.5.2):** the ordinary historical builds against the port, attract mode,
+  2,200 displays each: SB1 US at 16 and 8 bpp and Speedy Eggbert 1 at 16 bpp identical (the SB1 rows
+  repeat the Windows result), and the editions too: the Speedy Eggbert Demo (8 bpp), Valueware (16 and
+  8 bpp) and the June 1998 demo (8 bpp) ([port/docs/ORACLE.md](../port/docs/ORACLE.md)).
 
 These are bounded receipts, not whole-game certification.
 

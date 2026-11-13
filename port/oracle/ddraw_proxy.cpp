@@ -15,6 +15,8 @@
 //   BLUPI_ORACLE_DUMP_DIR    directory for raw frames (optional)
 //   BLUPI_ORACLE_DUMP_EVERY  dump every Nth frame (default: none)
 //   BLUPI_ORACLE_MAX_FRAMES  post WM_CLOSE after this many frames (default: none)
+//   BLUPI_ORACLE_DDRAW       the real DirectDraw: "system" for the system's ddraw.dll (Wine's, for
+//                            port/tools/oracle_wine.py); default cnc-ddraw.dll next to this proxy
 //   BLUPI_ORACLE_INPUT       scripted input in the port's --input format
 //                            ("FRAME click X Y", "FRAME key|keydown|keyup VK").
 //                            Frame N is the port's N-th timer frame, i.e. the
@@ -357,6 +359,13 @@ extern "C" __declspec(dllexport) HRESULT WINAPI DirectDrawCreate(GUID* guid, LPD
         GetModuleFileNameA(self, path, MAX_PATH);
         char* slash = strrchr(path, '\\');
         if (slash) strcpy(slash + 1, "cnc-ddraw.dll");
+        const char* which = getenv("BLUPI_ORACLE_DDRAW");
+        if (which && strcmp(which, "system") == 0)
+        {
+            const UINT n = GetSystemDirectoryA(path, MAX_PATH - 12);
+            if (n == 0 || n >= MAX_PATH - 12) return DDERR_GENERIC;
+            strcat(path, "\\ddraw.dll");
+        }
         HMODULE lib = LoadLibraryA(path);
         if (lib) real = reinterpret_cast<DirectDrawCreateFn>(GetProcAddress(lib, "DirectDrawCreate"));
         if (real == nullptr) return DDERR_GENERIC;
