@@ -35,6 +35,11 @@ Layering inside `port/`:
   visibility rule; never draw them in the faithful frame.
 - Test-only state injection goes through `--probe` (`games/sb1/game/probe.cpp`), never through gameplay
   code paths.
+- Code shared by both games that needs a game's historical headers (`common/ui/`, `common/pixmap/`,
+  `common/sound/`) is compiled in each game's own context: as a TU in each game's target, or as a
+  header that each game's adapter includes once (`pixmap_port.h`, `pixmap_present.h`, `sound_port.h`).
+  Game-specific policy and data stay in the game (`game/language_catalog.h`, CPixmap's clipping and
+  icon tables, CSound's music policy).
 - Port UI (the shared Display options screen, `common/ui/options_screen.cpp`) is a presentation layer:
   drawn over the tick's frame when presenting, never into the game's frame or screen. It uses
   its own posted messages, handled before the window procedure. Port settings live in
