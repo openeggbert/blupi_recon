@@ -31,6 +31,10 @@ installed game. On the first start the port asks for its folder and remembers it
   desktop; not yet on a device).
 - **The Speedy Eggbert Demo, Speedy Eggbert SE Valueware and the 1998 Speedy Blupi Demo on Android:**
   the app recognises their folders and plays them as on the desktop (built, not yet tested on a device).
+- **Higher-resolution images:** `--hd-pack <folder>` shows the games at two to four times their
+  resolution with a pack of re-drawn images, such as the 2x and 4x sheets re-rendered from the original
+  3D models; `--hd-scale N` alone shows the originals enlarged. The game itself is unchanged
+  (port/docs/HD.md).
 - **The original Windows cursors with `MouseType=2` or `3`:** the games' own arrows, hourglass and
   hand from their resources, instead of the system's cursors, enlarged with the window.
 

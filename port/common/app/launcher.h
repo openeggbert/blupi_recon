@@ -43,6 +43,8 @@ struct Options
     bool        setFullscreen = false, setScale = false, setIntegerScale = false;
     bool        setLanguage = false;
     bool        setNetServer = false, setNetRoom = false;
+    bool        setHdScale = false, setHdPack = false;
+    bool        hdCheck = false;             // --hd-check (test)
     std::string netServerDefault;            // --net-server-default: when the settings have none
     bool        checkView = false;
     bool        checkWide = false;

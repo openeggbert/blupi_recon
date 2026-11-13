@@ -140,6 +140,8 @@ bool PortSettingsLoad(const char* path, PortSettings& settings)
 	ReadString(values, "netAddress", settings.netAddress);
 	ReadString(values, "netServer", settings.netServer);
 	ReadString(values, "netRoom", settings.netRoom);
+	ReadInt(values, "hdScale", settings.hdScale, 1, 4);
+	ReadString(values, "hdPack", settings.hdPack);
 	return true;
 }
 
@@ -155,6 +157,8 @@ PortSettings PortSettingsMerge(const PortSettings& file, const PortSettings& giv
 	if (set.language) s.language = given.language;
 	if (set.netServer) s.netServer = given.netServer;
 	if (set.netRoom) s.netRoom = given.netRoom;
+	if (set.hdScale) s.hdScale = given.hdScale;
+	if (set.hdPack) s.hdPack = given.hdPack;
 	return s;
 }
 
@@ -229,6 +233,14 @@ bool PortSettingsSave(const char* path, const PortSettings& settings)
 	if (!settings.netRoom.empty())
 	{
 		fprintf(file, ",\n  \"netRoom\": %s", Quoted(settings.netRoom).c_str());
+	}
+	if (settings.hdScale > 1)
+	{
+		fprintf(file, ",\n  \"hdScale\": %d", settings.hdScale);
+	}
+	if (!settings.hdPack.empty())
+	{
+		fprintf(file, ",\n  \"hdPack\": %s", Quoted(settings.hdPack).c_str());
 	}
 	fprintf(file, "\n}\n");
 	bool ok = ferror(file) == 0;

@@ -70,7 +70,12 @@ uint64_t now_ns();
 
 // Presents a full logical frame (0xAARRGGBB, logical size, tightly packed).
 // width x logical height; ignored unless width is the current view width.
+// With a frame scale (higher-resolution images), the frame is that many times
+// larger on each axis: width is the view width times the scale.
 void present(const uint32_t* argb, int width);
+// The presented frame's resolution, times the logical size (1 to 4); the
+// logical coordinates (mouse, layout) stay as they are.
+void set_frame_scale(int scale);
 // True when present() waits for the display refresh (vsync).
 bool presents_with_vsync();
 void toggle_fullscreen();

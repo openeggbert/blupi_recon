@@ -177,7 +177,9 @@ add_library(blupi_render STATIC
     common/render/bmp.cpp
     common/render/display_capture.cpp
     common/render/device.cpp
-    common/render/surface.cpp)
+    common/render/surface.cpp
+    common/render/scaled.cpp
+    common/render/hd_pack.cpp)
 target_include_directories(blupi_render PUBLIC ${BLUPI_COMMON})
 
 # SDL3 host. Must not see compat/include.

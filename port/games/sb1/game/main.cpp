@@ -1290,6 +1290,8 @@ int BlupiMain(int argc, char** argv)
 
         g_hWnd = nullptr; g_bActive = TRUE;
         if (o.checkCommands) PortPixmapEnableCommandCheck();
+        if (g_settings.hdScale > 1 && PortPixmapEnableHd(g_settings.hdScale, g_settings.hdPack, o.hdCheck))
+            blupi::host::set_frame_scale(PortPixmapHdScale());
         if (!DoInit(NULL, (LPSTR)"", 0)) return 1;
         PortOptionsInit(g_pPixmap, g_pSound, &g_settings, PortApplySettings,
                         !blupi::host::touch_screen());
@@ -1356,6 +1358,13 @@ int BlupiMain(int argc, char** argv)
     game.mouseInSideArea = PortMouseInSideArea;
     game.checkResult = [](const Options& o) {
         int result = 0;
+        long hdFrames, hdMismatches, hdFirst, hdLoaded;
+        if (PortPixmapHdCheckResult(hdFrames, hdMismatches, hdFirst, hdLoaded))
+        {
+            printf("hd check: %ld displays compared, %ld not the enlargement of the faithful frame "
+                   "(first at display %ld), %ld images from the pack\n", hdFrames, hdMismatches, hdFirst, hdLoaded);
+            if (hdMismatches != 0 || hdFrames == 0) result = 5;
+        }
         long checkFrames, checkMismatches, checkFirst;
         if (PortPixmapCommandCheckResult(checkFrames, checkMismatches, checkFirst))
         {

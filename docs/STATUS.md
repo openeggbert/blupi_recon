@@ -214,6 +214,10 @@ These are bounded receipts, not whole-game certification.
 - **SB2 CD audio:** plays ripped tracks the player supplies (`music/trackNN.wav`, port 1.3.0; also `.ogg` and `.flac` after 1.5.2); without
   them it fails and logs once. No archive holds the tracks.
 - **MIDI:** played with a modern SoundFont, not the 1998 device's timbre.
+- **Higher-resolution images (after 1.5.2):** an optional presentation at 2 to 4 times the resolution,
+  with a pack of re-drawn images ([port/docs/HD.md](../port/docs/HD.md)); the faithful frame, traces and
+  goldens are unchanged, and without a pack every presented frame is the exact enlargement of the faithful
+  one (`ctest -R '^hd_'`). Desktop only for now.
 - **Coverage gaps:** hardware gamepads and Android keyboard/background are open. SB2 on Android
   (since 1.2.0-rc2) is checked on the emulator (start, menus, touch controls, play) and by the user's
   multiplayer test.

@@ -46,6 +46,8 @@ bool SDLCALL lifecycle_watch(void*, SDL_Event* ev)
 }
 int  g_width = 0, g_height = 0;   // the game's frame
 int  g_viewWidth = 0, g_frameX = 0; // the presented view; the frame's x in it (widescreen)
+int  g_frameScale = 1;              // set_frame_scale: the texture's resolution, times the view
+bool g_textureStale = false;        // the texture must be made again (another frame scale)
 bool g_autoWide = false;            // view width follows the window shape
 bool g_integerScale = false;
 bool g_headless = false;
@@ -177,14 +179,15 @@ void close_gamepad(SDL_JoystickID id)
 void apply_view_width(int width)
 {
     if (width < g_width) width = g_width;
-    if (width == g_viewWidth && (g_headless || g_texture != nullptr)) return;
+    if (width == g_viewWidth && (g_headless || g_texture != nullptr) && !g_textureStale) return;
+    g_textureStale = false;
     g_viewWidth = width;
     g_frameX = (g_viewWidth - g_width) / 2;   // until the port places the frame (set_frame_x)
     if (g_headless || g_renderer == nullptr) return;
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "view %dx%d", g_viewWidth, g_height);
     if (g_texture) SDL_DestroyTexture(g_texture);
     g_texture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
-                                  g_viewWidth, g_height);
+                                  g_viewWidth * g_frameScale, g_height * g_frameScale);
     if (g_texture) SDL_SetTextureScaleMode(g_texture, SDL_SCALEMODE_NEAREST);
     SDL_SetRenderLogicalPresentation(g_renderer, g_viewWidth, g_height,
                                      g_integerScale ? SDL_LOGICAL_PRESENTATION_INTEGER_SCALE
@@ -560,11 +563,20 @@ bool wait_event(Event& event, uint64_t timeoutNs)
     return poll_event(event);   // events translate() queued (touch, the gamepad as the keyboard)
 }
 
+void set_frame_scale(int scale)
+{
+    scale = scale < 1 ? 1 : scale > 4 ? 4 : scale;
+    if (scale == g_frameScale) return;
+    g_frameScale = scale;
+    g_textureStale = true;
+    apply_view_width(g_viewWidth);
+}
+
 void present(const uint32_t* argb, int width)
 {
     if (g_headless || g_texture == nullptr) return;
-    if (width != g_viewWidth) return;   // composed before a resize: the next one fits
-    SDL_UpdateTexture(g_texture, nullptr, argb, g_viewWidth * 4);
+    if (width != g_viewWidth * g_frameScale) return;   // composed before a resize: the next one fits
+    SDL_UpdateTexture(g_texture, nullptr, argb, width * 4);
     SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
     SDL_RenderClear(g_renderer);
     SDL_RenderTexture(g_renderer, g_texture, nullptr, nullptr);

@@ -58,11 +58,17 @@ void Usage(const Game& game)
         "  --net-room ID       room on that server (prefills its screen; empty: a new room)\n"
         "  --net-server-default ADDRESS  the server's screen shows this one when no server\n"
         "                      is remembered (the web page's default server)\n"
+        "  --hd-scale N        higher-resolution images: present at N times 640x480 (2 to 4;\n"
+        "                      1 off), with the images of --hd-pack where it has them\n"
+        "  --hd-pack DIR       a folder of images N times the originals' size, in the game's\n"
+        "                      folders and names (IMAGE08/..., IMAGE16/...); implies --hd-scale 2\n"
         "  --version           print the version and exit\n"
         "  --language CODE     built-in pack or a pack in the user folder languages/\n"
         "test options:\n"
         "  --headless          no window, no audio device, frames run back to back\n"
         "  --net-test-sync     reliable tick ingress, requires the test supervisor\n"
+        "  --hd-check          with --hd-scale: count the frames that are not the exact\n"
+        "                      enlargement of the faithful frame (exit 5 if any)\n"
         "  --net-test-suspend TICK:MS[:bare]  after frame TICK, the app in the background for MS\n"
         "                      ms as on Android (bare: without the session keep-alive)\n"
         "  --net-room-file F   the server screen's room from F if it exists; a room this\n"
@@ -154,6 +160,13 @@ bool ParseOptions(int argc, char** argv, Options& o, Game& game)
         }
         else if (a == "--net-server") { o.settings.netServer = next(); o.setNetServer = true; }
         else if (a == "--net-room") { o.settings.netRoom = next(); o.setNetRoom = true; }
+        else if (a == "--hd-scale") {
+            o.settings.hdScale = atoi(next());
+            if (o.settings.hdScale < 1 || o.settings.hdScale > 4) return false;
+            o.setHdScale = true;
+        }
+        else if (a == "--hd-pack") { o.settings.hdPack = next(); o.setHdPack = true; if (!o.setHdScale && o.settings.hdScale < 2) o.settings.hdScale = 2; o.setHdScale = true; }
+        else if (a == "--hd-check") o.hdCheck = true;
         else if (a == "--net-server-default") o.netServerDefault = next();
         else if (a == "--net-room-file") o.net.roomFile = next();
         else if (a == "--frames") o.ticks = atol(next());
@@ -436,6 +449,7 @@ int Run(int argc, char** argv, Game& game)
         set.widescreen = o.setWide; set.interpolate = o.setInterpolate; set.displayRate = o.setPresent;
         set.fullscreen = o.setFullscreen; set.scale = o.setScale; set.integerScale = o.setIntegerScale;
         set.language = o.setLanguage; set.netServer = o.setNetServer; set.netRoom = o.setNetRoom;
+        set.hdScale = o.setHdScale; set.hdPack = o.setHdPack;
         o.settings = PortSettingsMerge(fromFile, o.settings, set);
         if (o.settings.netServer.empty()) o.settings.netServer = o.netServerDefault;
         (*game.settings) = o.settings;

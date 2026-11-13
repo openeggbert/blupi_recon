@@ -281,6 +281,19 @@ if(BLUPI_TEST_DATA_EGGBERT)
             -P ${CMAKE_CURRENT_SOURCE_DIR}/golden_check.cmake)
 endif()
 
+# Higher-resolution images (port/docs/HD.md, tests/hd_check.cmake): the mirrored frames are exact
+# enlargements of the faithful ones, without a pack and with a synthetic pack of enlarged originals.
+# The packs are made once per build tree, one per game and scale.
+function(blupi_hd_test name exe data scale args images)
+    string(REGEX MATCH "^[a-z0-9]+" game "${name}")
+    add_test(NAME hd_${name} COMMAND ${CMAKE_COMMAND}
+        -DEXE=${exe}${BLUPI_TEST_LAUNCHER} "-DDATA=${data}" -DWORK=${CMAKE_CURRENT_BINARY_DIR}/hd_${name}
+        -DPACK_DIR=${CMAKE_CURRENT_BINARY_DIR}/hd_pack_${game}_x${scale}
+        -DSCALE=${scale} "-DARGS=${args}" "-DPYTHON=${BLUPI_TEST_PYTHON}"
+        -DTOOL=${CMAKE_CURRENT_SOURCE_DIR}/../tools/make_hd_test_pack.py "-DPACK_IMAGES=${images}"
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/hd_check.cmake)
+    set_tests_properties(hd_${name} PROPERTIES TIMEOUT 900)
+endfunction()
 # A second, isolated historical include context and a separate golden-update
 # option: SB2 bring-up must never regenerate SB1's accepted traces.
 add_executable(test_sb2_layout test_sb2_layout.cpp)
@@ -538,6 +551,21 @@ endif()
 if(BLUPI2_TEST_DATA AND BLUPI_TEST_PYTHON)
     blupi_net_robustness(sb2 $<TARGET_FILE:blupi2> "${BLUPI2_TEST_DATA}" host-killed-in-play client-quits-in-play
         client-suspended client-suspended-bare)
+endif()
+set(BLUPI_HD_SB1_IMAGES "blupi000,blupi001,blupi002,blupi003,button00,decor000,element,explo,init,jauge,little,map,object,temp,text")
+if(BLUPI_TEST_DATA AND BLUPI_TEST_PYTHON)
+    blupi_hd_test(sb1_tour16_x3 $<TARGET_FILE:blupi> "${BLUPI_TEST_DATA}" 3
+        "--color 16 --frames 800 --input ${CMAKE_CURRENT_SOURCE_DIR}/golden/tour.input" "")
+    blupi_hd_test(sb1_editor8_x2 $<TARGET_FILE:blupi> "${BLUPI_TEST_DATA}" 2
+        "--color 8 --frames 360 --input ${CMAKE_CURRENT_SOURCE_DIR}/golden/editor.input" "")
+    blupi_hd_test(sb1_pack16_x2 $<TARGET_FILE:blupi> "${BLUPI_TEST_DATA}" 2 "--color 16 --frames 1500" "${BLUPI_HD_SB1_IMAGES}")
+    blupi_hd_test(sb1_pack8_x2 $<TARGET_FILE:blupi> "${BLUPI_TEST_DATA}" 2 "--color 8 --frames 1500" "${BLUPI_HD_SB1_IMAGES}")
+endif()
+if(BLUPI2_TEST_DATA AND BLUPI_TEST_PYTHON)
+    blupi_hd_test(sb2_tour16_x2 $<TARGET_FILE:blupi2> "${BLUPI2_TEST_DATA}" 2
+        "--color 16 --frames 190 --input ${CMAKE_CURRENT_SOURCE_DIR}/golden/sb2_tour.input" "")
+    blupi_hd_test(sb2_pack16_x2 $<TARGET_FILE:blupi2> "${BLUPI2_TEST_DATA}" 2 "--color 16 --frames 1500"
+        "blupi000,blupi001,blupi002,blupi003,init,jauge,little,map,temp,text,button00,decor000,decor026,element,explo,object")
 endif()
 if(BLUPI2_TEST_DATA AND BLUPI_TEST_PYTHON)
     add_test(NAME net_sb2_two_instances COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_session.py"

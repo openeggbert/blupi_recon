@@ -67,6 +67,12 @@ void     PortPixmapWideRelease();
 bool     PortPixmapWideRegionEqualsBack(int x);
 // The target, for screenshots (false without a view).
 bool     PortPixmapCopyWide(std::vector<uint32_t>& argb, int& width, int& height);
+// Higher-resolution images (port/docs/HD.md): the rendering mirrored at `scale` (2 to 4) for the
+// presentation, with the images of `pack` where it has them. Before DoInit. --hd-check counts the
+// Displays whose mirrored frame is not the enlargement of the faithful one.
+bool     PortPixmapEnableHd(int scale, const std::string& pack, bool check);
+int      PortPixmapHdScale();
+bool     PortPixmapHdCheckResult(long& frames, long& mismatches, long& firstMismatch, long& loaded);
 
 // Delivers the MCI end-of-song notification of the music player (sound.cpp).
 void     PortSoundPoll();
