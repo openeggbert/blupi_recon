@@ -52,7 +52,7 @@ different games or editions never do (the protocol id and the content check belo
 
 - **Through a Free Direct server (since 1.5.0):** the provider list has a third entry, "Internet through
   a Free Direct server"; in a browser it is the only one (there is no UDP there). Every player, the host
-  too, connects out to a [free-direct-server](https://github.com/openeggbert/free-direct/blob/hires-images/docs/free-direct-server.md), so no
+  too, connects out to a [free-direct-server](https://github.com/openeggbert/free-direct/blob/develop/docs/free-direct-server.md), so no
   player needs an open port. Its rooms, with secret IDs, are private LANs: the session list shows the
   games in the player's room. Choosing the entry opens the address screen in a second form with two
   fields: the server (a name or IP with `:port` if it is not 51325, on an `https://` page 443, or a
@@ -63,7 +63,7 @@ different games or editions never do (the protocol id and the content check belo
   link with `?server=` and `?room=`) to give to the others, who type it. The last server and room are
   remembered (`netServer`, `netRoom`); `--net-server` and `--net-room` fill the screen, and the password
   of a server that has one comes from `BLUPI_NET_PASSWORD`.
-  [DESIGN] The server's protocol ([directplay-relay-protocol.md](https://github.com/openeggbert/free-direct/blob/hires-images/docs/directplay-relay-protocol.md)) is a second
+  [DESIGN] The server's protocol ([directplay-relay-protocol.md](https://github.com/openeggbert/free-direct/blob/develop/docs/directplay-relay-protocol.md)) is a second
   transport of the same session layer (`common/net/relay.*`): the host hosts a session in the room,
   members join it, and the session envelope (Hello, Welcome, Members, Data, Gone) travels unchanged as the
   payload of the relay's Data messages, routed host to member and member to host, with the sender's

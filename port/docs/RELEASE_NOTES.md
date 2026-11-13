@@ -68,7 +68,7 @@ installed game. On the first start the port asks for its folder and remembers it
 
 - **Multiplayer through a Free Direct server:** the multiplayer provider list has a third entry,
   "Internet through a Free Direct server". Every player connects out to a
-  [free-direct-server](https://github.com/openeggbert/free-direct/blob/hires-images/docs/free-direct-server.md),
+  [free-direct-server](https://github.com/openeggbert/free-direct/blob/develop/docs/free-direct-server.md),
   which anyone can run, so nobody needs an open port. Type the server's address and leave the room empty:
   the game creates a room and shows its ID (also on the clipboard). The other players choose the same
   server and type that ID; the games in the room are then listed as on a local network. Windows, Linux,
