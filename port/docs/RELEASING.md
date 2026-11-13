@@ -128,6 +128,16 @@ uninstall the debug build first, which also removes its imported game data.
 6. Tag `port-v<version>` on the release commit and publish a GitHub release with the three
    packages, `SHA256SUMS.txt` and the notes from `docs/RELEASE_NOTES.md`.
 
+## 1.6.0
+
+As 1.5.2, all four packages from one commit on the Debian 13 host (2026-11-13). The Linux package ran
+the whole suite (308 tests); the Windows build ran the network, launcher and golden subset under Wine
+(46 tests); the web package passed `web_check.mjs` in Chrome and Firefox, and with `--relay` in both.
+After the release, the Windows package was checked on Windows 10 (the VM): seven goldens, three HD
+checks, `test_music_pcm`, `fidelity_stdio_sb1` (docs/STATUS.md, section 5), `wss://` and a game with a
+Linux host (port/docs/MULTIPLAYER.md).
+The Android APK was built and signed, not run.
+
 ## 1.5.2
 
 As 1.5.1, all four packages from one commit on the Debian 13 host. New: Mbed TLS compiled into the

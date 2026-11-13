@@ -125,7 +125,7 @@ The worker's Ninja stall was its sandbox's child-process limit; the Makefile bui
   it. Without the file the call fails and logs once, as the original's did without a disc.
   Tested: `ctest -R music_pcm` (decoding, resampling, the end report) and a headless Speedy
   Eggbert 2 run with `CDAudio=1` and a synthetic `track02.wav` (played, ended, restarted).
-- [EVIDENCE] **CD tracks as Ogg Vorbis or FLAC (after 1.5.2).** The track may also be
+- [EVIDENCE] **CD tracks as Ogg Vorbis or FLAC (since 1.6.0).** The track may also be
   `music/trackNN.ogg` or `music/trackNN.flac` (the first of `.wav`, `.ogg`, `.flac` that exists).
   They are decoded block by block while they play (`platform/track.cpp`: stb_vorbis, dr_flac),
   so a compressed track is never held decoded in full; WAV keeps its earlier path, and its

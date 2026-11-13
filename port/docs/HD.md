@@ -1,4 +1,4 @@
-# Higher-resolution images (after 1.5.2)
+# Higher-resolution images (since 1.6.0)
 
 The port can show the games at two to four times their resolution, with images from a pack of
 higher-resolution images, for example the 2x and 4x sheets re-rendered from the original 3D models
