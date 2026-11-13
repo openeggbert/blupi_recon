@@ -56,7 +56,7 @@ Whole image:
 - SB1 us: canonical relink `557ca92e…3533`.
   - .rsrc exact.
   - .data differs by 1 byte.
-  - .text is the right size; the layout and population are underdetermined (docs/SB1_CLOSURE.md).
+  - .text is the right size; the layout and population are underdetermined (docs/research/SB1_CLOSURE.md).
 - SB2: all four editions keep .data virtual size +32.
 
 Port: 139 provenance edges. The last documented Windows suite ran 217/217 tests.
@@ -81,7 +81,7 @@ port/                    SDL3 port (own rules, own docs)
 docs/STATUS.md           single current status page
 docs/BUILDING.md         ordinary historical build, per edition
 docs/VERIFYING.md        matching/verification workflow (maintainers)
-docs/research/README.md  index of archived research docs (docs files stay in place until stage 5)
+docs/research/README.md  index of archived research docs (29 of them moved here in stage 5)
 ```
 
 Tools stay where they are. Pinned paths (`tools/cmpfunc.py`, `tools/equivalence.py`, and histlink's
@@ -263,6 +263,23 @@ by the full Linux suite and the cross-build oracle, which now runs under Wine on
   CSound's policy stays per game).
 - **The network adapters are left out of stage 3.** Rank 6's movie/network alignment is reduced
   to the SB1 movie log-once, because the network stubs will be replaced by the real transport.
+
+[UPDATED 2026-11-13] **Stage 5 is done** (branch `consol-5`), at the owner's choice limited to what can
+move without touching a pinned file:
+
+- **Documents:** 29 research documents moved with `git mv` from `docs/` into `docs/research/`, and
+  every reference in the repository rewritten (Markdown links rebased, `docs/NAME.md` mentions, the
+  provenance map's `not_relevant` keys). Of the 70 documents in the research index, 41 stay in `docs/`:
+  36 are named by files under `oracle/`, `evidence/` or `tools/` (the TU maps among them), and five more
+  by `oracle/*/tu_map.csv` (`ANCESTRY_SB2.md`), `src/def.h` (`EGGBERT.md`) or `src/PROVENANCE.md`
+  (`LAYOUT_ORDER.md`, `RELINK.md`, `TU_MAP.md`). None of those files was changed.
+- **Gate:** no file under `evidence/`, `oracle/`, `tests/`, `tools/`, `msvc5kb/`, `steering/`, `src/` or
+  `games/` changed, so the verification inputs and their certificates are untouched; the relative links of
+  every tracked Markdown file resolve as before (the same 13 pre-existing broken links, to untracked
+  `scratch/` and `external/` files and a sibling repository); `port/tools/check_fidelity.py --check` passes.
+  `tools/verify.py` was not re-run: it reads none of the moved files.
+- **Local hygiene:** nothing to move. `scratch/` no longer exists, and `build/` holds only live build
+  trees (the port's, Free API's, the release packages and the editions' Wine oracle).
 
 Matching research resumes only on new evidence, after stage 2.
 

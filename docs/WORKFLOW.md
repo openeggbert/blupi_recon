@@ -1,7 +1,7 @@
 # Matching source workflow
 
 After the recovery cleanup, historical scratch/build paths may need restoration
-or regeneration. See [RECOVERY_MILESTONE.md](RECOVERY_MILESTONE.md) for the retained
+or regeneration. See [RECOVERY_MILESTONE.md](research/RECOVERY_MILESTONE.md) for the retained
 working set and research archive. `to_delete/` is not an input to any live workflow.
 
 The complete source-only build is `tools/build.py` for all 16 targets; see [BUILDING.md](BUILDING.md).
@@ -64,7 +64,7 @@ remain `STRICT`.
 the original developer's path. `msvc.py --build-path` maps `F:` temporarily for that one compile and always
 removes the mapping again. It never touches an existing `F:`. Where the mapping is impossible (Codex sandbox, or
 `F:` in use), the verifier prints `NOTE: regression gate INCOMPLETE`, checks that TU's accepted functions for
-identical code bytes only, and refuses `--accept`. See [BUILD_PATH.md](BUILD_PATH.md).
+identical code bytes only, and refuses `--accept`. See [BUILD_PATH.md](research/BUILD_PATH.md).
 
 ## Difference-first matching loop
 

@@ -46,7 +46,7 @@ It uses the same `src/`, build-wide `_DEMO=1`, VC5 RTM and its own audited inven
 partial matching target, not another completed retail language: [SB1_DEMO.md](SB1_DEMO.md).
 The target's executable is `assets/downloads/openeggbert/Speedy_Blupi_Demo/exe/Blupi.exe` (hash-pinned), never executed.
 The independent ICF/import constraints and remaining source-population assumptions are recorded
-in [SB1_CLOSURE.md](SB1_CLOSURE.md).
+in [SB1_CLOSURE.md](research/SB1_CLOSURE.md).
 
 ### Matching
 

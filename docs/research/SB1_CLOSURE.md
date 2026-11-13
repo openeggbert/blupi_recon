@@ -58,7 +58,7 @@ distinguishes (1) reproducing the linker output, (2) recovering the linker input
 ## June 1998 demo: tenth target and independent constraint
 
 [EVIDENCE] `sb1/blupi/demo` is registered and verifiable, with its own audited inventory and RTM
-compiler/library evidence: [SB1_DEMO.md](SB1_DEMO.md). The existing nine reports are identical under
+compiler/library evidence: [SB1_DEMO.md](../SB1_DEMO.md). The existing nine reports are identical under
 like sandbox conditions, and the primary relink remains `557ca92e6ec8c71cfaf5e9f2d55969d3ebcd614c771c9010e074c6ad82ba3533`.
 The demo's original physical owners are button destructor / network session getter / sound enable
 getter / **FrameUnwindFilter** / **aw_cmp _strncnt**; entry `0x24a60`. Its CRT choices differ from
@@ -102,7 +102,7 @@ three USER32 references. 18 real links, every existing US/Eggbert payload unchan
 Eggbert 1 languages) is a sandbox artefact: the sandbox `sound.cpp` path makes the `__FILE__` literal longer, shifting
 initialized data by 16 bytes, which the CRT's `__bufin` 16-byte alignment rounds to 32. With the historical-path
 `sound.obj` all nine retail targets have the exact virtual size and BSS placement. No source or CRT change is needed;
-builds must use the historical build path (docs/BUILD_PATH.md).
+builds must use the historical build path (docs/research/BUILD_PATH.md).
 
 ## Translation-unit partition (2026-10-25, `scratch/w-tupart/REPORT.md`)
 

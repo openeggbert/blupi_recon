@@ -10,7 +10,7 @@ The historical-path diagnostic image is static analysis only.
 [EVIDENCE] Initialized payload ends at VA 0x47e60c; the first BSS boundary is
 0x47e610. All intervals below are zero in the oracle's file-backed data and
 are bounded by independently resolved code operands. The complete reference
-map is [STRICT_BSS_MAP.md](STRICT_BSS_MAP.md): 187 game references at 21
+map is [STRICT_BSS_MAP.md](../STRICT_BSS_MAP.md): 187 game references at 21
 effective addresses plus 179 STRICT pinned-LIBC references at 64 addresses.
 The machine-readable audit records every function RVA, relocation offset,
 resolved symbol address, addend, current linked operand and target. Every one
@@ -59,7 +59,7 @@ alone are not treated as an original variable name/type.
 
 ## Placement predicted before compiling
 
-[EVIDENCE] [PREDICTIONS.md](PREDICTIONS.md) was written before the candidate
+[EVIDENCE] [PREDICTIONS.md](../PREDICTIONS.md) was written before the candidate
 compile. Two bounded full-TU name probes retain the local-static suffix
 S31272 and measure this relative order (VC5-DATA-01):
 

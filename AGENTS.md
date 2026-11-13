@@ -83,7 +83,7 @@ Hard rules:
 - Matching loop: candidate in scratch -> `tools/verify.py --tu src/X.cpp=<candidate>` (docs/WORKFLOW.md). When a
   function does not match, consult msvc5kb/README.md (`msvc5kb/tools/kb.py hints <func>`) before guessing; Blood II
   rules are hypotheses until confirmed on SB1. Record verified compiler findings and negatives in the catalog.
-- sound.cpp compiles as its historical path `F:\Profil\sound.cpp` (temporary drive mapping, docs/BUILD_PATH.md).
+- sound.cpp compiles as its historical path `F:\Profil\sound.cpp` (temporary drive mapping, docs/research/BUILD_PATH.md).
   Inside the Codex sandbox the mapping is denied: "gate INCOMPLETE" for sound.cpp is expected there. Never add
   `#line` or other source changes for build-path strings, and never map drives yourself. The SB2 builds record
   `D:\Blupi\Profil\` and `D:\Blupi\Profil egames 2\`; the user allowed creating those folders on D: for one

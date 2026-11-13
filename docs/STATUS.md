@@ -109,7 +109,7 @@ with each original.
 
 - **SB1 US:** almost all of its differences are a +16 shift. LINK keeps a different copy of a folded
   empty function (an ICF survivor), plus the CRT filter survivor and the import order. Its Rich count
-  is 268 against 270 ([SB1_CLOSURE.md](SB1_CLOSURE.md), [BLOCKER_CHECKS.md](BLOCKER_CHECKS.md)).
+  is 268 against 270 ([SB1_CLOSURE.md](research/SB1_CLOSURE.md), [BLOCKER_CHECKS.md](BLOCKER_CHECKS.md)).
 - **The original linker inputs are underdetermined,** and that limit applies to every target.
 - **SB1 demo:** its own resource script since 2026-11-11; `.rsrc` differs in the directory timestamps
   only. LINK keeps a different copy of a folded destructor and `ChangePhase` is 16 bytes longer, which
@@ -243,7 +243,7 @@ These are bounded receipts, not whole-game certification.
 ## 6. Where work stands
 
 - **Matching.** The SB1 and SB2 function residues are at the limit of the current evidence: the
-  open functions need authentic source or context evidence (docs/SB1_CLOSURE.md, docs/SB2.md
+  open functions need authentic source or context evidence (docs/research/SB1_CLOSURE.md, docs/SB2.md
   section 12). Matching research resumes only on new evidence.
 - **Whole image.** The original linker inputs (dead contributions, TU population, order) are
   underdetermined by the binaries. Experimental witnesses, such as branch `sb1-histlink`, are
@@ -251,8 +251,9 @@ These are bounded receipts, not whole-game certification.
 - **Consolidation.** Stages 1 (ordinary builds), 2 (this documentation) and 3 (port cleanup: Linux
   release and test portability, Android import, port docs; `083944a`) are done, and stage 4 (the port's
   shared services: languages, CPixmap's and CSound's port support) on branch `port-improvements-2`
-  (2026-11-13), each part gated by the full suite and the Wine oracle. Stage 5 is optional
-  (docs/CONSOLIDATION_PLAN.md).
+  (2026-11-13), each part gated by the full suite and the Wine oracle. Stage 5 (local hygiene) is done
+  on branch `consol-5` (2026-11-13): 29 research documents moved into `docs/research/`; those named by
+  pinned or historical files stay in `docs/` (docs/CONSOLIDATION_PLAN.md).
 - **Port.** 1.6.0 ships the five programs on Windows, Linux, Android and the web, with multiplayer on a
   LAN, by address, and through a Free Direct server (`ws://` or `wss://`). Open: running the Android
   build on a device, and play on real networks beyond one game between Windows 10 and Linux through

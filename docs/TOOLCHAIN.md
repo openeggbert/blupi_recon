@@ -135,4 +135,4 @@ identical to tested SP2. Package hashes and the exact scope are in that study.
 The original was compiled against the **DirectX 5.0 SDK** headers: the oracle's `.rdata` holds the exact ten GUIDs of
 DX5 dplay.h (no IDirectPlay4), defined in network.cpp via INITGUID, and dxguid.lib was not linked. The SDK is installed
 at `C:\tools\dx5sdk\{INCLUDE,LIB}` (archive.org `ms-dx5-sdk`, ISO MD5 40a5aceb9683e56e6e6451d39daa3686). The manifest
-uses dx5sdk since the DX5 integration (zero regressions, docs/LINK_CONTEXT.md).
+uses dx5sdk since the DX5 integration (zero regressions, docs/research/LINK_CONTEXT.md).

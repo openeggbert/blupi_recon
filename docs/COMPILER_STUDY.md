@@ -320,7 +320,7 @@ integration: 404 STRICT + 4 FOLDED, 113,344 / 141,488, zero regressions.
 - **DX5 state integrated (sol-mos).** The last regression of the DX5 + authenticity state, MoveObjectSort, is fixed
   by moving decmove.cpp's existing `#include <decor.h>` below `misc.h` and `dectables.h` (137 counter numbers before
   decor.h, inside the measured 109-141 window); DecorNextAction becomes STRICT (+272). [HYPOTHESIS] The include order
-  is plausible, not proven (docs/LINK_CONTEXT.md "DX5 state integrated").
+  is plausible, not proven (docs/research/LINK_CONTEXT.md "DX5 state integrated").
 - **ChangePhase (sol-cphase), integrated as best-known body.** The oracle computes the previous-page hide flag in both
   network page lists: `bHide = FALSE; if (m_filePageOffset == 0) bHide = TRUE; SetHide(WM_BUTTON10, bHide);` (and the
   same form for next-page) replaces `SetHide(WM_BUTTON10, TRUE)`. Right after the offset reset the test folds to TRUE,
@@ -377,7 +377,7 @@ forbidden: the two scalarized pos.x ranges (LR142/LR150) bind eax and run from t
 their argument pushes. A diagnostic that only moves those two IR definitions to just before their x-argument pushes
 (compiler memory, before temp assignment; never a source or output change) removes the whole 63-byte residue. Lowering
 model: c2 assembles assignments early, deletes late copies at 0x443889, and rematerializes the 330 constant while keeping
-the early definitions (docs/LOWERING.md). Inert or worse source forms: x inside the POINT argument, const/fresh POINT
+the early definitions (docs/research/LOWERING.md). Inert or worse source forms: x inside the POINT argument, const/fresh POINT
 aggregates, inline POINT-returning helpers, font/line2+1 precomputed into locals before `pos.x = 330`, and the 18
 micro controls in round 3. [OPEN] the C++ construct whose IR defines x after the text/font arguments.
 
@@ -399,7 +399,7 @@ Round 5 (in-memory IR diagnostic, never source or output): a singleton-1 cut, mo
 and coalescing the initial Y copy together give 8 masked bytes and 1229/1237 aligned instructions; the lift, cloud and
 moving-object blocks and B47 then match. None of 20 C++ translations passed the IR gate (scratch/sol-build4/FINDINGS.md).
 
-### C1XX IL emission ([EVIDENCE], worker sol-c1; docs/C1_IL.md)
+### C1XX IL emission ([EVIDENCE], worker sol-c1; docs/research/C1_IL.md)
 
 C1XX (SP3) emits scalar reads, logical-not, typed assignments, comma expressions and whole aggregate arguments (unary entry
 0x10415738, built-in builder 0x10410239, argument prepend 0x10412057, expression emitter 0x104048fb, record writer

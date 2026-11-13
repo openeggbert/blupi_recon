@@ -201,7 +201,7 @@ arithmetic or selecting an original TU partition.
 [OPEN] Original dead population, complete original CRT/member closure, larger subsets (seven or
 more), unconstrained dead-import caller keys, earlier source-specific dead keys, original TU partition, and remaining demo code/data/
 resources are unresolved. The conditional key model is not an authenticated original input census.
-See [SB1_CLOSURE.md](SB1_CLOSURE.md) and `scratch/w-demo10/REPORT.md` for raw real-link numbers,
+See [SB1_CLOSURE.md](research/SB1_CLOSURE.md) and `scratch/w-demo10/REPORT.md` for raw real-link numbers,
 failed gates, reproduction commands and the remaining boundaries. No matching acceptance status
 for any existing target changed.
 
