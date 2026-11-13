@@ -251,6 +251,16 @@ Stages 1 and 2 are independent and could run in parallel. Stages 3 and 4 touch o
 
 - **Native multiplayer comes right after stage 3** (port/docs/ROADMAP.md, stage 10). Stages 4 and 5
   are optional and follow it.
+
+[UPDATED 2026-11-13] **Stage 4 is done** (branch `port-improvements-2`), one commit per rank, each gated
+by the full Linux suite and the cross-build oracle, which now runs under Wine on the Linux host
+(`port/tools/oracle_wine.py`; SB1, the editions and SB2, 2,200 displays each, all identical):
+
+- rank 3: `common/ui/language_service.cpp`, each game's data in `game/language_catalog.h`;
+- rank 4: `common/pixmap/pixmap_port.h` and `pixmap_present.h` (the byte-identical port support of both
+  `pixmap.cpp`; CPixmap's policy, clipping and icon tables stay per game);
+- rank 7: `common/sound/sound_port.h` (buffer registry, PCM load, MCI notification, MIDI volume table;
+  CSound's policy stays per game).
 - **The network adapters are left out of stage 3.** Rank 6's movie/network alignment is reduced
   to the SB1 movie log-once, because the network stubs will be replaced by the real transport.
 
