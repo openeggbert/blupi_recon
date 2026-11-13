@@ -68,24 +68,27 @@ void LoadString(UINT nID, char *pBuffer, int lgBuffer)
 
 void ChangeSprite(int sprite)
 {
-	using blupi::host::Cursor;
-	Cursor cursor = Cursor::Arrow;
+	// Port: the original loaded its cursor resources IDC_ARROW ... IDC_EMPTY
+	// (src/res/*.cur); platform/cursor.h has the same files. A sprite outside
+	// the list left the original's hCursor unset; the port shows the arrow.
+	using blupi::host::GameCursor;
+	GameCursor cursor = GameCursor::Arrow;
 
 	if ( g_mouseType != MOUSETYPEGRA && g_lastSprite != sprite )
 	{
-		if ( sprite == SPRITE_ARROW )   cursor = Cursor::Arrow;
-		if ( sprite == SPRITE_POINTER ) cursor = Cursor::Pointer;
-		if ( sprite == SPRITE_ARROWU )  cursor = Cursor::SizeNS;
-		if ( sprite == SPRITE_ARROWD )  cursor = Cursor::SizeNS;
-		if ( sprite == SPRITE_ARROWL )  cursor = Cursor::SizeWE;
-		if ( sprite == SPRITE_ARROWR )  cursor = Cursor::SizeWE;
-		if ( sprite == SPRITE_ARROWUL ) cursor = Cursor::SizeNWSE;
-		if ( sprite == SPRITE_ARROWUR ) cursor = Cursor::SizeNESW;
-		if ( sprite == SPRITE_ARROWDL ) cursor = Cursor::SizeNESW;
-		if ( sprite == SPRITE_ARROWDR ) cursor = Cursor::SizeNWSE;
-		if ( sprite == SPRITE_WAIT )    cursor = Cursor::Wait;
-		if ( sprite == SPRITE_EMPTY )   cursor = Cursor::Hidden;
-		blupi::host::set_system_cursor(cursor);
+		if ( sprite == SPRITE_ARROW )   cursor = GameCursor::Arrow;
+		if ( sprite == SPRITE_POINTER ) cursor = GameCursor::Pointer;
+		if ( sprite == SPRITE_ARROWU )  cursor = GameCursor::ArrowU;
+		if ( sprite == SPRITE_ARROWD )  cursor = GameCursor::ArrowD;
+		if ( sprite == SPRITE_ARROWL )  cursor = GameCursor::ArrowL;
+		if ( sprite == SPRITE_ARROWR )  cursor = GameCursor::ArrowR;
+		if ( sprite == SPRITE_ARROWUL ) cursor = GameCursor::ArrowUL;
+		if ( sprite == SPRITE_ARROWUR ) cursor = GameCursor::ArrowUR;
+		if ( sprite == SPRITE_ARROWDL ) cursor = GameCursor::ArrowDL;
+		if ( sprite == SPRITE_ARROWDR ) cursor = GameCursor::ArrowDR;
+		if ( sprite == SPRITE_WAIT )    cursor = GameCursor::Wait;
+		if ( sprite == SPRITE_EMPTY )   cursor = GameCursor::Empty;
+		blupi::host::set_game_cursor(cursor);
 		g_lastSprite = sprite;
 	}
 }

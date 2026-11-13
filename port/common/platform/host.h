@@ -8,6 +8,8 @@
 #ifndef BLUPI_PLATFORM_HOST_H
 #define BLUPI_PLATFORM_HOST_H
 
+#include "platform/cursor.h"
+
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -121,8 +123,10 @@ void set_frame_x(int x);
 void get_mouse(int& x, int& y);
 void warp_mouse(int x, int y);
 void show_system_cursor(bool show);
-enum class Cursor { Arrow, Pointer, Wait, Move, SizeNS, SizeWE, SizeNWSE, SizeNESW, Hidden };
-void set_system_cursor(Cursor cursor);
+// MouseType 2 and 3: the original's Windows cursor (platform/cursor.h), enlarged with the frame
+// (an integer factor of the window's height over the frame's, as the 640x480 full screen of
+// the original showed it); a system cursor where the platform has no custom cursors.
+void set_game_cursor(GameCursor cursor);
 
 void set_title(const char* title);
 void message_box(const char* title, const char* text);

@@ -297,8 +297,11 @@ Not implemented / known gaps (each fails the way the original did when the servi
   `gamepadArrows` (true/false) turns the arrow keys off. Once the gamepad is chosen as the input
   device, the game reads it as its joystick as above and this mode is off. On Android this code
   is built but untested.
-- **MouseType 2/3** (Windows cursors): mapped to SDL system cursors, not the original `.cur`
-  shapes. The default MouseType 1 (game-drawn cursor) is exact.
+- **MouseType 2/3** (Windows cursors): the original's own cursors, the historical resources
+  `src/res/*.cur` compiled in (since after 1.5.2; `ctest -R cursor_resources`), enlarged with the
+  frame (the window's height over 480, whole times) as the 640x480 full screen showed them. Where a
+  platform has no custom cursors, the nearest system cursor. The default MouseType 1 (game-drawn
+  cursor) is exact.
 - The cross-build oracle covers the attract mode, the screen tour and an editor session, plus a
   bounded SB1 US save interchange in one scenario ([docs/ORACLE.md](docs/ORACLE.md),
   [oracle/SB1_SAVE.md](oracle/SB1_SAVE.md)). It does not cover every screen, state, language or

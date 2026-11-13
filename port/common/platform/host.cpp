@@ -25,6 +25,11 @@ SDL_Window*   g_window = nullptr;
 SDL_Renderer* g_renderer = nullptr;
 SDL_Texture*  g_texture = nullptr;
 SDL_Cursor*   g_cursor = nullptr;
+bool g_gameCursorSet = false;               // set_game_cursor: the original's cursor, MouseType 2/3
+GameCursor g_gameCursor = GameCursor::Arrow;
+int g_gameCursorScale = 0;                  // its enlargement when it was made
+int cursor_scale();
+void apply_game_cursor();
 int  g_width = 0, g_height = 0;   // the game's frame
 int  g_viewWidth = 0, g_frameX = 0; // the presented view; the frame's x in it (widescreen)
 bool g_autoWide = false;            // view width follows the window shape
@@ -272,6 +277,7 @@ bool translate(SDL_Event& ev, Event& out)
         return true;
     case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
         update_auto_width();
+        if (g_gameCursorSet && cursor_scale() != g_gameCursorScale) apply_game_cursor();
         return false;
     case SDL_EVENT_FINGER_DOWN:
     case SDL_EVENT_FINGER_MOTION:
@@ -712,27 +718,67 @@ void show_system_cursor(bool show)
     else SDL_HideCursor();
 }
 
-void set_system_cursor(Cursor cursor)
+namespace
 {
-    if (g_headless) return;
+// The frame's integer enlargement in the window (window points, as cursor images are).
+int cursor_scale()
+{
+    int ww = 0, wh = 0;
+    if (g_window == nullptr || !SDL_GetWindowSize(g_window, &ww, &wh) || g_height <= 0) return 1;
+    return wh / g_height > 1 ? wh / g_height : 1;
+}
+
+// Where custom cursors are missing: the nearest system cursor.
+SDL_Cursor* system_cursor(GameCursor cursor)
+{
     SDL_SystemCursor id = SDL_SYSTEM_CURSOR_DEFAULT;
     switch (cursor)
     {
-    case Cursor::Pointer:  id = SDL_SYSTEM_CURSOR_POINTER; break;
-    case Cursor::Wait:     id = SDL_SYSTEM_CURSOR_WAIT; break;
-    case Cursor::Move:     id = SDL_SYSTEM_CURSOR_MOVE; break;
-    case Cursor::SizeNS:   id = SDL_SYSTEM_CURSOR_NS_RESIZE; break;
-    case Cursor::SizeWE:   id = SDL_SYSTEM_CURSOR_EW_RESIZE; break;
-    case Cursor::SizeNWSE: id = SDL_SYSTEM_CURSOR_NWSE_RESIZE; break;
-    case Cursor::SizeNESW: id = SDL_SYSTEM_CURSOR_NESW_RESIZE; break;
-    case Cursor::Hidden:   SDL_HideCursor(); return;
+    case GameCursor::Pointer: id = SDL_SYSTEM_CURSOR_POINTER; break;
+    case GameCursor::Wait:    id = SDL_SYSTEM_CURSOR_WAIT; break;
+    case GameCursor::ArrowU: case GameCursor::ArrowD: id = SDL_SYSTEM_CURSOR_NS_RESIZE; break;
+    case GameCursor::ArrowL: case GameCursor::ArrowR: id = SDL_SYSTEM_CURSOR_EW_RESIZE; break;
+    case GameCursor::ArrowUL: case GameCursor::ArrowDR: id = SDL_SYSTEM_CURSOR_NWSE_RESIZE; break;
+    case GameCursor::ArrowUR: case GameCursor::ArrowDL: id = SDL_SYSTEM_CURSOR_NESW_RESIZE; break;
     default: break;
     }
-    SDL_Cursor* c = SDL_CreateSystemCursor(id);
+    return SDL_CreateSystemCursor(id);
+}
+
+void apply_game_cursor()
+{
+    const int scale = cursor_scale();
+    const CursorImage& original = game_cursor_image(g_gameCursor);
+    SDL_Cursor* c = nullptr;
+    if (!original.argb.empty())
+    {
+        CursorImage image = scale_cursor(original, scale);
+        if (SDL_Surface* surface = SDL_CreateSurfaceFrom(image.width, image.height, SDL_PIXELFORMAT_ARGB8888,
+                                                         image.argb.data(), image.width * 4))
+        {
+            c = SDL_CreateColorCursor(surface, image.hotX, image.hotY);
+            SDL_DestroySurface(surface);
+        }
+    }
+    if (c == nullptr)
+    {
+        if (g_gameCursor == GameCursor::Empty) { SDL_HideCursor(); return; }
+        c = system_cursor(g_gameCursor);
+    }
     if (c == nullptr) return;
     SDL_SetCursor(c);
     if (g_cursor) SDL_DestroyCursor(g_cursor);
     g_cursor = c;
+    g_gameCursorScale = scale;
+}
+}  // namespace
+
+void set_game_cursor(GameCursor cursor)
+{
+    if (g_headless) return;
+    g_gameCursorSet = true;
+    g_gameCursor = cursor;
+    apply_game_cursor();
 }
 
 void set_title(const char* title)

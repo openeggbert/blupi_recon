@@ -22,6 +22,8 @@ installed game. On the first start the port asks for its folder and remembers it
 
 - **Speedy Blupi 2's CD music from Ogg Vorbis or FLAC files:** besides `music/track02.wav`, the
   track may be `music/track02.ogg` or `music/track02.flac`, which take far less room.
+- **The original Windows cursors with `MouseType=2` or `3`:** the games' own arrows, hourglass and
+  hand from their resources, instead of the system's cursors, enlarged with the window.
 
 ## New in 1.5.2
 

@@ -26,6 +26,10 @@ add_executable(test_gamepad test_gamepad.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../comm
 target_link_libraries(test_gamepad PRIVATE blupi_hist_context blupi_platform)
 add_test(NAME gamepad COMMAND test_gamepad)
 # CD audio stand-in: WAV, Ogg Vorbis and FLAC tracks in the music player (SB2 PlayCDAudio).
+# MouseType 2 and 3: the original cursor resources compiled into the program (platform/cursor.h).
+add_executable(test_cursor test_cursor.cpp)
+target_link_libraries(test_cursor PRIVATE blupi_platform)
+add_test(NAME cursor_resources COMMAND test_cursor)
 add_executable(test_music_pcm test_music_pcm.cpp)
 target_link_libraries(test_music_pcm PRIVATE blupi_platform)
 add_test(NAME music_pcm COMMAND test_music_pcm ${CMAKE_CURRENT_SOURCE_DIR}/audio)
