@@ -231,9 +231,10 @@ These are bounded receipts, not whole-game certification.
   underdetermined by the binaries. Experimental witnesses, such as branch `sb1-histlink`, are
   evidence, not recovered source.
 - **Consolidation.** Stages 1 (ordinary builds), 2 (this documentation) and 3 (port cleanup: Linux
-  release and test portability, Android import, port docs; `083944a`) are done. Stages 4 and 5 are
-  optional (docs/CONSOLIDATION_PLAN.md).
+  release and test portability, Android import, port docs; `083944a`) are done, and stage 4 (the port's
+  shared services: languages, CPixmap's and CSound's port support) on branch `port-improvements-2`
+  (2026-11-13), each part gated by the full suite and the Wine oracle. Stage 5 is optional
+  (docs/CONSOLIDATION_PLAN.md).
 - **Port.** 1.5.2 ships the five programs on Windows, Linux and the web (the two games on Android),
   with multiplayer on a LAN, by address, and through a Free Direct server (`ws://` or `wss://`). Open: running the Android
-  build on a device, tests on real networks (simulated faults: after 1.5.2), and the optional consolidation stage 4 (shared
-  language, pixmap and audio services).
+  build on a device and tests on real networks (simulated faults: after 1.5.2).

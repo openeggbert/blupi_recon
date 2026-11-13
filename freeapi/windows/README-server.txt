@@ -20,7 +20,7 @@ press Ctrl+C) to stop the server. It listens on TCP port 51325.
 
 Playing
 -------
-1. In the game's multiplayer screen, choose the provider "FreeDirect server".
+1. In the game's multiplayer screen, choose the provider "Internet through a Free Direct server".
 2. Enter the server's address (this computer's IP address, or "localhost" on
    this computer), port 51325 and the password if there is one.
 3. One player creates a room and gives its ID to the others, who join the room

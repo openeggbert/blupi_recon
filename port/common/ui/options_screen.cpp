@@ -33,6 +33,7 @@ enum : UINT
 	MSG_WINDOW, MSG_FULLSCREEN,
 	MSG_FIT, MSG_WHOLE,
 	MSG_LANG_PREV, MSG_LANG_NEXT,
+	MSG_HD_PREV, MSG_HD_NEXT,
 	MSG_LAST,
 };
 
@@ -48,7 +49,8 @@ struct Control
 
 // Layout on the settings screen background (setup.blp): three panels on the
 // left with arrow pairs like the volume settings, choice buttons on the right
-// like the input devices, the confirm button where the game has its own.
+// like the input devices, the confirm button where the game has its own. The images'
+// resolution (port/docs/HD.md) has an arrow pair at the right of the big panel.
 const Control kControls[] =
 {
 	{ MSG_WIDE_PREV,   kIconLeft,  70, 110 }, { MSG_WIDE_NEXT,   kIconRight, 110, 110 },
@@ -57,6 +59,7 @@ const Control kControls[] =
 	{ MSG_WINDOW,      -1,        370, 110 }, { MSG_FULLSCREEN,  -1,         370, 150 },
 	{ MSG_FIT,         -1,        370, 240 }, { MSG_WHOLE,       -1,         370, 280 },
 	{ MSG_LANG_PREV,   kIconLeft, 370, 350 }, { MSG_LANG_NEXT,   kIconRight, 410, 350 },
+	{ MSG_HD_PREV,     kIconLeft, 530, 110 }, { MSG_HD_NEXT,     kIconRight, 570, 110 },
 	{ MSG_CLOSE,       kIconOk,   541, 411 },
 };
 constexpr int kControlCount = sizeof(kControls) / sizeof(kControls[0]);
@@ -115,6 +118,12 @@ void Refresh()
 	Find(MSG_WHOLE)->SetState(s.integerScale ? 1 : 0);
 	Find(MSG_LANG_PREV)->SetEnable(PortLanguageCount() > 1);
 	Find(MSG_LANG_NEXT)->SetEnable(PortLanguageCount() > 1);
+	// Higher-resolution images: chosen here, used from the next start (port/docs/HD.md). Not on
+	// touch screens, which have no way to bring a pack in.
+	Find(MSG_HD_PREV)->SetEnable(s.hdScale > 1);
+	Find(MSG_HD_NEXT)->SetEnable(s.hdScale < 4);
+	Find(MSG_HD_PREV)->SetHide(!s_windowChoice);
+	Find(MSG_HD_NEXT)->SetHide(!s_windowChoice);
 }
 
 // The game's cursor rule (CEvent::MousePosToSprite): the pointer over a
@@ -230,6 +239,8 @@ bool PortOptionsCommand(UINT message)
 	case MSG_RATE_NEXT:   s.displayRate = true; break;
 	case MSG_WINDOW:      s.fullscreen = false; break;
 	case MSG_FULLSCREEN:  s.fullscreen = true; break;
+	case MSG_HD_PREV:     if (s.hdScale > 1) s.hdScale--; break;
+	case MSG_HD_NEXT:     if (s.hdScale < 4) s.hdScale++; break;
 	case MSG_FIT:         s.integerScale = false; break;
 	case MSG_WHOLE:       s.integerScale = true; break;
 	case MSG_LANG_PREV:
@@ -277,6 +288,18 @@ void PortOptionsDraw()
 		Text(370, 80, 9010, "Display", FONTWHITE);
 		Text(420, 122, 9011, "Window", FONTWHITE);
 		Text(420, 162, 9012, "Full screen", FONTWHITE);
+	}
+	if (s_windowChoice)
+	{
+		Text(530, 80, 9017, "Images", FONTWHITE);
+		if (s.hdScale > 1)
+		{
+			char value[8];
+			snprintf(value, sizeof(value), "%dx", s.hdScale);
+			Text(530, 157, value, FONTWHITE);
+		}
+		else Text(530, 157, 9009, "Original", FONTWHITE);
+		if (s.hdScale != PortPixmapHdScale()) Text(530, 180, 9018, "next start", FONTLITTLE);
 	}
 	Text(370, 210, 9013, "Scaling", FONTWHITE);
 	Text(420, 252, 9014, "Fit the window", FONTWHITE);

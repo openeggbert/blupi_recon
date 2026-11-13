@@ -5,7 +5,7 @@
 //
 // One port binary serves both editions and every language, so a switch whose
 // value depends on them is a run-time call, answered from the recognised
-// edition and the chosen language pack (game/language.cpp). The matching
+// edition and the chosen language pack (common/ui/language_service.cpp). The matching
 // source uses those switches only in expressions, never in #if (root
 // AGENTS.md, Targets). Every other switch keeps its def.h default, except as
 // set here.

@@ -24,13 +24,13 @@ Multiplayer
 -----------
 In the game's multiplayer screen, choose a provider:
 
-* FreeDirect - the local network. One player creates a game, the others choose it
+* Local network (Free Direct) - the local network. One player creates a game, the others choose it
   from the list. Windows Firewall asks on the first start: allow the program on
   private networks. The computers must reach each other on UDP ports 51321 and
   51323. If the list stays empty, set FREE_DIRECT_ENET_HOST_ADDRESS to the host
   computer's IP address before starting the game.
 
-* FreeDirect server - over the Internet, through a Free Direct server (the
+* Internet through a Free Direct server - through a Free Direct server (the
   FreeDirectServer package). Enter the server's address, port 51325 and the
   password if the server has one, then create a room. Give the room ID that
   appears to the other players; they choose "Join a room" and enter it. Inside

@@ -448,7 +448,7 @@ quality, other browser engines or pixel equality with a historical executable.
 
 ## Local-network multiplayer
 
-Native builds offer the provider **FreeDirect**: Free Direct's ENet backend, which finds games on
+Native builds offer the provider **Local network (Free Direct)** (before 2026-11-13: "FreeDirect"): Free Direct's ENet backend, which finds games on
 the local network by UDP broadcast and connects to the chosen one. As on the original, one player
 creates a game and the others pick it from the list; no addresses are typed.
 
@@ -473,7 +473,7 @@ an empty game list and no address to join). [OPEN] Two separate machines.
 
 The games' multiplayer, through a [Free Direct server](../../free-direct/docs/free-direct-server.md)
 (`free-direct-server`), natively and in the browser, and the two together. The historical source
-is unchanged: its provider list shows **FreeDirect server**, and choosing it opens a dialog for
+is unchanged: its provider list shows **Internet through a Free Direct server** (before 2026-11-13: "FreeDirect server"), and choosing it opens a dialog for
 the server's address or URL, port, password (if the server has one) and room. Creating a room
 shows its secret ID (in the browser also as a link) for the other players; inside the room the
 game's own session list, create, join and lobby work as on a LAN. Players need no open ports.

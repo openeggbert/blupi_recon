@@ -18,6 +18,11 @@ blupi-sdl3 --hd-scale 2                         # scale 2 without a pack: the or
 (`blupi-sdl3.json`, ...) keeps them as `hdScale` (1 to 4; 1 is off) and `hdPack`. The window is then
 best `--scale` times as large as the scale, or full screen.
 
+**Display options:** the screen has an **Images** setting at the right of its big panel: Original, 2x,
+3x or 4x. It is saved at once and used from the next start ("next start" shows while it differs from
+the running one). The pack folder stays in the settings file (`hdPack`) or on the command line. Touch
+screens do not show the setting.
+
 **What a pack holds:** the game's image folders and file names (`IMAGE08/OBJECT.BLP`,
 `IMAGE16/DECOR000.BLP`, the June 1998 demo's `IMAGE/...`), in any case, as uncompressed BMP files
 (`.blp` or `.bmp`, 8 bits with a colour table or 24 bits), each exactly `scale` times the original's width
@@ -69,6 +74,5 @@ memory), and Speedy Eggbert 2's 2x pack, shown in the attract mode and on the ti
 Speedy Blupi at scale 2 under Xvfb presented the pack's detail. Some tiles of those packs are enlargements
 of the dithered originals (the pack's "fallback" icons, `manifest/build_games.csv`), and look so.
 
-**Not done:** a switch on the Display options screen (the settings file and the options set it), packs
-on Android and in the browser (the code is there, but neither has a way to bring a pack in yet), alpha
-channels.
+**Not done:** choosing the pack folder on the Display options screen, packs on Android and in the
+browser (the code is there, but neither has a way to bring a pack in yet), alpha channels.

@@ -12,6 +12,8 @@ scripted input; frames are compared by display index.
     python3 port/tools/oracle_wine.py --rebuilt build/oracle-editions/rebuilt/sb1-blupi-us/BLUPI.EXE \\
         --data <game folder> --port build/port-linux/blupi-sdl3 --frames 2200 --color 16 \\
         --work build/oracle-editions/runs
+    (Speedy Blupi 2 / Speedy Eggbert 2: add --game sb2 --edition blupi|eggbert; their configuration and
+    the port's --reference are those of oracle_capture_sb2.ps1.)
 
 Wine draws through its own ddraw and GDI, not Windows': a difference can be Wine's. Calibrate with a
 program whose oracle matched on Windows (SB1 US, 2026-10-21) before reading other results.
@@ -60,6 +62,19 @@ def find_config(game):
     raise SystemExit("no data/config.def in the game folder")
 
 
+def sb2_config(path, color, edition, game):
+    """oracle_capture_sb2.ps1's complete config (both ReadConfig implementations read 199 bytes):
+    Benchmark>=3100 honours TrueColorBack/Decor; Eggbert 2 finds its data at CD-Rom=., Blupi 2 one level
+    above an (empty) US folder."""
+    cd = "US" if edition == "blupi" else "."
+    if cd == "US":
+        (game / "US").mkdir(exist_ok=True)
+    text = (f"CD-Rom={cd}\r\nFullScreen=1\r\nBenchmark=6666\r\nTrueColorBack={color}\r\n"
+            f"TrueColorDecor={color}\r\nMouseType=2\r\nCDAudio=0\r\n")
+    assert len(text) <= 199
+    path.write_bytes(text.encode("ascii"))
+
+
 def edit_config(path, color):
     text = path.read_bytes().decode("latin-1")
     lines = [l for l in text.replace("\r\n", "\n").split("\n") if l]
@@ -85,6 +100,9 @@ def main():
     ap.add_argument("--input", type=Path, help="scripted input, as the port's --input")
     ap.add_argument("--dump-every", type=int, default=0)
     ap.add_argument("--work", type=Path, required=True)
+    ap.add_argument("--game", choices=("sb1", "sb2"), default="sb1",
+                    help="sb2: Speedy Blupi 2 / Speedy Eggbert 2 (their config, --edition)")
+    ap.add_argument("--edition", choices=("blupi", "eggbert"), default="eggbert", help="with --game sb2")
     ap.add_argument("--display", default=":78")
     ap.add_argument("--keep-game", action="store_true", help="keep the run's game folder (default: removed)")
     a = ap.parse_args()
@@ -113,7 +131,10 @@ def main():
     shutil.copy(rebuilt, exe)
     shutil.copy(proxy, game / "ddraw.dll")
     config = find_config(game)
-    edit_config(config, a.color)
+    if a.game == "sb2":
+        sb2_config(config, a.color, a.edition, game)
+    else:
+        edit_config(config, a.color)
     user = run / "port-user"
     (user / "data").mkdir(parents=True)
     shutil.copy(config, user / "data" / "config.def")
@@ -162,6 +183,8 @@ def main():
 
     command = [str(a.port.resolve()), "--headless", "--data", str(a.data.resolve()), "--user", str(user),
                "--frames", str(a.frames - 11), "--display-log", str(run / "port.log")]
+    if a.game == "sb2":
+        command.append("--reference")   # the historical SetDecor/Build path, as oracle_capture_sb2.ps1
     if a.dump_every:
         command += ["--display-dump", f"{run / 'port-frames'}:{a.dump_every}"]
     if a.input:

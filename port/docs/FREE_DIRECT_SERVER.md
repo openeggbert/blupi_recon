@@ -1,6 +1,6 @@
 # Running the Free Direct server for the port
 
-How to run [free-direct-server](https://github.com/openeggbert/free-direct/blob/hires-images/docs/free-direct-server.md) so that every build of
+How to run [free-direct-server](https://github.com/openeggbert/free-direct/blob/develop/docs/free-direct-server.md) so that every build of
 the port can use it: the web page on GitHub Pages (`https://`, so only `wss://`), and the desktop and
 Android programs (`ws://`, and since 1.5.2 also `wss://`, port/docs/MULTIPLAYER.md). One server process
 serves both, so all of them share its rooms. The web page offers `fds.openeggbert.com` as its default server (`port/web/loader.js`).
@@ -20,12 +20,12 @@ networks that let only 443 out, or with a password. Those programs send no `Orig
 ## 1. Build the server
 
 On the server (Debian or Ubuntu; it needs a C++20 compiler, CMake and git). TLS is nginx's job, so the
-server is built without it. The server's code is on free-direct's `hires-images` branch.
+server is built without it. The server's code is on free-direct's default branch, `develop`.
 
 ```bash
 sudo apt install build-essential cmake ninja-build git
 git clone --branch v11.4.6 --depth 1 https://github.com/machinezone/IXWebSocket ~/deps/IXWebSocket-v11.4.6
-git clone --branch hires-images https://github.com/openeggbert/free-direct ~/free-direct
+git clone --branch develop https://github.com/openeggbert/free-direct ~/free-direct
 cmake -S ~/free-direct/server -B ~/free-direct/build-server -G Ninja -DCMAKE_BUILD_TYPE=Release \
   -DFREE_DIRECT_IXWEBSOCKET_SOURCE_DIR=$HOME/deps/IXWebSocket-v11.4.6 -DFREE_DIRECT_RELAY_TLS=OFF
 cmake --build ~/free-direct/build-server
