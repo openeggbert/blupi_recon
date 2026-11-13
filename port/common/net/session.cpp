@@ -522,7 +522,10 @@ bool BeginTestTick(long tick) {
     for (auto* s:sessions) {
         auto& p=*s->p;
         for (uint32_t origin=1;origin<=4;++origin) {
-            while (p.active && origin!=p.id && p.received[origin]<counts[origin-1]) {
+            // Only from members still in the session: what a departed member sent after the session
+            // dropped it never arrives.
+            auto member=[&p,origin] { return std::find(p.members.begin(),p.members.end(),origin)!=p.members.end(); };
+            while (p.active && origin!=p.id && member() && p.received[origin]<counts[origin-1]) {
                 ServiceAll(); if (Clock::now()>=deadline) return false;
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
             }
