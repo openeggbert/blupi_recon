@@ -18,6 +18,26 @@ Blupi 2 and Speedy Eggbert 2, and the original multiplayer of all four games.
 **The original games' files are not included.** You need your own copy of the game: the CD or the
 installed game. On the first start the port asks for its folder and remembers it.
 
+## Since 1.5.2 (not yet released)
+
+- **Speedy Blupi 2's CD music from Ogg Vorbis or FLAC files:** besides `music/track02.wav`, the
+  track may be `music/track02.ogg` or `music/track02.flac`, which take far less room.
+- **Multiplayer on poor networks:** a typed Internet address is now found and joined over slow or lossy
+  links (before, one lost packet or a slow round trip could hide the session), and a few lost packets in a
+  row no longer drop a player (a player is given up after 5 to 10 s without an answer, instead of 1.5 to
+  3 s). The last moves of a player who leaves are no longer thrown away.
+- **Android: a game survives a short trip to the background:** switching to another app no longer drops
+  you from a multiplayer game; the connection is kept alive while the game is paused (tested on the
+  desktop; not yet on a device).
+- **The Speedy Eggbert Demo, Speedy Eggbert SE Valueware and the 1998 Speedy Blupi Demo on Android:**
+  the app recognises their folders and plays them as on the desktop (built, not yet tested on a device).
+- **Higher-resolution images:** `--hd-pack <folder>` shows the games at two to four times their
+  resolution with a pack of re-drawn images, such as the 2x and 4x sheets re-rendered from the original
+  3D models; `--hd-scale N` alone shows the originals enlarged. The game itself is unchanged
+  (port/docs/HD.md).
+- **The original Windows cursors with `MouseType=2` or `3`:** the games' own arrows, hourglass and
+  hand from their resources, instead of the system's cursors, enlarged with the window.
+
 ## New in 1.5.2
 
 - **`wss://` on Windows, Linux and Android:** type `wss://fds.openeggbert.com` on the server screen (or
@@ -177,7 +197,7 @@ package with Emscripten.
 
 - **The intro and ending movies.** The original skipped them when the system could not play AVI, and
   the installed games do not include them.
-- **Speedy Blupi 2's CD audio tracks** themselves: supply them as WAV files ripped from your disc (above).
+- **Speedy Blupi 2's CD audio tracks** themselves: supply them as WAV, Ogg Vorbis or FLAC files ripped from your disc (above).
 
 ## Known limitations
 

@@ -184,7 +184,7 @@ web packages.
 | Eggbert 1 (each language) | 12 | 24 | 16 | 14 | 6 | 72 |
 | Blupi 2 (each language) | 11 | 30 | 17 | 15 | 7 | 80 |
 | Eggbert 2 | 11 | 27 | 17 | 15 | 7 | 77 |
-| SB1 demo | not supported by the port (F454) | | | | | |
+| SB1 demo | outside the supported catalog (F454); goldens and the Wine oracle since after 1.5.2 | | | | | |
 
 **Runtime evidence** (doc: [port/docs/ORACLE.md](../port/docs/ORACLE.md) and
 [port/oracle/SB1_SAVE.md](../port/oracle/SB1_SAVE.md)):
@@ -193,6 +193,10 @@ web packages.
   2,200 frames identical for SB1 and for each SB2 edition, at 8 and 16 bpp.
 - **SB1 screen tour:** identical except for the multiplayer provider list.
 - **SB1 US save interchange:** identical in one recorded scenario, at both depths.
+- **Under Wine on Linux (after 1.5.2):** the ordinary historical builds against the port, attract mode,
+  2,200 displays each: SB1 US at 16 and 8 bpp and Speedy Eggbert 1 at 16 bpp identical (the SB1 rows
+  repeat the Windows result), and the editions too: the Speedy Eggbert Demo (8 bpp), Valueware (16 and
+  8 bpp) and the June 1998 demo (8 bpp) ([port/docs/ORACLE.md](../port/docs/ORACLE.md)).
 
 These are bounded receipts, not whole-game certification.
 
@@ -203,11 +207,17 @@ These are bounded receipts, not whole-game certification.
   and Android, with LAN discovery, a content check and `--net-join`; an in-game address entry since
   1.3.0; and since 1.5.0 play through a Free Direct server (rooms with secret IDs, no open ports), which
   is also the browser's way. Tested automatically on one machine and, for each game, by the user between
-  real devices (1.2.0); little other real-world play.
+  real devices (1.2.0); little other real-world play. After 1.5.2: tests through a lossy, delaying,
+  reordering proxy, with members killed or quitting in play and in the lobby, and with an app in the
+  background as on Android, with a session keep-alive (port/docs/MULTIPLAYER.md, "Robustness").
 - **AVI movies:** not played; the phase is skipped.
-- **SB2 CD audio:** plays ripped tracks the player supplies (`music/trackNN.wav`, port 1.3.0); without
+- **SB2 CD audio:** plays ripped tracks the player supplies (`music/trackNN.wav`, port 1.3.0; also `.ogg` and `.flac` after 1.5.2); without
   them it fails and logs once. No archive holds the tracks.
 - **MIDI:** played with a modern SoundFont, not the 1998 device's timbre.
+- **Higher-resolution images (after 1.5.2):** an optional presentation at 2 to 4 times the resolution,
+  with a pack of re-drawn images ([port/docs/HD.md](../port/docs/HD.md)); the faithful frame, traces and
+  goldens are unchanged, and without a pack every presented frame is the exact enlargement of the faithful
+  one (`ctest -R '^hd_'`). Desktop only for now.
 - **Coverage gaps:** hardware gamepads and Android keyboard/background are open. SB2 on Android
   (since 1.2.0-rc2) is checked on the emulator (start, menus, touch controls, play) and by the user's
   multiplayer test.
@@ -225,5 +235,5 @@ These are bounded receipts, not whole-game certification.
   optional (docs/CONSOLIDATION_PLAN.md).
 - **Port.** 1.5.2 ships the five programs on Windows, Linux and the web (the two games on Android),
   with multiplayer on a LAN, by address, and through a Free Direct server (`ws://` or `wss://`). Open: running the Android
-  build on a device, real-network fault tests, and the optional consolidation stage 4 (shared
+  build on a device, tests on real networks (simulated faults: after 1.5.2), and the optional consolidation stage 4 (shared
   language, pixmap and audio services).

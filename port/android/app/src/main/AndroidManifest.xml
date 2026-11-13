@@ -53,5 +53,34 @@
             android:launchMode="singleInstance"
             android:configChanges="layoutDirection|locale|grammaticalGender|fontScale|fontWeightAdjustment|orientation|uiMode|screenLayout|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
             android:preferMinimalPostProcessing="true" />
+
+        <!-- The editions with programs of their own (port/docs/EDITIONS.md), each in its own process. -->
+        <activity
+            android:name=".EggbertDemoActivity"
+            android:exported="false"
+            android:process=":egdemo"
+            android:screenOrientation="sensorLandscape"
+            android:alwaysRetainTaskState="true"
+            android:launchMode="singleInstance"
+            android:configChanges="layoutDirection|locale|grammaticalGender|fontScale|fontWeightAdjustment|orientation|uiMode|screenLayout|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
+            android:preferMinimalPostProcessing="true" />
+        <activity
+            android:name=".EggbertValueActivity"
+            android:exported="false"
+            android:process=":egvalue"
+            android:screenOrientation="sensorLandscape"
+            android:alwaysRetainTaskState="true"
+            android:launchMode="singleInstance"
+            android:configChanges="layoutDirection|locale|grammaticalGender|fontScale|fontWeightAdjustment|orientation|uiMode|screenLayout|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
+            android:preferMinimalPostProcessing="true" />
+        <activity
+            android:name=".BlupiDemoActivity"
+            android:exported="false"
+            android:process=":bldemo"
+            android:screenOrientation="sensorLandscape"
+            android:alwaysRetainTaskState="true"
+            android:launchMode="singleInstance"
+            android:configChanges="layoutDirection|locale|grammaticalGender|fontScale|fontWeightAdjustment|orientation|uiMode|screenLayout|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
+            android:preferMinimalPostProcessing="true" />
     </application>
 </manifest>

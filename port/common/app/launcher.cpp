@@ -7,6 +7,7 @@
 #include "platform/vfs.h"
 #include "platform/audio.h"
 #include "platform/music.h"
+#include "net/keepalive.h"
 #include "presentation/timing.h"
 #include <cstdlib>
 #include <cctype>
@@ -57,11 +58,19 @@ void Usage(const Game& game)
         "  --net-room ID       room on that server (prefills its screen; empty: a new room)\n"
         "  --net-server-default ADDRESS  the server's screen shows this one when no server\n"
         "                      is remembered (the web page's default server)\n"
+        "  --hd-scale N        higher-resolution images: present at N times 640x480 (2 to 4;\n"
+        "                      1 off), with the images of --hd-pack where it has them\n"
+        "  --hd-pack DIR       a folder of images N times the originals' size, in the game's\n"
+        "                      folders and names (IMAGE08/..., IMAGE16/...); implies --hd-scale 2\n"
         "  --version           print the version and exit\n"
         "  --language CODE     built-in pack or a pack in the user folder languages/\n"
         "test options:\n"
         "  --headless          no window, no audio device, frames run back to back\n"
         "  --net-test-sync     reliable tick ingress, requires the test supervisor\n"
+        "  --hd-check          with --hd-scale: count the frames that are not the exact\n"
+        "                      enlargement of the faithful frame (exit 5 if any)\n"
+        "  --net-test-suspend TICK:MS[:bare]  after frame TICK, the app in the background for MS\n"
+        "                      ms as on Android (bare: without the session keep-alive)\n"
         "  --net-room-file F   the server screen's room from F if it exists; a room this\n"
         "                      instance creates is written to F\n"
         "  --frames N          exit after N game frames (WM_UPDATE)\n"
@@ -140,8 +149,24 @@ bool ParseOptions(int argc, char** argv, Options& o, Game& game)
             o.net.endpoints.push_back(endpoint);
         }
         else if (a == "--net-test-sync") o.net.testSync=true;
+        else if (a == "--net-test-suspend") {
+            const std::string v = next();
+            char mode[8] = "";
+            long tick = -1;
+            unsigned ms = 0;
+            const int n = sscanf(v.c_str(), "%ld:%u:%7s", &tick, &ms, mode);
+            if (n < 2 || tick < 0 || ms == 0 || (n == 3 && std::string(mode) != "bare")) return false;
+            o.netSuspendTick = tick; o.netSuspendMs = ms; o.netSuspendBare = n == 3;
+        }
         else if (a == "--net-server") { o.settings.netServer = next(); o.setNetServer = true; }
         else if (a == "--net-room") { o.settings.netRoom = next(); o.setNetRoom = true; }
+        else if (a == "--hd-scale") {
+            o.settings.hdScale = atoi(next());
+            if (o.settings.hdScale < 1 || o.settings.hdScale > 4) return false;
+            o.setHdScale = true;
+        }
+        else if (a == "--hd-pack") { o.settings.hdPack = next(); o.setHdPack = true; if (!o.setHdScale && o.settings.hdScale < 2) o.settings.hdScale = 2; o.setHdScale = true; }
+        else if (a == "--hd-check") o.hdCheck = true;
         else if (a == "--net-server-default") o.netServerDefault = next();
         else if (a == "--net-room-file") o.net.roomFile = next();
         else if (a == "--frames") o.ticks = atol(next());
@@ -424,6 +449,7 @@ int Run(int argc, char** argv, Game& game)
         set.widescreen = o.setWide; set.interpolate = o.setInterpolate; set.displayRate = o.setPresent;
         set.fullscreen = o.setFullscreen; set.scale = o.setScale; set.integerScale = o.setIntegerScale;
         set.language = o.setLanguage; set.netServer = o.setNetServer; set.netRoom = o.setNetRoom;
+        set.hdScale = o.setHdScale; set.hdPack = o.setHdPack;
         o.settings = PortSettingsMerge(fromFile, o.settings, set);
         if (o.settings.netServer.empty()) o.settings.netServer = o.netServerDefault;
         (*game.settings) = o.settings;
@@ -574,6 +600,11 @@ int Run(int argc, char** argv, Game& game)
     const uint64_t loopStart = blupi::host::now_ns();
     uint64_t lastTick = loopStart;   // when the latest tick ran (interpolation)
     PortPerf perf;
+    // The multiplayer keep-alive (net/keepalive.h): the loop runs under its lock, which the host
+    // releases while it waits for events; in the background a thread services the sessions.
+    blupi::net::HoldLoop();
+    blupi::host::set_event_wait_hooks(blupi::net::ReleaseLoop, blupi::net::HoldLoop);
+    blupi::host::set_background_handler(blupi::net::Suspend);
 
     while (!*game.quit && (o.ticks < 0 || frame < o.ticks))
     {
@@ -622,6 +653,7 @@ int Run(int argc, char** argv, Game& game)
             frame++;
             game.completedTick(frame);
             if (!blupi::net::EndTestTick(frame-1)) { fprintf(stderr,"network test tick completion failed\n"); result=7; break; }
+            if (frame-1 == o.netSuspendTick) blupi::host::simulate_background(o.netSuspendMs, o.netSuspendBare);
             if (o.host.headless)
             {
                 // No audio device: advance the synthesizer by one timer interval per
@@ -653,6 +685,10 @@ int Run(int argc, char** argv, Game& game)
             }
             if (o.ticks >= 0 && frame >= o.ticks)
             {
+                // Test lockstep: leave the session only when every peer has completed its last
+                // frame (the supervisor's grant of the next one), so that no peer sees another's
+                // departure in a frame it is still running.
+                if (!blupi::net::BeginTestTick(frame)) { fprintf(stderr,"network test exit grant timed out\n"); result=7; }
                 game.windowProc(WM_CLOSE, 0, 0);
                 break;
             }
@@ -701,6 +737,11 @@ int Run(int argc, char** argv, Game& game)
             if (now < nextTick && blupi::host::wait_event(e, nextTick - now)) TranslateHostEvent(e, game);
         }
     }
+
+    blupi::net::Suspend(false);
+    blupi::host::set_background_handler(nullptr);
+    blupi::host::set_event_wait_hooks(nullptr, nullptr);
+    blupi::net::ReleaseLoop();
 
     if (presents > 0)
     {

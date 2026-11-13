@@ -8,6 +8,8 @@
 #ifndef BLUPI_PLATFORM_HOST_H
 #define BLUPI_PLATFORM_HOST_H
 
+#include "platform/cursor.h"
+
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -68,7 +70,12 @@ uint64_t now_ns();
 
 // Presents a full logical frame (0xAARRGGBB, logical size, tightly packed).
 // width x logical height; ignored unless width is the current view width.
+// With a frame scale (higher-resolution images), the frame is that many times
+// larger on each axis: width is the view width times the scale.
 void present(const uint32_t* argb, int width);
+// The presented frame's resolution, times the logical size (1 to 4); the
+// logical coordinates (mouse, layout) stay as they are.
+void set_frame_scale(int scale);
 // True when present() waits for the display refresh (vsync).
 bool presents_with_vsync();
 void toggle_fullscreen();
@@ -121,8 +128,21 @@ void set_frame_x(int x);
 void get_mouse(int& x, int& y);
 void warp_mouse(int x, int y);
 void show_system_cursor(bool show);
-enum class Cursor { Arrow, Pointer, Wait, Move, SizeNS, SizeWE, SizeNWSE, SizeNESW, Hidden };
-void set_system_cursor(Cursor cursor);
+// MouseType 2 and 3: the original's Windows cursor (platform/cursor.h), enlarged with the frame
+// (an integer factor of the window's height over the frame's, as the 640x480 full screen of
+// the original showed it); a system cursor where the platform has no custom cursors.
+void set_game_cursor(GameCursor cursor);
+
+// Called around every wait for platform events (poll_event, wait_event): the multiplayer keep-alive
+// (net/keepalive.h) releases the game loop's lock there.
+void set_event_wait_hooks(void (*before)(), void (*after)());
+// The app goes to the background (true) or comes back (false): SDL's lifecycle events, which SDL
+// delivers on the game thread inside the event wait (Android, where the wait then blocks until the
+// app is back).
+void set_background_handler(void (*handler)(bool background));
+// Tests: the background as Android has it, for `ms` milliseconds: the game thread inside an event
+// wait, the handler told (unless `bare`, which shows what happens without it).
+void simulate_background(unsigned ms, bool bare);
 
 void set_title(const char* title);
 void message_box(const char* title, const char* text);

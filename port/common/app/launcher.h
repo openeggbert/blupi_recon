@@ -43,6 +43,8 @@ struct Options
     bool        setFullscreen = false, setScale = false, setIntegerScale = false;
     bool        setLanguage = false;
     bool        setNetServer = false, setNetRoom = false;
+    bool        setHdScale = false, setHdPack = false;
+    bool        hdCheck = false;             // --hd-check (test)
     std::string netServerDefault;            // --net-server-default: when the settings have none
     bool        checkView = false;
     bool        checkWide = false;
@@ -55,6 +57,10 @@ struct Options
     bool reference = false;
     bool        verbose = false;
     blupi::net::Options net;
+    // --net-test-suspend TICK:MS[:bare]: after frame TICK, the background as Android has it (test).
+    long        netSuspendTick = -1;
+    unsigned    netSuspendMs = 0;
+    bool        netSuspendBare = false;
 };
 
 

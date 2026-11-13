@@ -25,8 +25,29 @@ SDL_Window*   g_window = nullptr;
 SDL_Renderer* g_renderer = nullptr;
 SDL_Texture*  g_texture = nullptr;
 SDL_Cursor*   g_cursor = nullptr;
+bool g_gameCursorSet = false;               // set_game_cursor: the original's cursor, MouseType 2/3
+GameCursor g_gameCursor = GameCursor::Arrow;
+int g_gameCursorScale = 0;                  // its enlargement when it was made
+int cursor_scale();
+void apply_game_cursor();
+void (*g_waitBefore)() = nullptr;           // set_event_wait_hooks
+void (*g_waitAfter)() = nullptr;
+void (*g_background)(bool) = nullptr;       // set_background_handler
+struct WaitScope
+{
+    WaitScope() { if (g_waitBefore) g_waitBefore(); }
+    ~WaitScope() { if (g_waitAfter) g_waitAfter(); }
+};
+bool SDLCALL lifecycle_watch(void*, SDL_Event* ev)
+{
+    if (g_background && ev->type == SDL_EVENT_WILL_ENTER_BACKGROUND) g_background(true);
+    if (g_background && ev->type == SDL_EVENT_DID_ENTER_FOREGROUND) g_background(false);
+    return true;
+}
 int  g_width = 0, g_height = 0;   // the game's frame
 int  g_viewWidth = 0, g_frameX = 0; // the presented view; the frame's x in it (widescreen)
+int  g_frameScale = 1;              // set_frame_scale: the texture's resolution, times the view
+bool g_textureStale = false;        // the texture must be made again (another frame scale)
 bool g_autoWide = false;            // view width follows the window shape
 bool g_integerScale = false;
 bool g_headless = false;
@@ -158,14 +179,15 @@ void close_gamepad(SDL_JoystickID id)
 void apply_view_width(int width)
 {
     if (width < g_width) width = g_width;
-    if (width == g_viewWidth && (g_headless || g_texture != nullptr)) return;
+    if (width == g_viewWidth && (g_headless || g_texture != nullptr) && !g_textureStale) return;
+    g_textureStale = false;
     g_viewWidth = width;
     g_frameX = (g_viewWidth - g_width) / 2;   // until the port places the frame (set_frame_x)
     if (g_headless || g_renderer == nullptr) return;
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "view %dx%d", g_viewWidth, g_height);
     if (g_texture) SDL_DestroyTexture(g_texture);
     g_texture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
-                                  g_viewWidth, g_height);
+                                  g_viewWidth * g_frameScale, g_height * g_frameScale);
     if (g_texture) SDL_SetTextureScaleMode(g_texture, SDL_SCALEMODE_NEAREST);
     SDL_SetRenderLogicalPresentation(g_renderer, g_viewWidth, g_height,
                                      g_integerScale ? SDL_LOGICAL_PRESENTATION_INTEGER_SCALE
@@ -272,6 +294,7 @@ bool translate(SDL_Event& ev, Event& out)
         return true;
     case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
         update_auto_width();
+        if (g_gameCursorSet && cursor_scale() != g_gameCursorScale) apply_game_cursor();
         return false;
     case SDL_EVENT_FINGER_DOWN:
     case SDL_EVENT_FINGER_MOTION:
@@ -440,6 +463,7 @@ bool init(const char* title, int logicalWidth, int logicalHeight, const Options&
         SDL_Log("SDL_Init failed: %s", SDL_GetError());
         return false;
     }
+    SDL_AddEventWatch(lifecycle_watch, nullptr);   // set_background_handler
     int scale = options.scale < 1 ? 1 : options.scale;
     // Automatic widescreen opens a 16:9 window; resizing changes the shape.
     const int windowWidth = g_autoWide ? (logicalHeight * 16 / 9 + 1) & ~1 : g_viewWidth;
@@ -507,8 +531,14 @@ bool poll_event(Event& event)
     if (g_headless && !g_headlessPads) return false;
     if (next_text(event)) return true;
     SDL_Event ev;
-    while (SDL_PollEvent(&ev))
+    for (;;)
     {
+        bool got;
+        {
+            WaitScope wait;
+            got = SDL_PollEvent(&ev);
+        }
+        if (!got) break;
         if (translate(ev, event)) return true;
         if (next_text(event)) return true;
         if (!g_pending.empty()) return poll_event(event);
@@ -522,17 +552,31 @@ bool wait_event(Event& event, uint64_t timeoutNs)
     if (poll_event(event)) return true;
     Sint32 ms = (Sint32)(timeoutNs / 1000000);
     SDL_Event ev;
-    if (!SDL_WaitEventTimeout(&ev, ms)) return false;
+    bool got;
+    {
+        WaitScope wait;
+        got = SDL_WaitEventTimeout(&ev, ms);
+    }
+    if (!got) return false;
     if (translate(ev, event)) return true;
     if (next_text(event)) return true;
     return poll_event(event);   // events translate() queued (touch, the gamepad as the keyboard)
 }
 
+void set_frame_scale(int scale)
+{
+    scale = scale < 1 ? 1 : scale > 4 ? 4 : scale;
+    if (scale == g_frameScale) return;
+    g_frameScale = scale;
+    g_textureStale = true;
+    apply_view_width(g_viewWidth);
+}
+
 void present(const uint32_t* argb, int width)
 {
     if (g_headless || g_texture == nullptr) return;
-    if (width != g_viewWidth) return;   // composed before a resize: the next one fits
-    SDL_UpdateTexture(g_texture, nullptr, argb, g_viewWidth * 4);
+    if (width != g_viewWidth * g_frameScale) return;   // composed before a resize: the next one fits
+    SDL_UpdateTexture(g_texture, nullptr, argb, width * 4);
     SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
     SDL_RenderClear(g_renderer);
     SDL_RenderTexture(g_renderer, g_texture, nullptr, nullptr);
@@ -712,27 +756,86 @@ void show_system_cursor(bool show)
     else SDL_HideCursor();
 }
 
-void set_system_cursor(Cursor cursor)
+namespace
 {
-    if (g_headless) return;
+// The frame's integer enlargement in the window (window points, as cursor images are).
+int cursor_scale()
+{
+    int ww = 0, wh = 0;
+    if (g_window == nullptr || !SDL_GetWindowSize(g_window, &ww, &wh) || g_height <= 0) return 1;
+    return wh / g_height > 1 ? wh / g_height : 1;
+}
+
+// Where custom cursors are missing: the nearest system cursor.
+SDL_Cursor* system_cursor(GameCursor cursor)
+{
     SDL_SystemCursor id = SDL_SYSTEM_CURSOR_DEFAULT;
     switch (cursor)
     {
-    case Cursor::Pointer:  id = SDL_SYSTEM_CURSOR_POINTER; break;
-    case Cursor::Wait:     id = SDL_SYSTEM_CURSOR_WAIT; break;
-    case Cursor::Move:     id = SDL_SYSTEM_CURSOR_MOVE; break;
-    case Cursor::SizeNS:   id = SDL_SYSTEM_CURSOR_NS_RESIZE; break;
-    case Cursor::SizeWE:   id = SDL_SYSTEM_CURSOR_EW_RESIZE; break;
-    case Cursor::SizeNWSE: id = SDL_SYSTEM_CURSOR_NWSE_RESIZE; break;
-    case Cursor::SizeNESW: id = SDL_SYSTEM_CURSOR_NESW_RESIZE; break;
-    case Cursor::Hidden:   SDL_HideCursor(); return;
+    case GameCursor::Pointer: id = SDL_SYSTEM_CURSOR_POINTER; break;
+    case GameCursor::Wait:    id = SDL_SYSTEM_CURSOR_WAIT; break;
+    case GameCursor::ArrowU: case GameCursor::ArrowD: id = SDL_SYSTEM_CURSOR_NS_RESIZE; break;
+    case GameCursor::ArrowL: case GameCursor::ArrowR: id = SDL_SYSTEM_CURSOR_EW_RESIZE; break;
+    case GameCursor::ArrowUL: case GameCursor::ArrowDR: id = SDL_SYSTEM_CURSOR_NWSE_RESIZE; break;
+    case GameCursor::ArrowUR: case GameCursor::ArrowDL: id = SDL_SYSTEM_CURSOR_NESW_RESIZE; break;
     default: break;
     }
-    SDL_Cursor* c = SDL_CreateSystemCursor(id);
+    return SDL_CreateSystemCursor(id);
+}
+
+void apply_game_cursor()
+{
+    const int scale = cursor_scale();
+    const CursorImage& original = game_cursor_image(g_gameCursor);
+    SDL_Cursor* c = nullptr;
+    if (!original.argb.empty())
+    {
+        CursorImage image = scale_cursor(original, scale);
+        if (SDL_Surface* surface = SDL_CreateSurfaceFrom(image.width, image.height, SDL_PIXELFORMAT_ARGB8888,
+                                                         image.argb.data(), image.width * 4))
+        {
+            c = SDL_CreateColorCursor(surface, image.hotX, image.hotY);
+            SDL_DestroySurface(surface);
+        }
+    }
+    if (c == nullptr)
+    {
+        if (g_gameCursor == GameCursor::Empty) { SDL_HideCursor(); return; }
+        c = system_cursor(g_gameCursor);
+    }
     if (c == nullptr) return;
     SDL_SetCursor(c);
     if (g_cursor) SDL_DestroyCursor(g_cursor);
     g_cursor = c;
+    g_gameCursorScale = scale;
+}
+}  // namespace
+
+void set_event_wait_hooks(void (*before)(), void (*after)())
+{
+    g_waitBefore = before;
+    g_waitAfter = after;
+}
+
+void set_background_handler(void (*handler)(bool background))
+{
+    g_background = handler;
+}
+
+void simulate_background(unsigned ms, bool bare)
+{
+    WaitScope wait;
+    if (g_background && !bare) g_background(true);
+    SDL_Delay(ms);
+    if (g_background && !bare) g_background(false);
+}
+
+void set_game_cursor(GameCursor cursor)
+{
+    if (g_headless) return;
+    g_gameCursorSet = true;
+    g_gameCursor = cursor;
+    apply_game_cursor();
 }
 
 void set_title(const char* title)

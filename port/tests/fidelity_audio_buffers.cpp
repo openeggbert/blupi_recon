@@ -26,7 +26,7 @@ BLUPI_MEMBER_ACCESS(Sound2Access, CSound, SB2_FIELDS)
 static std::vector<float> levels;
 namespace blupi::music {
 bool load_soundfont(const std::string&) {return false;} bool has_soundfont() {return false;}
-unsigned play(const uint8_t*,size_t) {return 0;} unsigned play_wav(const uint8_t*,size_t) {return 0;} bool stop(unsigned) {return false;}
+unsigned play(const uint8_t*,size_t) {return 0;} unsigned play_track(const uint8_t*,size_t) {return 0;} bool stop(unsigned) {return false;}
 unsigned take_finished() {return 0;} void set_level(float x) {levels.push_back(x);}
 void render_mix(float*,int,int) {} void shutdown() {}
 }

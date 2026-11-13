@@ -569,14 +569,16 @@ void CSound::SetSuspendSkip(int nb)
 void CSound::SetCDAudio(BOOL enabled) { m_bCDAudio = enabled; }
 // Plays a track of the CD.
 // Port: the CD's audio tracks are not data files. A player who has them puts
-// each track, ripped as a WAV file, at music\trackNN.wav in the game folder (NN
-// the track number the game asks for); it plays once, like MCI_PLAY from the
-// track to the next, and its end posts MM_MCINOTIFY as the MIDI songs do.
-// Without the file the call fails as the original's did without a CD drive.
+// each track, ripped as a WAV, Ogg Vorbis or FLAC file, at music\trackNN.wav,
+// .ogg or .flac in the game folder (NN the track number the game asks for; the
+// first of the three that exists); it plays once, like MCI_PLAY from the track
+// to the next, and its end posts MM_MCINOTIFY as the MIDI songs do. Without
+// the file the call fails as the original's did without a CD drive.
 BOOL CSound::PlayCDAudio(HWND hWnd, int track)
 {
+    static const char* const formats[] = { "wav", "ogg", "flac" };
     char name[MAX_PATH];
-    FILE* file;
+    FILE* file = NULL;
     std::vector<uint8_t> data;
     uint8_t buffer[16384];
     size_t n;
@@ -587,16 +589,20 @@ BOOL CSound::PlayCDAudio(HWND hWnd, int track)
     InitMidiVolume(m_midiVolume);
     m_lastMidiVolume = m_midiVolume;
 
-    sprintf(name, "music\\track%.2d.wav", track);
-    file = blupi::vfs::open(name, "rb");
+    for ( const char* format : formats )
+    {
+        sprintf(name, "music\\track%.2d.%s", track, format);
+        file = blupi::vfs::open(name, "rb");
+        if ( file != NULL )  break;
+    }
     if ( file == NULL )
     {
         static bool reported = false;
         if (!reported)
         {
-            char text[160];
-            snprintf(text, sizeof(text), "SB2: CD audio (CDAudio=1) needs the ripped track %s in the game folder; "
-                     "playing without music.", name);
+            char text[200];
+            snprintf(text, sizeof(text), "SB2: CD audio (CDAudio=1) needs the ripped track music\\track%.2d.wav "
+                     "(or .ogg, .flac) in the game folder; playing without music.", track);
             blupi::host::log_info(text);
             reported = true;
         }
@@ -605,7 +611,7 @@ BOOL CSound::PlayCDAudio(HWND hWnd, int track)
     while ( (n = fread(buffer, 1, sizeof(buffer), file)) > 0 )  data.insert(data.end(), buffer, buffer + n);
     fclose(file);
 
-    device = blupi::music::play_wav(data.data(), data.size());
+    device = blupi::music::play_track(data.data(), data.size());
     if ( device == 0 )  return FALSE;
     m_MidiDeviceID = device;
     s_notifyDevice = device;

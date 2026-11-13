@@ -1,4 +1,5 @@
 #include "platform/music.h"
+#include "platform/track.h"
 
 #define TSF_IMPLEMENTATION
 #include "third_party/tinysoundfont/tsf.h"
@@ -7,6 +8,8 @@
 
 #include <SDL3/SDL.h>
 
+#include <algorithm>
+#include <memory>
 #include <mutex>
 #include <vector>
 
@@ -34,12 +37,17 @@ unsigned     g_nextId = 0;
 unsigned     g_finished = 0;
 float        g_level = 1.0f;
 std::vector<float> g_block;
-// A WAV track (play_wav): stereo float frames at their own rate, read with
-// linear interpolation at the output rate.
-std::vector<float> g_pcm;
+// A CD audio track (play_track): stereo float frames at their own rate, read with linear
+// interpolation at the output rate. The track is decoded into a window of frames, from absolute
+// frame g_windowStart on, as the position reaches its end (platform/track.h).
+std::unique_ptr<Track> g_track;
+std::vector<float> g_window;
+size_t       g_windowStart = 0;
+bool         g_trackEnd = false;
 int          g_pcmRate = 0;
 double       g_pcmPos = 0.0;
 bool         g_pcmPlaying = false;
+constexpr size_t k_trackBlock = 4096;   // frames decoded at a time
 
 void reset_channels()
 {
@@ -56,18 +64,35 @@ void release_song()
     g_song = nullptr;
     g_cursor = nullptr;
     g_playing = false;
-    g_pcm.clear();
+    g_track.reset();
+    g_window.clear();
+    g_windowStart = 0;
+    g_trackEnd = false;
     g_pcmPlaying = false;
 }
 
-// Mixes the WAV track; at its end the play command completed.
+// Makes absolute frames k and k + 1 available in the window where the track has them: the frames
+// before k are dropped and the next block is decoded.
+void fill_window(size_t k)
+{
+    while (!g_trackEnd && k + 1 >= g_windowStart + g_window.size() / 2)
+    {
+        const size_t drop = std::min(k - g_windowStart, g_window.size() / 2);
+        g_window.erase(g_window.begin(), g_window.begin() + (ptrdiff_t)(drop * 2));
+        g_windowStart += drop;
+        if (g_track->read(g_window, k_trackBlock) < k_trackBlock) g_trackEnd = true;
+    }
+}
+
+// Mixes the track; at its end the play command completed.
 void render_pcm(float* out, int frames, int rate)
 {
     const double step = (double)g_pcmRate / rate;
-    const size_t count = g_pcm.size() / 2;
     for (int i = 0; i < frames && g_pcmPlaying; i++)
     {
         const size_t k = (size_t)g_pcmPos;
+        fill_window(k);
+        const size_t count = g_windowStart + g_window.size() / 2;
         if (k >= count)
         {
             g_pcmPlaying = false;
@@ -78,7 +103,7 @@ void render_pcm(float* out, int frames, int rate)
         const size_t next = k + 1 < count ? k + 1 : k;
         for (int c = 0; c < 2; c++)
         {
-            const float a = g_pcm[k * 2 + c], b = g_pcm[next * 2 + c];
+            const float a = g_window[(k - g_windowStart) * 2 + c], b = g_window[(next - g_windowStart) * 2 + c];
             out[(size_t)i * 2 + c] += (float)(a + (b - a) * f) * g_level;
         }
         g_pcmPos += step;
@@ -145,25 +170,15 @@ unsigned play(const uint8_t* data, size_t size)
     return g_id;
 }
 
-unsigned play_wav(const uint8_t* data, size_t size)
+unsigned play_track(const uint8_t* data, size_t size)
 {
-    SDL_AudioSpec spec;
-    Uint8* raw = nullptr;
-    Uint32 length = 0;
-    if (!SDL_LoadWAV_IO(SDL_IOFromConstMem(data, size), true, &spec, &raw, &length)) return 0;
-    const SDL_AudioSpec want{SDL_AUDIO_F32, 2, spec.freq};
-    Uint8* converted = nullptr;
-    int convertedLength = 0;
-    const bool ok = SDL_ConvertAudioSamples(&spec, raw, (int)length, &want, &converted, &convertedLength);
-    SDL_free(raw);
-    if (!ok || spec.freq <= 0) return 0;
-    std::vector<float> pcm((const float*)converted, (const float*)(converted + convertedLength));
-    SDL_free(converted);
+    std::unique_ptr<Track> track = open_track(data, size);
+    if (!track || track->rate <= 0) return 0;
     std::lock_guard<std::mutex> guard(g_lock);
     release_song();
     if (g_font) reset_channels();
-    g_pcm.swap(pcm);
-    g_pcmRate = spec.freq;
+    g_pcmRate = track->rate;
+    g_track = std::move(track);
     g_pcmPos = 0.0;
     g_pcmPlaying = true;
     g_id = ++g_nextId;

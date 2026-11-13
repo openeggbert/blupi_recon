@@ -100,14 +100,61 @@ different games or editions never do (the protocol id and the content check belo
   Windows under Wine (the system check); badssl.com's expired, wrong-name, self-signed and
   untrusted-root certificates were refused on both. Not tested: Android, and real Windows.
 
+## Robustness (after 1.5.2, 2026-11-13)
+
+[EVIDENCE] Tests on Linux (`tests/net_session.py`; SB1 on Speedy Blupi data, SB2 on Speedy Eggbert 2
+data; every test runs twice and both runs must repeat exactly, except where noted):
+
+- **A poor link:** `net_sb1_impaired`, `net_sb2_impaired`. The client joins through the Internet entry and a
+  lossy UDP proxy (`tests/net_impair.py`): each datagram, in both directions, is dropped with probability
+  0.1, delayed by 40 +/- 30 ms (so about a fifth arrive before an earlier one) and duplicated with
+  probability 0.02. The frame traces and audits equal those of a run without the proxy (`--reference`):
+  under the test lockstep every message still arrives at its tick. Ten seeds passed.
+- **A member killed in play** (a crash, a cable pulled): `net_sb1_client_killed_in_play`. The host gets
+  the member's ABANDON after ENet's peer timeout and plays on.
+- **The host killed in play:** `net_sb1_host_killed_in_play`, `net_sb2_host_killed_in_play`. The client
+  notes "host disconnected; host migration unsupported" and gets the host's ABANDON.
+- **A member quits its program in play:** `net_sb1_client_quits_in_play`, `net_sb2_client_quits_in_play`.
+  Its session closes at once; the host gets its last moves, then its ABANDON.
+- **The host quits in the lobby:** `net_sb1_host_quits_in_lobby`. The client gets the host's LEAVE and the
+  game leaves the lobby.
+- **The app in the background, as on Android:** `net_sb1_client_suspended`, `net_sb2_client_suspended`:
+  `--net-test-suspend` blocks the client's game thread for 12 s in play, as SDL blocks it inside its event
+  pump while an Android app is in the background, and the session keep-alive below runs. Nobody notices:
+  the traces equal those of a run without the suspension. `net_sb1_client_suspended_bare` and
+  `net_sb2_client_suspended_bare` do the same without the keep-alive, which is what the port did before:
+  the host drops the client after its peer timeout, and the client finds its host gone when it comes back.
+  This confirms the earlier hypothesis on the desktop; whether a message of the departed host was already
+  queued then varies, so these two runs are not compared with each other.
+
+What the tests found, and the changes:
+
+- **Finding a session at a typed address** waited 200 ms. One lost datagram (ENet resends after about
+  500 ms) or a round trip of 80 ms or more and the session was not listed. A remote address (typed, or
+  `--net-join`) now gets 5 s and a join 8 s; both end as soon as the host answers, so only an unreachable
+  address waits that long. This machine's own address keeps 200 ms.
+- **Peer timeout:** members were given up after 1.5 to 3 s without acknowledgements (ENet limit 8). On the
+  lossy link, a few lost datagrams in a row ended games. It is now ENet's default limit of 32 round trips,
+  5 to 10 s, so a member that is really gone is noticed within 10 s.
+- **The order of a departure:** the adapter queued a member's departure before the messages the member had
+  sent before it, and then the game rejected those as a departed member's ("rejected origin", "rejected
+  gameplay-member"). Messages now come first, and a member stays known until the game has read its
+  departure.
+- **The session keep-alive (`common/net/keepalive.*`):** the game loop runs under a lock that the host
+  releases while it waits for events. SDL's background event (`SDL_EVENT_WILL_ENTER_BACKGROUND`, delivered
+  inside that wait) starts a thread that services every session every 10 ms until the app is back
+  (`SDL_EVENT_DID_ENTER_FOREGROUND`). The game stays paused, as SDL keeps it on Android. A full receive
+  queue now drops an unreliable message, a state the next one replaces, instead of ending the session.
+  [OPEN] Tested on the desktop through `--net-test-suspend`, which calls the same handler; not run on
+  an Android device. How long Android keeps a background app's network is up to the system.
+- **The test harness:** a peer leaves the session only once every peer has completed the last frame (an
+  exit grant), so no peer sees another's departure in its last frame. Before, `net_sb1_two_instances`
+  could fail that way.
+
 [OPEN] Not yet:
 
-- real-network behaviour tests (latency, loss, reordering) and the host-loss and client-drop paths as
-  game scenarios (transport level only so far);
 - [EVIDENCE, 2026-10-25, user test] An SB1 session between an Android phone (1.2.0-rc1) and a Windows PC
-  worked without issues. Not yet: more real devices and networks. [HYPOTHESIS] A backgrounded app stops
-  servicing its session (SDL pauses the game loop), so after ENet's peer timeout (1.5 to 3 s) the others see
-  it leave; untested;
+  worked without issues. Not yet: more real devices and networks, and the keep-alive on a device;
 - [EVIDENCE, 2026-10-26, user test] SB2 multiplayer with the local test builds (Windows package and
   Android APK of commit e6a305f) worked;
 - the validator's remaining whitelists and margins before internet exposure;

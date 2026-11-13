@@ -53,6 +53,14 @@ TinyMidiLoader, zlib licence:
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 
+stb_vorbis 1.22 (compiled into the program; Speedy Blupi 2's CD tracks as Ogg Vorbis)
+  by Sean Barrett, https://github.com/nothings/stb
+  Public domain (the Unlicense), used here under that option; also offered under the MIT licence.
+
+dr_flac 0.13.3 (compiled into the program; Speedy Blupi 2's CD tracks as FLAC)
+  by David Reid, https://github.com/mackron/dr_libs
+  Public domain (the Unlicense), used here under that option; also offered under MIT No Attribution.
+
 Mbed TLS 3.6.7 (compiled into the Windows, Linux and Android programs; wss:// addresses
   of a Free Direct server. The web version uses the browser's TLS instead.)
   Copyright The Mbed TLS Contributors, https://github.com/Mbed-TLS/mbedtls

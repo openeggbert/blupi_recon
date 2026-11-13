@@ -29,6 +29,8 @@
 #include "render/bmp.h"
 #include "render/device.h"
 #include "render/surface.h"
+#include "render/scaled.h"
+#include "render/hd_pack.h"
 
 #include <cstring>
 #include <memory>
@@ -52,6 +54,52 @@ static long s_checkFirstMismatch = -1;
 static void submit(const blupi::render::Command& command)
 {
 	s_device->submit(command);
+}
+
+// Higher-resolution images (render/scaled.h, port/docs/HD.md): the commands mirrored at --hd-scale,
+// with the pack's images where it has them. Presentation only; the game and its traces use
+// s_reference as before.
+static blupi::render::ScaledDevice* s_hd = NULL;
+static std::string s_hdPack;
+static bool s_hdCheck = false;
+static long s_hdLoaded = 0, s_hdCheckFrames = 0, s_hdCheckMismatches = 0, s_hdFirstMismatch = -1;
+
+bool PortPixmapEnableHd(int scale, const std::string& pack, bool check)
+{
+	if ( scale < 2 || s_hd != NULL )  return false;
+	s_hd = new blupi::render::ScaledDevice(s_device, &s_reference, scale);
+	s_device = s_hd;
+	s_hdPack = pack;
+	s_hdCheck = check;
+	return true;
+}
+
+int PortPixmapHdScale()
+{
+	return s_hd != NULL ? s_hd->scale() : 1;
+}
+
+// --hd-check (test): at every Display, the mirrored back buffer and screen must be exactly the
+// enlargement of the faithful ones (true without a pack, or with a pack of enlarged originals).
+static void PortHdCheck()
+{
+	if ( s_hd == NULL || !s_hdCheck )  return;
+	const long n = s_hd->mismatches(blupi::render::kBackBuffer) + s_hd->mismatches(blupi::render::kScreen);
+	if ( n != 0 )
+	{
+		if ( s_hdFirstMismatch < 0 )  s_hdFirstMismatch = s_hdCheckFrames;
+		s_hdCheckMismatches++;
+	}
+	s_hdCheckFrames++;
+}
+
+bool PortPixmapHdCheckResult(long& frames, long& mismatches, long& firstMismatch, long& loaded)
+{
+	frames = s_hdCheckFrames;
+	mismatches = s_hdCheckMismatches;
+	firstMismatch = s_hdFirstMismatch;
+	loaded = s_hdLoaded;
+	return s_hd != NULL && s_hdCheck;
 }
 
 struct IDirectDraw
@@ -179,7 +227,7 @@ static void PortCommandCheck()
 void PortPixmapEnableCommandCheck()
 {
 	if ( s_recorder != NULL )  return;
-	s_recorder = new blupi::render::Recorder(&s_reference);
+	s_recorder = new blupi::render::Recorder(s_device);
 	s_shadow = new blupi::render::SoftwareDevice;
 	s_device = s_recorder;
 }
@@ -332,18 +380,11 @@ static IDirectDrawPalette* load_palette(const char* filename)
 	return pal;
 }
 
-// DDLoadBitmap: the image converted to the display format the way GDI did
-// (8 bpp: nearest palette entry; 16 bpp: truncation to RGB565), uploaded to
-// the device as surface `id`.
-static IDirectDrawSurface* load_bitmap(SurfaceId id, const char* filename, int bpp, IDirectDrawPalette* pal)
+// The image converted to the display format the way GDI did (8 bpp: nearest palette entry;
+// 16 bpp: truncation to RGB565).
+static Surface convert_bitmap(const blupi::render::Bitmap& bmp, int bpp, const blupi::render::Palette& p)
 {
-	std::vector<uint8_t> data;
-	blupi::render::Bitmap bmp;
-	if ( !read_file(filename, data) )  return NULL;
-	if ( !blupi::render::decode_bmp(data.data(), data.size(), bmp) )  return NULL;
-
 	Surface image(bmp.width, bmp.height, bpp);
-	const blupi::render::Palette& p = palette_of(pal);
 	if ( bmp.bpp == 8 )
 	{
 		uint32_t lut[256];
@@ -365,10 +406,52 @@ static IDirectDrawSurface* load_bitmap(SurfaceId id, const char* filename, int b
 				image.set_pixel(x, y, it->second);
 			}
 	}
+	return image;
+}
+
+// The pack's image for `filename`, for the mirrored upload that follows (port/docs/HD.md).
+static void offer_pack_image(SurfaceId id, const char* filename, int bpp, const blupi::render::Palette& p,
+							 int width, int height)
+{
+	if ( s_hd == NULL || s_hdPack.empty() )  return;
+	blupi::render::Bitmap big;
+	std::string found;
+	const blupi::render::PackResult r =
+		blupi::render::load_pack_image(s_hdPack, filename, s_hd->scale(), width, height, big, found);
+	if ( r == blupi::render::PackResult::Loaded )
+	{
+		s_hd->set_next_upload(id, std::make_shared<const Surface>(convert_bitmap(big, bpp, p)));
+		s_hdLoaded++;
+		char text[400];
+		snprintf(text, sizeof(text), "HD pack: %s from %s", filename, found.c_str());
+		blupi::host::log_debug(text);
+	}
+	else if ( r != blupi::render::PackResult::Missing )
+	{
+		char text[400];
+		snprintf(text, sizeof(text), "HD pack: %s is %s (not %dx%d); the original is shown enlarged",
+				 found.c_str(), r == blupi::render::PackResult::WrongSize ? "another size" : "not a readable BMP",
+				 width * s_hd->scale(), height * s_hd->scale());
+		blupi::host::log_info(text);
+	}
+}
+
+// DDLoadBitmap: the image converted to the display format (convert_bitmap), uploaded to the
+// device as surface `id`.
+static IDirectDrawSurface* load_bitmap(SurfaceId id, const char* filename, int bpp, IDirectDrawPalette* pal)
+{
+	std::vector<uint8_t> data;
+	blupi::render::Bitmap bmp;
+	if ( !read_file(filename, data) )  return NULL;
+	if ( !blupi::render::decode_bmp(data.data(), data.size(), bmp) )  return NULL;
+
+	const blupi::render::Palette& p = palette_of(pal);
+	Surface image = convert_bitmap(bmp, bpp, p);
 
 	IDirectDrawSurface* pdds = new IDirectDrawSurface(id, bmp.width, bmp.height, bpp);
 	auto shared = std::make_shared<const Surface>(std::move(image));
 	pdds->image = shared;
+	offer_pack_image(id, filename, bpp, p, bmp.width, bmp.height);
 	submit(blupi::render::make_upload(id, *shared));
 	return pdds;
 }
@@ -1246,6 +1329,7 @@ BOOL CPixmap::Display()
 	if ( blt_fast(m_lpDDSPrimary, 0, 0, m_lpDDSBack, MapRect, FALSE) != DD_OK )  return FALSE;
 	s_dirty = true;
 	PortCommandCheck();
+	PortHdCheck();
 	s_displayCapture.write(*s_reference.surface(blupi::render::kBackBuffer), s_reference.palette());
 	return TRUE;
 }
@@ -1592,6 +1676,21 @@ bool PortPixmapCopyScreen(std::vector<uint32_t>& argb, int& width, int& height)
 	return true;
 }
 
+static bool copy_presented_wide(std::vector<uint32_t>& argb, int& width, int& height);
+
+// What is presented: the screen, mirrored at --hd-scale when that is on.
+static bool copy_presented(blupi::render::SurfaceId id, std::vector<uint32_t>& argb, int& width, int& height)
+{
+	const Surface* s = s_hd != NULL ? s_hd->surface(id) : s_reference.surface(id);
+	const blupi::render::Palette& pal = s_hd != NULL ? s_hd->palette() : s_reference.palette();
+	if ( s == NULL )  return false;
+	width  = s->width();
+	height = s->height();
+	argb.resize((size_t)width * height);
+	blupi::render::to_argb8888(*s, pal, argb.data(), width);
+	return true;
+}
+
 void PortPixmapPresentIfDirty()
 {
 	static std::vector<uint32_t> frame;
@@ -1601,7 +1700,7 @@ void PortPixmapPresentIfDirty()
 
 	if ( !s_dirty )  return;
 	s_dirty = false;
-	if ( PortPixmapCopyScreen(frame, width, height) )
+	if ( s_primary != NULL && copy_presented(blupi::render::kScreen, frame, width, height) )
 	{
 		blupi::host::present(frame.data(), width);
 	}
@@ -1630,8 +1729,9 @@ bool PortPixmapWriteScreenBmp(const char* path)
 	std::vector<uint32_t> frame;
 	int width, height;
 
-	if ( !PortPixmapCopyWide(frame, width, height) &&
-		 !PortPixmapCopyScreen(frame, width, height) )  return false;   // the view, else the screen
+	// The view, else the screen; as presented (--hd-scale included).
+	if ( !copy_presented_wide(frame, width, height) &&
+		 !(s_primary != NULL && copy_presented(blupi::render::kScreen, frame, width, height)) )  return false;
 	FILE* file = fopen(path, "wb");
 	if ( file == NULL )  return false;
 	const size_t stride = ((size_t)width * 3 + 3) & ~(size_t)3;   // rows padded to 4 bytes
@@ -1794,6 +1894,11 @@ bool PortPixmapCopyWide(std::vector<uint32_t>& argb, int& width, int& height)
 	return true;
 }
 
+static bool copy_presented_wide(std::vector<uint32_t>& argb, int& width, int& height)
+{
+	return s_wideWidth > 0 && s_wide != NULL && copy_presented(s_wide->id, argb, width, height);
+}
+
 bool PortPixmapWidePresentIfDirty()
 {
 	static std::vector<uint32_t> frame;
@@ -1802,7 +1907,7 @@ bool PortPixmapWidePresentIfDirty()
 	if ( s_wideWidth <= 0 )  return false;
 	if ( !s_wideDirty )  return true;
 	s_wideDirty = false;
-	if ( PortPixmapCopyWide(frame, width, height) )  blupi::host::present(frame.data(), width);
+	if ( copy_presented_wide(frame, width, height) )  blupi::host::present(frame.data(), width);
 	return true;
 }
 

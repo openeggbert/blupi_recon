@@ -60,7 +60,7 @@ endif()
 # The Free Direct server's client (relay.cpp over websocket.cpp) is a second transport of the
 # session layer: a browser's only one (port/docs/MULTIPLAYER.md).
 add_library(blupi_net STATIC common/net/session.cpp common/net/game_protocol.cpp
-    common/net/relay.cpp common/net/websocket.cpp common/net/tls.cpp)
+    common/net/relay.cpp common/net/websocket.cpp common/net/tls.cpp common/net/keepalive.cpp)
 target_include_directories(blupi_net PUBLIC ${BLUPI_COMMON})
 target_link_libraries(blupi_net PRIVATE blupi_enet)
 if(EMSCRIPTEN)
@@ -177,7 +177,9 @@ add_library(blupi_render STATIC
     common/render/bmp.cpp
     common/render/display_capture.cpp
     common/render/device.cpp
-    common/render/surface.cpp)
+    common/render/surface.cpp
+    common/render/scaled.cpp
+    common/render/hd_pack.cpp)
 target_include_directories(blupi_render PUBLIC ${BLUPI_COMMON})
 
 # SDL3 host. Must not see compat/include.
@@ -187,11 +189,15 @@ add_library(blupi_platform STATIC
     common/platform/vfs.cpp
     common/platform/audio.cpp
     common/platform/music.cpp
+    common/platform/track.cpp
+    common/platform/cursor.cpp
     common/platform/language.cpp
     common/platform/icon.cpp)
 target_include_directories(blupi_platform PUBLIC ${BLUPI_COMMON})
 target_include_directories(blupi_platform PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})   # third_party/
 target_link_libraries(blupi_platform PUBLIC SDL3::SDL3 blupi_render)
+# track.cpp compiles the vendored decoders (third_party/stb_vorbis, third_party/dr_flac) as they come.
+set_source_files_properties(common/platform/track.cpp PROPERTIES COMPILE_OPTIONS "$<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w>")
 
 # The port's icon (res/icon.png, tools/make_icon.py), for the window on
 # systems without executable resources.
@@ -202,6 +208,17 @@ add_custom_command(OUTPUT ${BLUPI_ICON_INC}
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/res/icon.png ${CMAKE_CURRENT_SOURCE_DIR}/cmake/embed_bytes.cmake
     COMMENT "Embedding res/icon.png")
 target_sources(blupi_platform PRIVATE ${BLUPI_ICON_INC})
+# The original programs' Windows cursors (MouseType 2 and 3; platform/cursor.cpp): the historical
+# resources src/res/*.cur, which Speedy Blupi 2's resource scripts name too.
+foreach(cursor arrow cursor1 arrowup arrowdow arrowlef arrowrig arrowul arrowur arrowdl arrowdr wait empty)
+    set(in ${CMAKE_CURRENT_SOURCE_DIR}/../src/res/${cursor}.cur)
+    set(out ${CMAKE_CURRENT_BINARY_DIR}/generated/cursor_${cursor}.inc)
+    add_custom_command(OUTPUT ${out}
+        COMMAND ${CMAKE_COMMAND} -DIN=${in} -DOUT=${out} -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/embed_bytes.cmake
+        DEPENDS ${in} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/embed_bytes.cmake
+        COMMENT "Embedding src/res/${cursor}.cur")
+    target_sources(blupi_platform PRIVATE ${out})
+endforeach()
 target_include_directories(blupi_platform PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/generated)
 
 # Launcher: no historical context or game headers. Compat declarations are

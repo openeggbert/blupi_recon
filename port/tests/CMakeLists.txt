@@ -25,10 +25,14 @@ add_test(NAME layout COMMAND test_layout)
 add_executable(test_gamepad test_gamepad.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../common/compat/src/win32.cpp)
 target_link_libraries(test_gamepad PRIVATE blupi_hist_context blupi_platform)
 add_test(NAME gamepad COMMAND test_gamepad)
-# CD audio stand-in: WAV tracks in the music player (SB2 PlayCDAudio).
+# CD audio stand-in: WAV, Ogg Vorbis and FLAC tracks in the music player (SB2 PlayCDAudio).
+# MouseType 2 and 3: the original cursor resources compiled into the program (platform/cursor.h).
+add_executable(test_cursor test_cursor.cpp)
+target_link_libraries(test_cursor PRIVATE blupi_platform)
+add_test(NAME cursor_resources COMMAND test_cursor)
 add_executable(test_music_pcm test_music_pcm.cpp)
 target_link_libraries(test_music_pcm PRIVATE blupi_platform)
-add_test(NAME music_pcm COMMAND test_music_pcm)
+add_test(NAME music_pcm COMMAND test_music_pcm ${CMAKE_CURRENT_SOURCE_DIR}/audio)
 
 set(BLUPI_TEST_DATA "" CACHE PATH "Game root (DATA/, IMAGE08/, ...) for replay tests")
 option(BLUPI_UPDATE_GOLDEN "Golden tests rewrite tests/golden/*.trace instead of comparing" OFF)
@@ -277,6 +281,19 @@ if(BLUPI_TEST_DATA_EGGBERT)
             -P ${CMAKE_CURRENT_SOURCE_DIR}/golden_check.cmake)
 endif()
 
+# Higher-resolution images (port/docs/HD.md, tests/hd_check.cmake): the mirrored frames are exact
+# enlargements of the faithful ones, without a pack and with a synthetic pack of enlarged originals.
+# The packs are made once per build tree, one per game and scale.
+function(blupi_hd_test name exe data scale args images)
+    string(REGEX MATCH "^[a-z0-9]+" game "${name}")
+    add_test(NAME hd_${name} COMMAND ${CMAKE_COMMAND}
+        -DEXE=${exe}${BLUPI_TEST_LAUNCHER} "-DDATA=${data}" -DWORK=${CMAKE_CURRENT_BINARY_DIR}/hd_${name}
+        -DPACK_DIR=${CMAKE_CURRENT_BINARY_DIR}/hd_pack_${game}_x${scale}
+        -DSCALE=${scale} "-DARGS=${args}" "-DPYTHON=${BLUPI_TEST_PYTHON}"
+        -DTOOL=${CMAKE_CURRENT_SOURCE_DIR}/../tools/make_hd_test_pack.py "-DPACK_IMAGES=${images}"
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/hd_check.cmake)
+    set_tests_properties(hd_${name} PROPERTIES TIMEOUT 900)
+endfunction()
 # A second, isolated historical include context and a separate golden-update
 # option: SB2 bring-up must never regenerate SB1's accepted traces.
 add_executable(test_sb2_layout test_sb2_layout.cpp)
@@ -507,6 +524,49 @@ if(BLUPI_TEST_DATA AND BLUPI_TEST_PYTHON)
         --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb1_internet" --internet)
     set_tests_properties(net_sb1_internet_address PROPERTIES TIMEOUT 600 RUN_SERIAL TRUE)
 endif()
+# Robustness (net_session.py): a lossy, delaying, reordering UDP proxy between the peers (the lockstep
+# must give the same frame traces as without it), members that are killed or quit in play or in the
+# lobby, and an app in the background as on Android, with and without the session keep-alive.
+function(blupi_net_robustness game exe data)
+    set(common "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_session.py" --game ${game}
+        --exe ${exe}${BLUPI_TEST_LAUNCHER} --data "${data}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net")
+    add_test(NAME net_${game}_impaired COMMAND ${common} --work "${CMAKE_CURRENT_BINARY_DIR}/net_${game}_impaired"
+        --internet --impair loss=0.1,delay=40,jitter=30,duplicate=0.02,seed=7 --reference)
+    set_tests_properties(net_${game}_impaired PROPERTIES TIMEOUT 900 RUN_SERIAL TRUE)
+    foreach(scenario ${ARGN})
+        string(REPLACE "-" "_" name "${scenario}")
+        set(extra "")
+        if(scenario STREQUAL "client-suspended")
+            set(extra --reference)
+        endif()
+        add_test(NAME net_${game}_${name} COMMAND ${common} --work "${CMAKE_CURRENT_BINARY_DIR}/net_${game}_${name}"
+            --scenario ${scenario} ${extra})
+        set_tests_properties(net_${game}_${name} PROPERTIES TIMEOUT 900 RUN_SERIAL TRUE)
+    endforeach()
+endfunction()
+if(BLUPI_TEST_DATA AND BLUPI_TEST_PYTHON)
+    blupi_net_robustness(sb1 $<TARGET_FILE:blupi> "${BLUPI_TEST_DATA}" client-killed-in-play host-killed-in-play
+        client-quits-in-play host-quits-in-lobby client-suspended client-suspended-bare)
+endif()
+if(BLUPI2_TEST_DATA AND BLUPI_TEST_PYTHON)
+    blupi_net_robustness(sb2 $<TARGET_FILE:blupi2> "${BLUPI2_TEST_DATA}" host-killed-in-play client-quits-in-play
+        client-suspended client-suspended-bare)
+endif()
+set(BLUPI_HD_SB1_IMAGES "blupi000,blupi001,blupi002,blupi003,button00,decor000,element,explo,init,jauge,little,map,object,temp,text")
+if(BLUPI_TEST_DATA AND BLUPI_TEST_PYTHON)
+    blupi_hd_test(sb1_tour16_x3 $<TARGET_FILE:blupi> "${BLUPI_TEST_DATA}" 3
+        "--color 16 --frames 800 --input ${CMAKE_CURRENT_SOURCE_DIR}/golden/tour.input" "")
+    blupi_hd_test(sb1_editor8_x2 $<TARGET_FILE:blupi> "${BLUPI_TEST_DATA}" 2
+        "--color 8 --frames 360 --input ${CMAKE_CURRENT_SOURCE_DIR}/golden/editor.input" "")
+    blupi_hd_test(sb1_pack16_x2 $<TARGET_FILE:blupi> "${BLUPI_TEST_DATA}" 2 "--color 16 --frames 1500" "${BLUPI_HD_SB1_IMAGES}")
+    blupi_hd_test(sb1_pack8_x2 $<TARGET_FILE:blupi> "${BLUPI_TEST_DATA}" 2 "--color 8 --frames 1500" "${BLUPI_HD_SB1_IMAGES}")
+endif()
+if(BLUPI2_TEST_DATA AND BLUPI_TEST_PYTHON)
+    blupi_hd_test(sb2_tour16_x2 $<TARGET_FILE:blupi2> "${BLUPI2_TEST_DATA}" 2
+        "--color 16 --frames 190 --input ${CMAKE_CURRENT_SOURCE_DIR}/golden/sb2_tour.input" "")
+    blupi_hd_test(sb2_pack16_x2 $<TARGET_FILE:blupi2> "${BLUPI2_TEST_DATA}" 2 "--color 16 --frames 1500"
+        "blupi000,blupi001,blupi002,blupi003,init,jauge,little,map,temp,text,button00,decor000,decor026,element,explo,object")
+endif()
 if(BLUPI2_TEST_DATA AND BLUPI_TEST_PYTHON)
     add_test(NAME net_sb2_two_instances COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_session.py"
         --game sb2 --exe $<TARGET_FILE:blupi2>${BLUPI_TEST_LAUNCHER} --data "${BLUPI2_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
@@ -566,6 +626,23 @@ foreach(edition eggbert-demo eggbert-value blupi-demo)
             -DEXE=$<TARGET_FILE:${edition}-sdl3>${BLUPI_TEST_LAUNCHER} "-DDATA=${BLUPI_TEST_DATA_${key}}"
             -DWORK=${CMAKE_CURRENT_BINARY_DIR}/edition_${edition}
             -P ${CMAKE_CURRENT_SOURCE_DIR}/edition_smoke.cmake)
+        # Golden traces of the attract mode (after 1.5.2): the regression gate for the edition's frames
+        # and state, at the depths the edition has (the demos are 8 bpp only). The first 2,200 displays
+        # equal the edition's historical rebuild under Wine (docs/EDITIONS.md, docs/ORACLE.md).
+        set(depths 16 8)
+        if(edition MATCHES "demo")
+            set(depths 8)
+        endif()
+        foreach(depth ${depths})
+            add_test(NAME golden_${edition}_attract${depth}
+                COMMAND ${CMAKE_COMMAND}
+                    -DEXE=$<TARGET_FILE:${edition}-sdl3>${BLUPI_TEST_LAUNCHER} "-DDATA=${BLUPI_TEST_DATA_${key}}"
+                    -DWORK=${CMAKE_CURRENT_BINARY_DIR}/golden_${edition}_attract${depth}
+                    -DGOLDEN=${CMAKE_CURRENT_SOURCE_DIR}/golden/${edition}_attract${depth}.trace -DEVERY=10
+                    "-DARGS=--color ${depth} --frames 7500"
+                    -DUPDATE=${BLUPI_UPDATE_GOLDEN}
+                    -P ${CMAKE_CURRENT_SOURCE_DIR}/golden_check.cmake)
+        endforeach()
     endif()
 endforeach()
 

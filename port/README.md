@@ -169,6 +169,12 @@ The same options exist for one run on the command line: `--wide auto|off|16:9|85
 `--interpolate`, `--present display|tick`, `--fullscreen`, `--integer-scale`, `--scale N`,
 `--language CODE`.
 
+**Higher-resolution images** (after 1.5.2; [docs/HD.md](docs/HD.md)): `--hd-pack <folder>` shows the game
+at two to four times its resolution (`--hd-scale N`, default 2) with a pack of re-drawn images in the
+game's folder layout, such as the sheets re-rendered from the original 3D models. The game still runs in
+640x480; only the presentation is larger. The settings file keeps `hdScale` and `hdPack`; the Display
+options screen has no switch for it yet.
+
 **Speedy Eggbert 1** (the eGames edition, version 1.1 of the game) is the same game: point the
 port at its folder. Version 1.1 changes no gameplay. Like 1.1, the port then shows "Version 1.1"
 on the title screen and quits without the goodbye screen ([../docs/EGGBERT.md](../docs/EGGBERT.md)).
@@ -297,8 +303,11 @@ Not implemented / known gaps (each fails the way the original did when the servi
   `gamepadArrows` (true/false) turns the arrow keys off. Once the gamepad is chosen as the input
   device, the game reads it as its joystick as above and this mode is off. On Android this code
   is built but untested.
-- **MouseType 2/3** (Windows cursors): mapped to SDL system cursors, not the original `.cur`
-  shapes. The default MouseType 1 (game-drawn cursor) is exact.
+- **MouseType 2/3** (Windows cursors): the original's own cursors, the historical resources
+  `src/res/*.cur` compiled in (since after 1.5.2; `ctest -R cursor_resources`), enlarged with the
+  frame (the window's height over 480, whole times) as the 640x480 full screen showed them. Where a
+  platform has no custom cursors, the nearest system cursor. The default MouseType 1 (game-drawn
+  cursor) is exact.
 - The cross-build oracle covers the attract mode, the screen tour and an editor session, plus a
   bounded SB1 US save interchange in one scenario ([docs/ORACLE.md](docs/ORACLE.md),
   [oracle/SB1_SAVE.md](oracle/SB1_SAVE.md)). It does not cover every screen, state, language or

@@ -59,6 +59,39 @@ build's back buffer bit for bit. That covers:
 The only difference is expected: the historical build lists the machine's real DirectPlay
 service providers on the multiplayer screen, and the port, without multiplayer, lists none.
 
+## Under Wine on Linux (2026-11-13)
+
+`tools/oracle_wine.py` is the Linux counterpart of `oracle_capture.ps1`. The historical side is an
+ordinary historical build (`tools/build.py` in the win10 VM, copied out; the script refuses any file whose
+SHA-256 is an original's in `targets.json`, or equals a program of the data folder). It runs under Wine
+10.0 (32-bit), full screen on a 640x480 virtual X display (Xvfb), with `oracle/ddraw_proxy.cpp` as its
+`ddraw.dll` in front of Wine's own DirectDraw (`BLUPI_ORACLE_DDRAW=system`). Only the data folder's
+subfolders are copied into the run; the configuration edits are those of the Windows script (Benchmark=0,
+the requested TrueColor, MouseType=2), and the port reads the same `config.def`.
+
+```bash
+python3 port/tools/oracle_wine.py --rebuilt <build>/sb1-blupi-us/BLUPI.EXE --data <Speedy Blupi> \
+    --port build/port-linux/blupi-sdl3 --frames 2200 --color 16 --work build/oracle-editions/runs
+```
+
+[EVIDENCE] Results (attract mode: title, then the demo; 2,200 displays each; port at this branch):
+
+| Program (historical build) | Port program | Depth | Identical |
+|---|---|---|---:|
+| Speedy Blupi 1 US, `BLUPI.EXE` | `blupi-sdl3` | 16 bpp | 2,200 / 2,200 |
+| Speedy Blupi 1 US | `blupi-sdl3` | 8 bpp | 2,200 / 2,200 |
+| Speedy Eggbert 1 English, `egames.exe` | `blupi-sdl3` | 16 bpp | 2,200 / 2,200 |
+| Speedy Eggbert SE Valueware | `eggbert-value-sdl3` | 16 bpp | 2,200 / 2,200 |
+| Speedy Eggbert SE Valueware | `eggbert-value-sdl3` | 8 bpp | 2,200 / 2,200 |
+| Speedy Eggbert Demo, `WCSUP.DLL` | `eggbert-demo-sdl3` | 8 bpp | 2,200 / 2,200 |
+| Speedy Blupi Demo, June 1998 | `blupi-demo-sdl3` | 8 bpp | 2,200 / 2,200 |
+
+The first two rows repeat the Windows results of 2026-10-21 under Wine, which is the calibration: Wine
+reproduces the GDI image conversion, colour keys and palette the Windows runs showed for these images.
+A difference under Wine could still be Wine's. In every run about 1,000 displays are the idle title screen
+and the rest are each different (1,129 distinct hashes); the editions' demo frames equal those of the
+full game where their images and demo files are the same.
+
 ## What the oracle corrected
 
 Each fix has a golden-trace update with the reason recorded here:

@@ -8,6 +8,13 @@ headers) or moving the submodule pin, and record the new version and checksum be
 TinySoundFont v0.9 (MIT) and TinyMidiLoader v0.7 (zlib) by Bernhard Schelling; details and
 SHA-256 in [tinysoundfont/README.md](tinysoundfont/README.md).
 
+## stb_vorbis/ and dr_flac/ (vendored single-file decoders)
+
+stb_vorbis v1.22 (public domain or MIT) by Sean Barrett and dr_flac v0.13.3 (public domain or
+MIT-0) by David Reid decode SB2's CD audio tracks when the player ripped them as Ogg Vorbis or
+FLAC instead of WAV (`port/common/platform/music.cpp`); commits and SHA-256 in
+[stb_vorbis/README.md](stb_vorbis/README.md) and [dr_flac/README.md](dr_flac/README.md).
+
 ## enet/ (vendored sources)
 
 ENet 1.3.18 (MIT) by Lee Salzman, the UDP transport under the native multiplayer

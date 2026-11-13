@@ -79,6 +79,9 @@ uninstall the debug build first, which also removes its imported game data.
    BLUPI_LINUX_WORK=$PWD/build/port-release sh port/tools/linux_release.sh
    sh port/tools/windows_release.sh          # MinGW-w64 and Wine
    ```
+   Under Wine, `fidelity_stdio_sb1` and `fidelity_stdio_sb2` fail one check ("read from write-only
+   stream sets _IOERR"): Wine's msvcrt does not set the error flag there. On Windows 10,
+   `fidelity_stdio_sb1` passed (2026-11-12); the two tests check the same stdio contract.
 3. Android (JDK 17 or 21, the SDK with NDK 28.2.13676358, the release key above):
    ```bash
    cd port/android && ANDROID_HOME=~/Android/Sdk CMAKE_CXX_COMPILER_LAUNCHER=ccache \
@@ -87,7 +90,12 @@ uninstall the debug build first, which also removes its imported game data.
    ```
 4. Web: build as in port/docs/WEB.md, `python3 port/tools/package_web.py`, then
    `port/tools/web_check.mjs` in Chrome and with `--browser firefox`, and with `--relay`.
-5. `python3 port/tools/package_release.py sums`, tag `port-v<version>`, push the tag, and publish a
+5. Continuous integration (`.github/workflows/port.yml`) builds the Linux, web and Windows programs on
+   every push to `main` that touches the port or the historical source (not on feature branches or pull
+   requests), and runs the tests that need no game data
+   (Linux, and Windows under Wine without the two stdio tests above), plus `net_tls` against a
+   free-direct-server built in the job. It never sees game data, so it does not replace steps 2 to 4.
+6. `python3 port/tools/package_release.py sums`, tag `port-v<version>`, push the tag, and publish a
    GitHub release with the four packages, `SHA256SUMS.txt` and the notes from `docs/RELEASE_NOTES.md`.
    Publishing it runs `.github/workflows/pages.yml`, which puts that release's web package on GitHub
    Pages (https://openeggbert.github.io/blupi_recon/).

@@ -1209,6 +1209,8 @@ int BlupiMain(int argc, char** argv)
         if (!demoLogPath.empty()) { demoLog = fopen(demoLogPath.c_str(), "w"); if (!demoLog) return 2; }
         g_hWnd = nullptr; g_bActive = TRUE;
         if (o.checkCommands) PortPixmapEnableCommandCheck();
+        if (g_settings.hdScale > 1 && PortPixmapEnableHd(g_settings.hdScale, g_settings.hdPack, o.hdCheck))
+            blupi::host::set_frame_scale(PortPixmapHdScale());
         if (!DoInit(NULL, (LPSTR)"", 0)) return 1;
         PortOptionsInit(g_pPixmap, g_pSound, &g_settings, PortApplySettings,
                         !blupi::host::touch_screen(), 70, 411);
@@ -1271,6 +1273,13 @@ int BlupiMain(int argc, char** argv)
     game.mouseInSideArea = PortMouseInSideArea;
     game.checkResult = [](const Options& o) {
         int result = 0;
+        long hdFrames, hdMismatches, hdFirst, hdLoaded;
+        if (PortPixmapHdCheckResult(hdFrames, hdMismatches, hdFirst, hdLoaded))
+        {
+            printf("hd check: %ld displays compared, %ld not the enlargement of the faithful frame "
+                   "(first at display %ld), %ld images from the pack\n", hdFrames, hdMismatches, hdFirst, hdLoaded);
+            if (hdMismatches != 0 || hdFrames == 0) result = 5;
+        }
         long displays, mismatches, first;
         if (PortPixmapCommandCheckResult(displays, mismatches, first)) {
             printf("SB2 command check: %ld displays, %ld mismatches (first %ld)\n", displays, mismatches, first);
