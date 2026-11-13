@@ -75,6 +75,8 @@ static uint64_t ContentFingerprint()
 }
 namespace {
 namespace wire = blupi::net::game;
+// How long a probe of a remote address and a join wait for the host (EnumSessions, JoinSession).
+constexpr unsigned kRemoteProbeMs=5000, kJoinMs=8000;
 namespace native = blupi::net;
 #define NET_DECOR_MEMBERS(X) X(m_moveObject) X(m_decor) X(m_netBlupiPos) X(m_netBlupiIcon)
 BLUPI_MEMBER_ACCESS(NetDecor, CDecor, NET_DECOR_MEMBERS)
@@ -90,6 +92,9 @@ struct State {
     std::set<std::string> logged;
     std::map<std::string,unsigned> rejected;
     std::set<uint32_t> departed;
+    // Members whose departure is queued for the game but not yet read: their earlier messages, queued
+    // before it, still come from a member of the game (the session has already forgotten them).
+    std::set<uint32_t> leaving;
 };
 std::map<CNetwork*,std::unique_ptr<State>> states;
 // The server address entered on the port's address screen for the Internet provider.
@@ -114,7 +119,7 @@ wire::Context Context(CNetwork* n,uint32_t origin,bool reliable,bool trusted=fal
     for (int i=0;i<4;++i) {
         const auto& p=n->m_players[i]; c.players[i]={p.bIsPresent!=0,p.ready!=0,p.dpid,p.team};
     }
-    c.known=[&s](uint32_t id) { return s.session.Knows(id); };
+    c.known=[&s](uint32_t id) { return s.session.Knows(id) || s.leaving.count(id) != 0; };
     c.liveLift=[](int i) {
         if (!g_pDecor || i<0 || i>=200) return false;
         const auto& o=(g_pDecor->*NetDecor::m_moveObject)[i];
@@ -130,6 +135,16 @@ void Packet(const char* direction,const native::Message& m) {
 }
 void Pump(CNetwork* n) {
     auto& s=Get(n); s.session.Service();
+    // What a member sent before it left comes first: its departure is the last thing it does, and
+    // the game rejects a departed member's messages (wire::Validate).
+    native::Message m;
+    while (s.session.Receive(m)) {
+        auto kind=wire::Classify(m.bytes.data(),m.bytes.size());
+        if (kind==wire::Class::Invalid) { Reject(s,"type/length"); continue; }
+        auto& queue=kind==wire::Class::Lobby ? s.lobby : s.gameplay;
+        if (queue.size()>=1024) { Note("adapter receive queue exceeded"); s.session.Close(); s.terminal=true; break; }
+        queue.push_back(std::move(m));
+    }
     native::Departure departure;
     while (s.session.Departed(departure)) {
         if (departure.hostLost) {
@@ -146,24 +161,19 @@ void Pump(CNetwork* n) {
             } else for (const auto& p:n->m_players) {
                 if (!p.bIsPresent || p.dpid==n->m_dpid || s.departed.count(p.dpid)) continue;
                 native::Message m; m.origin=p.dpid; m.reliable=true; m.bytes={4,8,0,0};
+                s.leaving.insert(p.dpid);
                 s.gameplay.push_back(std::move(m));
             }
+            if (!s.started) s.leaving.insert(1);
         } else if (!s.departed.count(departure.member)) {
             native::Message m; m.origin=departure.member; m.reliable=true;
             if (s.started) m.bytes={4,8,0,0};
             else { m.bytes.resize(12); m.bytes[0]=12; m.bytes[1]=3; for (int i=0;i<4;++i) m.bytes[4+i]=uint8_t(m.origin>>(8*i)); }
             // Trusted service control retains identity until the original
             // LEAVE/ABANDON consumer removes the member from its game table.
+            s.leaving.insert(departure.member);
             (s.started ? s.gameplay : s.lobby).push_back(std::move(m));
         }
-    }
-    native::Message m;
-    while (s.session.Receive(m)) {
-        auto kind=wire::Classify(m.bytes.data(),m.bytes.size());
-        if (kind==wire::Class::Invalid) { Reject(s,"type/length"); continue; }
-        auto& queue=kind==wire::Class::Lobby ? s.lobby : s.gameplay;
-        if (queue.size()>=1024) { Note("adapter receive queue exceeded"); s.session.Close(); s.terminal=true; break; }
-        queue.push_back(std::move(m));
     }
 }
 }
@@ -309,14 +319,17 @@ BOOL CNetwork::EnumSessions() {
         }
         Note(m_sessions.nb ? "enumerated session" : "enumerated no sessions"); return TRUE;
     }
-    auto endpoints=native::Configuration().endpoints;
-    endpoints.insert(endpoints.begin(),{"127.0.0.1",native::Configuration().port});
-    if (s.kind==State::Kind::Address && internetSet) endpoints.push_back(internetEndpoint);
-    // Sessions on the LAN (discovery) and at the configured addresses (--net-join, this machine),
-    // each listed once.
+    auto remote=native::Configuration().endpoints;
+    if (s.kind==State::Kind::Address && internetSet) remote.push_back(internetEndpoint);
+    // Sessions on the LAN (discovery), on this machine and at the configured addresses (--net-join,
+    // the typed Internet address), each listed once. A remote address gets time for Internet round
+    // trips and for ENet to resend a lost packet (its first resend comes after about 500 ms); each
+    // probe ends as soon as the host answers.
     unsigned incompatible=0;
     s.listed=s.session.Discover(native::Configuration().port,300,&incompatible);
-    for (auto& ad:s.session.Probe(endpoints)) {
+    auto found=s.session.Probe({{"127.0.0.1",native::Configuration().port}});
+    for (auto& ad:s.session.Probe(remote,kRemoteProbeMs)) found.push_back(std::move(ad));
+    for (auto& ad:found) {
         bool known=false;
         for (const auto& other:s.listed) known=known || other.epoch==ad.epoch;
         if (!known) s.listed.push_back(std::move(ad));
@@ -334,14 +347,14 @@ int CNetwork::GetNbSessions() { return m_sessions.nb; }
 char* CNetwork::GetSessionName(int i) { return i<0 || i>=m_sessions.nb ? nullptr : (*m_sessions.pList)[i].name; }
 BOOL CNetwork::JoinSession(int i,char* player) {
     auto& s=Get(this); if (!s.provider || !player || i<0 || i>=m_sessions.nb) return FALSE;
-    if (!s.session.Join(s.listed[i],player)) { Note(s.session.Error().c_str()); return FALSE; }
-    m_dpid=s.session.Id(); m_bHost=FALSE; s.started=false; s.terminal=false; s.departed.clear(); Note("joined session"); return TRUE;
+    if (!s.session.Join(s.listed[i],player,kJoinMs)) { Note(s.session.Error().c_str()); return FALSE; }
+    m_dpid=s.session.Id(); m_bHost=FALSE; s.started=false; s.terminal=false; s.departed.clear(); s.leaving.clear(); Note("joined session"); return TRUE;
 }
 void CNetwork::FreeSessionList() { std::free(m_sessions.pList); m_sessions={0,nullptr}; Get(this).listed.clear(); }
 BOOL CNetwork::CreateSession(char* name,char* player) {
     auto& s=Get(this); if (!s.provider || !name || !player) return FALSE;
     if (!s.session.Create(native::Configuration().port,name,player)) { Note(s.session.Error().c_str()); return FALSE; }
-    m_dpid=s.session.Id(); m_bHost=TRUE; s.started=false; s.terminal=false; s.departed.clear(); Note("created session"); return TRUE;
+    m_dpid=s.session.Id(); m_bHost=TRUE; s.started=false; s.terminal=false; s.departed.clear(); s.leaving.clear(); Note("created session"); return TRUE;
 }
 BOOL CNetwork::Send(LPVOID data,DWORD size,DWORD flags) {
     auto& s=Get(this); if (!s.session.Active() || !data || size>200) return FALSE;
@@ -369,13 +382,13 @@ BOOL CNetwork::Receive(LPVOID dest,DWORD size,LPDWORD player) {
         *player=DWORD(-1);
         for (int i=0;i<4;++i) if (m_players[i].bIsPresent && m_players[i].dpid==m.origin) *player=i;
         if (m.bytes[1]==7 && size==200) { s.started=true; s.session.Start(); }
-        if ((m.bytes[1]==3 && size==200) || (size==60 && (m.bytes[1]==8 || m.bytes[1]==9))) s.departed.insert(m.origin);
+        if ((m.bytes[1]==3 && size==200) || (size==60 && (m.bytes[1]==8 || m.bytes[1]==9))) { s.departed.insert(m.origin); s.leaving.erase(m.origin); }
         Packet("receive",m); return TRUE;
     }
     return FALSE;
 }
 BOOL CNetwork::Close() {
-    auto& s=Get(this); s.session.Close(); s.lobby.clear(); s.gameplay.clear(); s.started=false; s.departed.clear();
+    auto& s=Get(this); s.session.Close(); s.lobby.clear(); s.gameplay.clear(); s.started=false; s.departed.clear(); s.leaving.clear();
     // Cached IsHost/DPID remain valid through the original caller's cleanup.
     return TRUE;
 }

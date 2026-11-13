@@ -21,6 +21,7 @@ constexpr uint32_t Magic = 0x4e455431, DiscoveryQuery = 0x51445442, DiscoveryAns
 enum Kind { Hello = 1, Welcome, Refuse, Members, Data, Query, Answer, Gone };
 // Envelope: magic, protocol, version, kind, epoch, origin, sequence, tick, length, content (64-bit).
 constexpr size_t Header = 44, MaxQueue = 1024;
+constexpr enet_uint32 kPeerTimeoutLimit = 32, kPeerTimeoutMinMs = 5000, kPeerTimeoutMaxMs = 10000;
 Options options;
 uint32_t currentTick = 0;
 uint32_t testSent = 0;
@@ -208,8 +209,19 @@ struct Session::Impl {
             if (Clock::now()-state.since >= std::chrono::seconds(1)) { state.count=0; state.since=Clock::now(); }
             if (++state.count > 512) { Reject(peer,"payload rate exceeded"); return; }
         } else if (origin == id || std::find(members.begin(),members.end(),origin) == members.end()) return;
-        if (incoming.size() >= MaxQueue) { Fail("receive queue exceeded"); return; }
-        incoming.push_back({origin,seq,Get(b,28),reliable,std::vector<uint8_t>(body,body+length)});
+        // A full queue (a game that does not read, e.g. suspended in the background): an unreliable
+        // message, a state the next one replaces, is dropped as UDP may drop it; a reliable one takes
+        // the place of the oldest unreliable one, and only a queue of reliable messages fails.
+        bool keep=true;
+        if (incoming.size() >= MaxQueue) {
+            if (!reliable) keep=false;
+            else {
+                auto old=std::find_if(incoming.begin(),incoming.end(),[](const Message& m) { return !m.reliable; });
+                if (old==incoming.end()) { Fail("receive queue exceeded"); return; }
+                incoming.erase(old);
+            }
+        }
+        if (keep) incoming.push_back({origin,seq,Get(b,28),reliable,std::vector<uint8_t>(body,body+length)});
         received[origin] = std::max(received[origin],seq);
         if (host) Broadcast(std::vector<uint8_t>(b,b+n),reliable,peer);
     }
@@ -403,7 +415,11 @@ void Session::Service(unsigned waitMs) {
     ENetEvent event{};
     for (unsigned count=0;count<512 && enet_host_service(p->socket,&event,count ? 0 : waitMs)>0;++count) {
         if (event.type==ENET_EVENT_TYPE_CONNECT) {
-            enet_peer_timeout(event.peer,8,1500,3000);
+            // A peer is given up after 5 to 10 s without acknowledgements (ENet's default limit of 32
+            // round trips): a few lost datagrams in a row on a poor link must not end a game, and a
+            // member that is gone is still noticed within seconds. (Before, 1.5 to 3 s dropped members
+            // on links losing a tenth of their datagrams: net_sb1_impaired.)
+            enet_peer_timeout(event.peer,kPeerTimeoutLimit,kPeerTimeoutMinMs,kPeerTimeoutMaxMs);
             if (p->host) p->peers.emplace(Impl::Handle(event.peer),Impl::Peer{});
             else p->Write(Impl::Handle(event.peer),p->Packet(Hello,0,0,p->player.c_str(),p->player.size()+1));
         } else if (event.type==ENET_EVENT_TYPE_RECEIVE) {
@@ -487,7 +503,9 @@ std::string ControlPath(const char* kind,long tick) {
 bool BeginTestTick(long tick) {
     if (!options.testSync) return true;
     const auto path=ControlPath("grant",tick); if (path.empty()) return false;
-    const auto deadline=Clock::now()+std::chrono::seconds(10);
+    // Longer than a peer timeout (kPeerTimeoutMaxMs): the supervisor holds a tick back that long
+    // when it lets a departure be detected.
+    const auto deadline=Clock::now()+std::chrono::seconds(30);
     // The grant lists how many data messages each member id 1..N had sent by the end of the
     // previous tick (N = the supervisor's peer count, at most 4).
     uint32_t counts[4]{};

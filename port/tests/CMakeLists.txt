@@ -511,6 +511,34 @@ if(BLUPI_TEST_DATA AND BLUPI_TEST_PYTHON)
         --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb1_internet" --internet)
     set_tests_properties(net_sb1_internet_address PROPERTIES TIMEOUT 600 RUN_SERIAL TRUE)
 endif()
+# Robustness (net_session.py): a lossy, delaying, reordering UDP proxy between the peers (the lockstep
+# must give the same frame traces as without it), members that are killed or quit in play or in the
+# lobby, and an app in the background as on Android, with and without the session keep-alive.
+function(blupi_net_robustness game exe data)
+    set(common "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_session.py" --game ${game}
+        --exe ${exe}${BLUPI_TEST_LAUNCHER} --data "${data}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net")
+    add_test(NAME net_${game}_impaired COMMAND ${common} --work "${CMAKE_CURRENT_BINARY_DIR}/net_${game}_impaired"
+        --internet --impair loss=0.1,delay=40,jitter=30,duplicate=0.02,seed=7 --reference)
+    set_tests_properties(net_${game}_impaired PROPERTIES TIMEOUT 900 RUN_SERIAL TRUE)
+    foreach(scenario ${ARGN})
+        string(REPLACE "-" "_" name "${scenario}")
+        set(extra "")
+        if(scenario STREQUAL "client-suspended")
+            set(extra --reference)
+        endif()
+        add_test(NAME net_${game}_${name} COMMAND ${common} --work "${CMAKE_CURRENT_BINARY_DIR}/net_${game}_${name}"
+            --scenario ${scenario} ${extra})
+        set_tests_properties(net_${game}_${name} PROPERTIES TIMEOUT 900 RUN_SERIAL TRUE)
+    endforeach()
+endfunction()
+if(BLUPI_TEST_DATA AND BLUPI_TEST_PYTHON)
+    blupi_net_robustness(sb1 $<TARGET_FILE:blupi> "${BLUPI_TEST_DATA}" client-killed-in-play host-killed-in-play
+        client-quits-in-play host-quits-in-lobby client-suspended client-suspended-bare)
+endif()
+if(BLUPI2_TEST_DATA AND BLUPI_TEST_PYTHON)
+    blupi_net_robustness(sb2 $<TARGET_FILE:blupi2> "${BLUPI2_TEST_DATA}" host-killed-in-play client-quits-in-play
+        client-suspended client-suspended-bare)
+endif()
 if(BLUPI2_TEST_DATA AND BLUPI_TEST_PYTHON)
     add_test(NAME net_sb2_two_instances COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_session.py"
         --game sb2 --exe $<TARGET_FILE:blupi2>${BLUPI_TEST_LAUNCHER} --data "${BLUPI2_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"

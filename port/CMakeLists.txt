@@ -60,7 +60,7 @@ endif()
 # The Free Direct server's client (relay.cpp over websocket.cpp) is a second transport of the
 # session layer: a browser's only one (port/docs/MULTIPLAYER.md).
 add_library(blupi_net STATIC common/net/session.cpp common/net/game_protocol.cpp
-    common/net/relay.cpp common/net/websocket.cpp common/net/tls.cpp)
+    common/net/relay.cpp common/net/websocket.cpp common/net/tls.cpp common/net/keepalive.cpp)
 target_include_directories(blupi_net PUBLIC ${BLUPI_COMMON})
 target_link_libraries(blupi_net PRIVATE blupi_enet)
 if(EMSCRIPTEN)

@@ -203,7 +203,9 @@ These are bounded receipts, not whole-game certification.
   and Android, with LAN discovery, a content check and `--net-join`; an in-game address entry since
   1.3.0; and since 1.5.0 play through a Free Direct server (rooms with secret IDs, no open ports), which
   is also the browser's way. Tested automatically on one machine and, for each game, by the user between
-  real devices (1.2.0); little other real-world play.
+  real devices (1.2.0); little other real-world play. After 1.5.2: tests through a lossy, delaying,
+  reordering proxy, with members killed or quitting in play and in the lobby, and with an app in the
+  background as on Android, with a session keep-alive (port/docs/MULTIPLAYER.md, "Robustness").
 - **AVI movies:** not played; the phase is skipped.
 - **SB2 CD audio:** plays ripped tracks the player supplies (`music/trackNN.wav`, port 1.3.0; also `.ogg` and `.flac` after 1.5.2); without
   them it fails and logs once. No archive holds the tracks.
@@ -225,5 +227,5 @@ These are bounded receipts, not whole-game certification.
   optional (docs/CONSOLIDATION_PLAN.md).
 - **Port.** 1.5.2 ships the five programs on Windows, Linux and the web (the two games on Android),
   with multiplayer on a LAN, by address, and through a Free Direct server (`ws://` or `wss://`). Open: running the Android
-  build on a device, real-network fault tests, and the optional consolidation stage 4 (shared
+  build on a device, tests on real networks (simulated faults: after 1.5.2), and the optional consolidation stage 4 (shared
   language, pixmap and audio services).

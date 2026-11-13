@@ -30,6 +30,20 @@ GameCursor g_gameCursor = GameCursor::Arrow;
 int g_gameCursorScale = 0;                  // its enlargement when it was made
 int cursor_scale();
 void apply_game_cursor();
+void (*g_waitBefore)() = nullptr;           // set_event_wait_hooks
+void (*g_waitAfter)() = nullptr;
+void (*g_background)(bool) = nullptr;       // set_background_handler
+struct WaitScope
+{
+    WaitScope() { if (g_waitBefore) g_waitBefore(); }
+    ~WaitScope() { if (g_waitAfter) g_waitAfter(); }
+};
+bool SDLCALL lifecycle_watch(void*, SDL_Event* ev)
+{
+    if (g_background && ev->type == SDL_EVENT_WILL_ENTER_BACKGROUND) g_background(true);
+    if (g_background && ev->type == SDL_EVENT_DID_ENTER_FOREGROUND) g_background(false);
+    return true;
+}
 int  g_width = 0, g_height = 0;   // the game's frame
 int  g_viewWidth = 0, g_frameX = 0; // the presented view; the frame's x in it (widescreen)
 bool g_autoWide = false;            // view width follows the window shape
@@ -446,6 +460,7 @@ bool init(const char* title, int logicalWidth, int logicalHeight, const Options&
         SDL_Log("SDL_Init failed: %s", SDL_GetError());
         return false;
     }
+    SDL_AddEventWatch(lifecycle_watch, nullptr);   // set_background_handler
     int scale = options.scale < 1 ? 1 : options.scale;
     // Automatic widescreen opens a 16:9 window; resizing changes the shape.
     const int windowWidth = g_autoWide ? (logicalHeight * 16 / 9 + 1) & ~1 : g_viewWidth;
@@ -513,8 +528,14 @@ bool poll_event(Event& event)
     if (g_headless && !g_headlessPads) return false;
     if (next_text(event)) return true;
     SDL_Event ev;
-    while (SDL_PollEvent(&ev))
+    for (;;)
     {
+        bool got;
+        {
+            WaitScope wait;
+            got = SDL_PollEvent(&ev);
+        }
+        if (!got) break;
         if (translate(ev, event)) return true;
         if (next_text(event)) return true;
         if (!g_pending.empty()) return poll_event(event);
@@ -528,7 +549,12 @@ bool wait_event(Event& event, uint64_t timeoutNs)
     if (poll_event(event)) return true;
     Sint32 ms = (Sint32)(timeoutNs / 1000000);
     SDL_Event ev;
-    if (!SDL_WaitEventTimeout(&ev, ms)) return false;
+    bool got;
+    {
+        WaitScope wait;
+        got = SDL_WaitEventTimeout(&ev, ms);
+    }
+    if (!got) return false;
     if (translate(ev, event)) return true;
     if (next_text(event)) return true;
     return poll_event(event);   // events translate() queued (touch, the gamepad as the keyboard)
@@ -772,6 +798,25 @@ void apply_game_cursor()
     g_gameCursorScale = scale;
 }
 }  // namespace
+
+void set_event_wait_hooks(void (*before)(), void (*after)())
+{
+    g_waitBefore = before;
+    g_waitAfter = after;
+}
+
+void set_background_handler(void (*handler)(bool background))
+{
+    g_background = handler;
+}
+
+void simulate_background(unsigned ms, bool bare)
+{
+    WaitScope wait;
+    if (g_background && !bare) g_background(true);
+    SDL_Delay(ms);
+    if (g_background && !bare) g_background(false);
+}
 
 void set_game_cursor(GameCursor cursor)
 {

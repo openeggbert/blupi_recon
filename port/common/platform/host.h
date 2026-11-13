@@ -128,6 +128,17 @@ void show_system_cursor(bool show);
 // the original showed it); a system cursor where the platform has no custom cursors.
 void set_game_cursor(GameCursor cursor);
 
+// Called around every wait for platform events (poll_event, wait_event): the multiplayer keep-alive
+// (net/keepalive.h) releases the game loop's lock there.
+void set_event_wait_hooks(void (*before)(), void (*after)());
+// The app goes to the background (true) or comes back (false): SDL's lifecycle events, which SDL
+// delivers on the game thread inside the event wait (Android, where the wait then blocks until the
+// app is back).
+void set_background_handler(void (*handler)(bool background));
+// Tests: the background as Android has it, for `ms` milliseconds: the game thread inside an event
+// wait, the handler told (unless `bare`, which shows what happens without it).
+void simulate_background(unsigned ms, bool bare);
+
 void set_title(const char* title);
 void message_box(const char* title, const char* text);
 // A new multiplayer room to pass on (the server screen): on the clipboard, and in a browser also

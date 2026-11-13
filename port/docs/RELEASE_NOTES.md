@@ -22,6 +22,13 @@ installed game. On the first start the port asks for its folder and remembers it
 
 - **Speedy Blupi 2's CD music from Ogg Vorbis or FLAC files:** besides `music/track02.wav`, the
   track may be `music/track02.ogg` or `music/track02.flac`, which take far less room.
+- **Multiplayer on poor networks:** a typed Internet address is now found and joined over slow or lossy
+  links (before, one lost packet or a slow round trip could hide the session), and a few lost packets in a
+  row no longer drop a player (a player is given up after 5 to 10 s without an answer, instead of 1.5 to
+  3 s). The last moves of a player who leaves are no longer thrown away.
+- **Android: a game survives a short trip to the background:** switching to another app no longer drops
+  you from a multiplayer game; the connection is kept alive while the game is paused (tested on the
+  desktop; not yet on a device).
 - **The original Windows cursors with `MouseType=2` or `3`:** the games' own arrows, hourglass and
   hand from their resources, instead of the system's cursors, enlarged with the window.
 

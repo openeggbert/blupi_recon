@@ -55,6 +55,10 @@ struct Options
     bool reference = false;
     bool        verbose = false;
     blupi::net::Options net;
+    // --net-test-suspend TICK:MS[:bare]: after frame TICK, the background as Android has it (test).
+    long        netSuspendTick = -1;
+    unsigned    netSuspendMs = 0;
+    bool        netSuspendBare = false;
 };
 
 
