@@ -27,9 +27,9 @@
     "sb2/eggbert/en"
   ],
   "excluded_targets": {
-    "sb1/blupi/demo": "June 1998 demo: outside the supported catalog; built as blupi-demo-sdl3 since port 1.3.0 without a fidelity review (F454).",
-    "sb1/eggbert/demo": "Speedy Eggbert Demo: outside the supported catalog; built as eggbert-demo-sdl3 since port 1.3.0 without a fidelity review (F473).",
-    "sb1/eggbert/value": "Speedy Eggbert SE Valueware: outside the supported catalog; built as eggbert-value-sdl3 since port 1.3.0 without a fidelity review (F474)."
+    "sb1/blupi/demo": "June 1998 demo: outside the supported catalog; built as blupi-demo-sdl3 since port 1.3.0; attract-mode oracle under Wine and goldens since after 1.5.2, no wider fidelity review (F454).",
+    "sb1/eggbert/demo": "Speedy Eggbert Demo: outside the supported catalog; built as eggbert-demo-sdl3 since port 1.3.0; attract-mode oracle under Wine and goldens since after 1.5.2, no wider fidelity review (F473).",
+    "sb1/eggbert/value": "Speedy Eggbert SE Valueware: outside the supported catalog; built as eggbert-value-sdl3 since port 1.3.0; attract-mode oracle under Wine and goldens since after 1.5.2, no wider fidelity review (F474)."
   },
   "dependency_groups": {
     "common_contracts": [
@@ -390,11 +390,11 @@
     "games/sb2/src/texttables.h": "31e799b15ab5c5e724ff96b87f831c40fae3161538e631b4971ccc1f586343f0",
     "games/sb2/src/wave.h": "6a633e098262a84f53387feda19df52fdb76a0c3c804d5e9f97a56610970a992",
     "port/CMakeLists.txt": "8e3dad9213039a7cb804f4b0759d52dcaf034742e8cd31d512be719fa09ccf7a",
-    "port/android/app/src/main/AndroidManifest.xml": "4464ace49a528b1b1e1d6707b10398b77fbe100a95fa5151c73d4ca6cb71a092",
+    "port/android/app/src/main/AndroidManifest.xml": "a664fd4690342057d0eda4a78566517e60cd3de38b7463381b3a26cd16af0ede",
     "port/android/app/src/main/java/io/github/missingno7/speedyblupi/Blupi2Activity.java": "7fd89b874b4890b18e53f87ebff45fd8f70c9767eff37e85272bce891a4af6ef",
     "port/android/app/src/main/java/io/github/missingno7/speedyblupi/BlupiActivity.java": "402880af4d2a26df397d4f5a3e012fb86b68311e513800f60427e9a8c6db369d",
-    "port/android/app/src/main/java/io/github/missingno7/speedyblupi/GameFolder.java": "454579ed30d55880ecf51aa57789826d2aac6a122149e42dc04b64ba2091d785",
-    "port/android/app/src/main/java/io/github/missingno7/speedyblupi/SetupActivity.java": "a5a3a19c030522a965b9490bdebcfa6685d4aa7095817f04fba7618720c230ee",
+    "port/android/app/src/main/java/io/github/missingno7/speedyblupi/GameFolder.java": "8c675dc8a4f36f29dd89a1e4bdd563ddc416fadadb44dfc3a93b6ab62640a5b8",
+    "port/android/app/src/main/java/io/github/missingno7/speedyblupi/SetupActivity.java": "4f3f1d6e6160a3d59d0fd61bddeea7fe964b83cdd4b30f08a9a3358d6e92978e",
     "port/common/app/launcher.cpp": "97db2be4290423ff9ff5b20045951c401f0cb0204c8fb9fa39c3eec01e701400",
     "port/common/app/launcher.h": "b121b8f9afa14ee6d492bb0638dff3e18685b79b8a214b5c0ca8e6c46fc6a267",
     "port/common/compat/include/WTypes.h": "ae97f1d92824184c876762d9707b8761ce36ba371c5783f4919fd3ac589f8852",
@@ -462,7 +462,7 @@
     "port/common/ui/options_screen.cpp": "26b28b7a3d7266e950fc8e6695d463e0748a12510b78a5d0b58aa73d599a49ad",
     "port/common/ui/settings.cpp": "c3dbea0d5555c116ac1cafc3579172a2f7751557fbed57fc41715fea5d32bc84",
     "port/common/ui/settings.h": "c799ba58d932c7db89812f08ec5df43cb131260411124a5261c4a7c55756a8d9",
-    "port/games/sb1/editions.cmake": "d419616e567c0c2dd9ef5b8e0b6f4c0f5240445ba5f10dc2ee8e107d22271aec",
+    "port/games/sb1/editions.cmake": "323fc575673bc708baa4362b9cbc61d3be0956e30eebdc1214dd10948c06dbde",
     "port/games/sb1/game/editor_wide.cpp": "54558b34fdd6631c3ea9e89e0129ec4384e100787b5f59d497c6ac3cfba5f1d1",
     "port/games/sb1/game/end_of_tick.cpp": "838256d26dc53a1212c4fe63aeb3af19a6c75c3184045f6a2d84ea16e4581740",
     "port/games/sb1/game/language.cpp": "d67cc9987ebdddbdfba32681d1b48ab3185e8489f7ec346f5895cdedeed3ac57",
@@ -13423,12 +13423,14 @@
       "dependency_paths": [
         "port/games/sb1/editions.cmake"
       ],
-      "reason": "June 1998 demo is outside the port's supported catalog. Since port 1.3.0 the port builds it as its own program, blupi-demo-sdl3 (port/games/sb1/editions.cmake): the edition's historical TUs compiled unchanged and games/sb1/game compiled again with BLUPI_EDITION_KEY (port/docs/EDITIONS.md); no fidelity review beyond its attract-mode test.",
+      "reason": "June 1998 demo is outside the port's supported catalog. Since port 1.3.0 the port builds it as its own program, blupi-demo-sdl3 (port/games/sb1/editions.cmake): the edition's historical TUs compiled unchanged and games/sb1/game compiled again with BLUPI_EDITION_KEY (port/docs/EDITIONS.md); since after 1.5.2 its title and attract mode equal its ordinary historical build under Wine (8 bpp, 2,200 displays; port/docs/ORACLE.md \"Under Wine\"), golden traces gate them, and the Android app has it too; menus, editor and saves are not reviewed.",
       "proof_scope": [
         "blupi-demo-sdl3 starts with its edition's data, shows its own title screen and plays the attract-mode demo (tests/edition_smoke.cmake); the retail programs do not compile these sources"
       ],
       "tests": [
-        "ctest -R edition_blupi-demo_attract"
+        "ctest -R edition_blupi-demo_attract",
+        "golden_blupi-demo_attract8",
+        "android_game_folder"
       ],
       "evidence": [
         "Initial scratch/w-fidelity audit REPORT.md; ledger F454",
@@ -13440,22 +13442,19 @@
         "scratch/w-audio/final-focused.log (19/19, final complete patch)",
         "scratch/w-audio/regression.log (193/193, before final loop-boundary normalization; not a final full-patch receipt)",
         "docs/SB1_DEMO.md (Completion work 2026-11-11); games/sb1-blupi-demo/README.md",
-        "port/docs/EDITIONS.md"
+        "port/docs/EDITIONS.md",
+        "port/tools/oracle_wine.py run of sb1/blupi/demo (build/oracle-editions/runs, compare.json MATCH), 2026-11-13"
       ],
       "follow_up": [
-        "A review of blupi-demo-sdl3 against its edition (golden traces, oracle comparison) before support can be claimed; its restrictions stay as the original has them."
+        "Scripted oracle runs of blupi-demo-sdl3 (menus, editor, saves) against its edition before support can be claimed; its restrictions stay as the original has them."
       ],
       "review": {
-        "commit": "722866d89baad70e71568e63d69e833f2bb7f119",
-        "disposition": "Reviewed: platform transport and adapter only (deadlines, peer timeout, departure order, background keep-alive, test lockstep exit grant); the game's messages, wire format, validation rules and the faithful frame are unchanged. Previous review stands.",
+        "commit": "ed585ebece58a9f0dc5ec7cdd6b560bc250f3254",
+        "disposition": "Reviewed: build packaging (the editions as Android libraries) and test tooling only; the edition programs' code and frames are unchanged and now match their ordinary historical builds in attract mode under Wine. Previous review stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h",
-          "port/common/platform/host.cpp",
-          "port/common/platform/host.h"
+          "port/games/sb1/editions.cmake"
         ],
-        "evidence_scope": "All 25 network tests on Linux, among them net_sb{1,2}_impaired (lossy proxy, traces equal to the reference run; 10 seeds), departures killed/quit in play and in the lobby, net_sb{1,2}_client_suspended (keep-alive, equal to the reference) and _bare (the drop without it); goldens attract/tour/editor, launcher, gamepad and options tests."
+        "evidence_scope": "oracle_wine.py: SB1 US 16/8 bpp and Eggbert 1 16 bpp (calibration), Speedy Eggbert Demo 8 bpp, Valueware 16/8 bpp, June demo 8 bpp: 2200/2200 identical displays each; the four new edition goldens; android_game_folder; the debug APK builds (arm64-v8a, x86_64) with libeggbert_demo, libeggbert_value, libblupi_demo."
       }
     },
     {
@@ -16243,33 +16242,32 @@
         "games/sb1-eggbert-demo/res/sb1-eggbert-demo.rc",
         "port/games/sb1/editions.cmake"
       ],
-      "reason": "Speedy Eggbert Demo is outside the port's supported catalog. Since port 1.3.0 the port builds it as its own program, eggbert-demo-sdl3 (port/games/sb1/editions.cmake): the edition's historical TUs compiled unchanged and games/sb1/game compiled again with BLUPI_EDITION_KEY (port/docs/EDITIONS.md); no fidelity review beyond its attract-mode test.",
+      "reason": "Speedy Eggbert Demo is outside the port's supported catalog. Since port 1.3.0 the port builds it as its own program, eggbert-demo-sdl3 (port/games/sb1/editions.cmake): the edition's historical TUs compiled unchanged and games/sb1/game compiled again with BLUPI_EDITION_KEY (port/docs/EDITIONS.md); since after 1.5.2 its title and attract mode equal its ordinary historical build under Wine (8 bpp, 2,200 displays; port/docs/ORACLE.md \"Under Wine\"), golden traces gate them, and the Android app has it too; menus, editor and saves are not reviewed.",
       "proof_scope": [
         "eggbert-demo-sdl3 starts with its edition's data, shows its own title screen and plays the attract-mode demo (tests/edition_smoke.cmake); the retail programs do not compile these sources"
       ],
       "tests": [
-        "ctest -R edition_eggbert-demo_attract"
+        "ctest -R edition_eggbert-demo_attract",
+        "golden_eggbert-demo_attract8",
+        "android_game_folder"
       ],
       "evidence": [
         "docs/EGGBERT_DEMO.md",
         "games/sb1-eggbert-demo/README.md",
         "targets.json sb1/eggbert/demo",
-        "port/docs/EDITIONS.md"
+        "port/docs/EDITIONS.md",
+        "port/tools/oracle_wine.py run of sb1/eggbert/demo (build/oracle-editions/runs, compare.json MATCH), 2026-11-13"
       ],
       "follow_up": [
-        "A review of eggbert-demo-sdl3 against its edition (golden traces, oracle comparison) before support can be claimed; its restrictions stay as the original has them."
+        "Scripted oracle runs of eggbert-demo-sdl3 (menus, editor, saves) against its edition before support can be claimed; its restrictions stay as the original has them."
       ],
       "review": {
-        "commit": "722866d89baad70e71568e63d69e833f2bb7f119",
-        "disposition": "Reviewed: platform transport and adapter only (deadlines, peer timeout, departure order, background keep-alive, test lockstep exit grant); the game's messages, wire format, validation rules and the faithful frame are unchanged. Previous review stands.",
+        "commit": "ed585ebece58a9f0dc5ec7cdd6b560bc250f3254",
+        "disposition": "Reviewed: build packaging (the editions as Android libraries) and test tooling only; the edition programs' code and frames are unchanged and now match their ordinary historical builds in attract mode under Wine. Previous review stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h",
-          "port/common/platform/host.cpp",
-          "port/common/platform/host.h"
+          "port/games/sb1/editions.cmake"
         ],
-        "evidence_scope": "All 25 network tests on Linux, among them net_sb{1,2}_impaired (lossy proxy, traces equal to the reference run; 10 seeds), departures killed/quit in play and in the lobby, net_sb{1,2}_client_suspended (keep-alive, equal to the reference) and _bare (the drop without it); goldens attract/tour/editor, launcher, gamepad and options tests."
+        "evidence_scope": "oracle_wine.py: SB1 US 16/8 bpp and Eggbert 1 16 bpp (calibration), Speedy Eggbert Demo 8 bpp, Valueware 16/8 bpp, June demo 8 bpp: 2200/2200 identical displays each; the four new edition goldens; android_game_folder; the debug APK builds (arm64-v8a, x86_64) with libeggbert_demo, libeggbert_value, libblupi_demo."
       }
     },
     {
@@ -16337,33 +16335,33 @@
         "games/sb1-eggbert-value/res/sb1-eggbert-value.rc",
         "port/games/sb1/editions.cmake"
       ],
-      "reason": "Speedy Eggbert SE Valueware is outside the port's supported catalog. Since port 1.3.0 the port builds it as its own program, eggbert-value-sdl3 (port/games/sb1/editions.cmake): the edition's historical TUs compiled unchanged and games/sb1/game compiled again with BLUPI_EDITION_KEY (port/docs/EDITIONS.md); no fidelity review beyond its attract-mode test.",
+      "reason": "Speedy Eggbert SE Valueware is outside the port's supported catalog. Since port 1.3.0 the port builds it as its own program, eggbert-value-sdl3 (port/games/sb1/editions.cmake): the edition's historical TUs compiled unchanged and games/sb1/game compiled again with BLUPI_EDITION_KEY (port/docs/EDITIONS.md); since after 1.5.2 its title and attract mode equal its ordinary historical build under Wine (16 and 8 bpp, 2,200 displays; port/docs/ORACLE.md \"Under Wine\"), golden traces gate them, and the Android app has it too; menus, editor and saves are not reviewed.",
       "proof_scope": [
         "eggbert-value-sdl3 starts with its edition's data, shows its own title screen and plays the attract-mode demo (tests/edition_smoke.cmake); the retail programs do not compile these sources"
       ],
       "tests": [
-        "ctest -R edition_eggbert-value_attract"
+        "ctest -R edition_eggbert-value_attract",
+        "golden_eggbert-value_attract16",
+        "golden_eggbert-value_attract8",
+        "android_game_folder"
       ],
       "evidence": [
         "docs/EGGBERT_VALUE.md",
         "games/sb1-eggbert-value/README.md",
         "targets.json sb1/eggbert/value",
-        "port/docs/EDITIONS.md"
+        "port/docs/EDITIONS.md",
+        "port/tools/oracle_wine.py run of sb1/eggbert/value (build/oracle-editions/runs, compare.json MATCH), 2026-11-13"
       ],
       "follow_up": [
-        "A review of eggbert-value-sdl3 against its edition (golden traces, oracle comparison) before support can be claimed; its restrictions stay as the original has them."
+        "Scripted oracle runs of eggbert-value-sdl3 (menus, editor, saves) against its edition before support can be claimed; its restrictions stay as the original has them."
       ],
       "review": {
-        "commit": "722866d89baad70e71568e63d69e833f2bb7f119",
-        "disposition": "Reviewed: platform transport and adapter only (deadlines, peer timeout, departure order, background keep-alive, test lockstep exit grant); the game's messages, wire format, validation rules and the faithful frame are unchanged. Previous review stands.",
+        "commit": "ed585ebece58a9f0dc5ec7cdd6b560bc250f3254",
+        "disposition": "Reviewed: build packaging (the editions as Android libraries) and test tooling only; the edition programs' code and frames are unchanged and now match their ordinary historical builds in attract mode under Wine. Previous review stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h",
-          "port/common/platform/host.cpp",
-          "port/common/platform/host.h"
+          "port/games/sb1/editions.cmake"
         ],
-        "evidence_scope": "All 25 network tests on Linux, among them net_sb{1,2}_impaired (lossy proxy, traces equal to the reference run; 10 seeds), departures killed/quit in play and in the lobby, net_sb{1,2}_client_suspended (keep-alive, equal to the reference) and _bare (the drop without it); goldens attract/tour/editor, launcher, gamepad and options tests."
+        "evidence_scope": "oracle_wine.py: SB1 US 16/8 bpp and Eggbert 1 16 bpp (calibration), Speedy Eggbert Demo 8 bpp, Valueware 16/8 bpp, June demo 8 bpp: 2200/2200 identical displays each; the four new edition goldens; android_game_folder; the debug APK builds (arm64-v8a, x86_64) with libeggbert_demo, libeggbert_value, libblupi_demo."
       }
     }
   ],
@@ -19482,6 +19480,16 @@
         "F474"
       ],
       "scope": "Network adapter and session layer, launcher and host event wait: remote probe/join deadlines, the ENet peer timeout, the order of departures after a member's last messages, a session keep-alive while the app is in the background (net/keepalive.*, host lifecycle watch and event-wait hooks), unreliable messages dropped from a full queue, a test exit grant. The game's own network code, wire format and faithful frames are unchanged."
+    },
+    {
+      "commit": "ed585ebece58a9f0dc5ec7cdd6b560bc250f3254",
+      "round": "After 1.5.2: the editions' oracle under Wine, goldens and Android",
+      "reviewed_edges": [
+        "F454",
+        "F473",
+        "F474"
+      ],
+      "scope": "Edition programs (outside the supported catalog): Android libraries and activities (editions.cmake builds them on Android), attract-mode goldens, the Wine oracle tool and the proxy's system-DirectDraw option. No historical source, game code or faithful-frame change."
     }
   ]
 }
