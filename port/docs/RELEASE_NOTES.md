@@ -18,6 +18,11 @@ Blupi 2 and Speedy Eggbert 2, and the original multiplayer of all four games.
 **The original games' files are not included.** You need your own copy of the game: the CD or the
 installed game. On the first start the port asks for its folder and remembers it.
 
+## Since 1.5.2 (not yet released)
+
+- **Speedy Blupi 2's CD music from Ogg Vorbis or FLAC files:** besides `music/track02.wav`, the
+  track may be `music/track02.ogg` or `music/track02.flac`, which take far less room.
+
 ## New in 1.5.2
 
 - **`wss://` on Windows, Linux and Android:** type `wss://fds.openeggbert.com` on the server screen (or
@@ -177,7 +182,7 @@ package with Emscripten.
 
 - **The intro and ending movies.** The original skipped them when the system could not play AVI, and
   the installed games do not include them.
-- **Speedy Blupi 2's CD audio tracks** themselves: supply them as WAV files ripped from your disc (above).
+- **Speedy Blupi 2's CD audio tracks** themselves: supply them as WAV, Ogg Vorbis or FLAC files ripped from your disc (above).
 
 ## Known limitations
 

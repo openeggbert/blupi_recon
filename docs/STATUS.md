@@ -205,7 +205,7 @@ These are bounded receipts, not whole-game certification.
   is also the browser's way. Tested automatically on one machine and, for each game, by the user between
   real devices (1.2.0); little other real-world play.
 - **AVI movies:** not played; the phase is skipped.
-- **SB2 CD audio:** plays ripped tracks the player supplies (`music/trackNN.wav`, port 1.3.0); without
+- **SB2 CD audio:** plays ripped tracks the player supplies (`music/trackNN.wav`, port 1.3.0; also `.ogg` and `.flac` after 1.5.2); without
   them it fails and logs once. No archive holds the tracks.
 - **MIDI:** played with a modern SoundFont, not the 1998 device's timbre.
 - **Coverage gaps:** hardware gamepads and Android keyboard/background are open. SB2 on Android

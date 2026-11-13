@@ -125,6 +125,15 @@ The worker's Ninja stall was its sandbox's child-process limit; the Makefile bui
   it. Without the file the call fails and logs once, as the original's did without a disc.
   Tested: `ctest -R music_pcm` (decoding, resampling, the end report) and a headless Speedy
   Eggbert 2 run with `CDAudio=1` and a synthetic `track02.wav` (played, ended, restarted).
+- [EVIDENCE] **CD tracks as Ogg Vorbis or FLAC (after 1.5.2).** The track may also be
+  `music/trackNN.ogg` or `music/trackNN.flac` (the first of `.wav`, `.ogg`, `.flac` that exists).
+  They are decoded block by block while they play (`platform/track.cpp`: stb_vorbis, dr_flac),
+  so a compressed track is never held decoded in full; WAV keeps its earlier path, and its
+  samples are unchanged (`music_pcm` compares a 10,000-frame WAV with the earlier arithmetic,
+  across the decoding blocks). Tested: `music_pcm` with mono and stereo Ogg Vorbis and FLAC
+  fixtures (`tests/audio`), and Speedy Eggbert 2 with `CDAudio=1` and a 3 s `track02.ogg`, then a
+  `track02.flac`, in the user folder (dummy SDL video and audio drivers, 1,500 frames): each
+  played, ended with MM_MCINOTIFY and was played again (2026-11-13).
 - [EVIDENCE] AVI playback reports disabled and logs once; the historical movie path continues
   without the film. DirectPlay enumerates zero providers, fails session operations, and logs
   once on enumeration. These are the original unavailable-service failure paths.

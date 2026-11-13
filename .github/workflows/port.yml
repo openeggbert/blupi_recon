@@ -26,7 +26,7 @@ jobs:
   linux:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Packages
         run: |
           sudo apt-get update -q
@@ -35,7 +35,7 @@ jobs:
             libxfixes-dev libwayland-dev libxkbcommon-dev libdecor-0-dev libegl-dev libgles-dev \
             libdrm-dev libgbm-dev libasound2-dev libpulse-dev libudev-dev libdbus-1-dev
       - id: sdl3-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/sdl3
           key: sdl3-linux-${{ env.SDL3_TAG }}-gcc14
@@ -74,13 +74,13 @@ jobs:
   web:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: true   # the GeneralUser GS SoundFont of the site
       - name: Packages
         run: sudo apt-get update -q && sudo apt-get install -qy --no-install-recommends ninja-build
       - id: emsdk-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/emsdk
           key: emsdk-${{ env.EMSDK_VERSION }}
@@ -106,7 +106,7 @@ jobs:
           cmake --build build/port-web/port -j 4
       - name: Package
         run: python3 port/tools/package_web.py
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: web-site
           path: build/release/speedy-blupi-sdl3-*-web.zip
@@ -115,14 +115,14 @@ jobs:
   windows:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Packages
         run: |
           sudo apt-get update -q
           sudo apt-get install -qy --no-install-recommends ninja-build python3 \
             g++-mingw-w64-x86-64-posix gcc-mingw-w64-x86-64-posix binutils-mingw-w64-x86-64 wine wine64
       - id: sdl3-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/sdl3-mingw
           key: sdl3-mingw-${{ env.SDL3_TAG }}
@@ -163,5 +163,8 @@ jobs:
         run: cmake --build build/port-windows -j 4
       - name: Tests under Wine (no game data)
         run: |
+          # fidelity_map needs the repository, not a program (the linux job runs it). fidelity_stdio_*
+          # meet one msvcrt stdio detail in which Wine differs from Windows (a read from a write-only
+          # stream does not set _IOERR); fidelity_stdio_sb1 passed on Windows 10 (port/docs/RELEASING.md, step 2).
           ctest --test-dir build/port-windows -N | tail -n 1
-          ctest --test-dir build/port-windows -j 2 --output-on-failure --timeout 600 -E '^fidelity_map$'
+          ctest --test-dir build/port-windows -j 2 --output-on-failure --timeout 600 -E '^(fidelity_map|fidelity_stdio_sb[12])$'

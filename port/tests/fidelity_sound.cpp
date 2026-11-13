@@ -38,7 +38,7 @@ bool is_playing(int) {return false;}
 namespace blupi::music {
 bool load_soundfont(const std::string&) {return true;} bool has_soundfont() {return true;}
 unsigned play(const uint8_t* data,size_t size) {midi.assign(data,data+size);playing=true;return ++device;}
-unsigned play_wav(const uint8_t* data,size_t size) {midi.assign(data,data+size);playing=true;return ++device;}
+unsigned play_track(const uint8_t* data,size_t size) {midi.assign(data,data+size);playing=true;return ++device;}
 bool stop(unsigned id) {bool was=playing&&id==device;playing=false;return was;}
 unsigned take_finished() {unsigned id=finished;finished=0;return id;}
 void set_level(float v) {level=v;}

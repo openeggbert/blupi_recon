@@ -25,10 +25,10 @@ add_test(NAME layout COMMAND test_layout)
 add_executable(test_gamepad test_gamepad.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../common/compat/src/win32.cpp)
 target_link_libraries(test_gamepad PRIVATE blupi_hist_context blupi_platform)
 add_test(NAME gamepad COMMAND test_gamepad)
-# CD audio stand-in: WAV tracks in the music player (SB2 PlayCDAudio).
+# CD audio stand-in: WAV, Ogg Vorbis and FLAC tracks in the music player (SB2 PlayCDAudio).
 add_executable(test_music_pcm test_music_pcm.cpp)
 target_link_libraries(test_music_pcm PRIVATE blupi_platform)
-add_test(NAME music_pcm COMMAND test_music_pcm)
+add_test(NAME music_pcm COMMAND test_music_pcm ${CMAKE_CURRENT_SOURCE_DIR}/audio)
 
 set(BLUPI_TEST_DATA "" CACHE PATH "Game root (DATA/, IMAGE08/, ...) for replay tests")
 option(BLUPI_UPDATE_GOLDEN "Golden tests rewrite tests/golden/*.trace instead of comparing" OFF)

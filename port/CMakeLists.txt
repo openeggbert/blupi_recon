@@ -187,11 +187,14 @@ add_library(blupi_platform STATIC
     common/platform/vfs.cpp
     common/platform/audio.cpp
     common/platform/music.cpp
+    common/platform/track.cpp
     common/platform/language.cpp
     common/platform/icon.cpp)
 target_include_directories(blupi_platform PUBLIC ${BLUPI_COMMON})
 target_include_directories(blupi_platform PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})   # third_party/
 target_link_libraries(blupi_platform PUBLIC SDL3::SDL3 blupi_render)
+# track.cpp compiles the vendored decoders (third_party/stb_vorbis, third_party/dr_flac) as they come.
+set_source_files_properties(common/platform/track.cpp PROPERTIES COMPILE_OPTIONS "$<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w>")
 
 # The port's icon (res/icon.png, tools/make_icon.py), for the window on
 # systems without executable resources.
