@@ -1,4 +1,4 @@
-# Speedy Blupi SDL3 port 1.5.2
+# Speedy Blupi SDL3 port 1.6.0
 
 The native port of **Speedy Blupi** (Epsitec, 1998) and **Speedy Blupi 2** (2001), and of their
 eGames editions **Speedy Eggbert** and **Speedy Eggbert 2**, for Windows, Linux, Android and web
@@ -6,7 +6,10 @@ browsers. It is
 built from this repository's reconstruction of the original programs' source, compiled unchanged with
 a modern compiler, plus a small platform layer on SDL3.
 
-Version 1.5.2 lets the Windows, Linux and Android programs reach a Free Direct server over `wss://`
+Version 1.6 shows the games at up to four times their resolution with a pack of re-drawn images, plays
+Speedy Blupi 2's CD music from Ogg Vorbis and FLAC files, makes multiplayer hold up on poor networks and
+in Android's background, brings the original Windows cursors, and adds the demos and Valueware to the
+Android app. Version 1.5.2 lets the Windows, Linux and Android programs reach a Free Direct server over `wss://`
 (TLS) as well. Version 1.5.1 gives the web page a server to play on, fds.openeggbert.com. Version 1.5 plays
 multiplayer through a Free Direct server, without open ports and also in the browser,
 where it can be played at https://openeggbert.github.io/blupi_recon/. Version 1.4 runs all five programs
@@ -18,7 +21,7 @@ Blupi 2 and Speedy Eggbert 2, and the original multiplayer of all four games.
 **The original games' files are not included.** You need your own copy of the game: the CD or the
 installed game. On the first start the port asks for its folder and remembers it.
 
-## Since 1.5.2 (not yet released)
+## New in 1.6.0
 
 - **Speedy Blupi 2's CD music from Ogg Vorbis or FLAC files:** besides `music/track02.wav`, the
   track may be `music/track02.ogg` or `music/track02.flac`, which take far less room.
@@ -37,6 +40,12 @@ installed game. On the first start the port asks for its folder and remembers it
   (port/docs/HD.md).
 - **The original Windows cursors with `MouseType=2` or `3`:** the games' own arrows, hourglass and
   hand from their resources, instead of the system's cursors, enlarged with the window.
+- **Images on the Display options screen:** Original, 2x, 3x or 4x, used from the next start (the
+  pack's folder is set with `--hd-pack` or `hdPack` in the settings file).
+- **Behind the scenes:** the two games share their language, image and sound support code
+  (consolidation stage 4), and every push to `main` builds the Linux, Windows and web programs on GitHub.
+  The demos' and Valueware's attract modes were checked frame by frame against their original programs'
+  rebuilds (under Wine).
 
 ## New in 1.5.2
 
@@ -151,10 +160,10 @@ installed game. On the first start the port asks for its folder and remembers it
 
 | File | For |
 |---|---|
-| `speedy-blupi-sdl3-1.5.2-windows-x64.zip` | 64-bit Windows 10 or 11: `blupi-sdl3`, `blupi2-sdl3`, `eggbert-demo-sdl3`, `eggbert-value-sdl3`, `blupi-demo-sdl3`, `SDL3.dll` |
-| `speedy-blupi-sdl3-1.5.2-linux-x86_64.tar.gz` | x86-64 Linux with glibc 2.38 or newer (Debian 13, Ubuntu 24.04, Fedora 39 and later), X11 or Wayland: the same five programs |
-| `speedy-blupi-sdl3-1.5.2-android.apk` | Android 7.0 or newer (arm64-v8a, x86_64): Speedy Blupi and Speedy Blupi 2 |
-| `speedy-blupi-sdl3-1.5.2-web.zip` | a web browser: the five programs as WebAssembly, the page, `serve.py`; also at https://openeggbert.github.io/blupi_recon/ |
+| `speedy-blupi-sdl3-1.6.0-windows-x64.zip` | 64-bit Windows 10 or 11: `blupi-sdl3`, `blupi2-sdl3`, `eggbert-demo-sdl3`, `eggbert-value-sdl3`, `blupi-demo-sdl3`, `SDL3.dll` |
+| `speedy-blupi-sdl3-1.6.0-linux-x86_64.tar.gz` | x86-64 Linux with glibc 2.38 or newer (Debian 13, Ubuntu 24.04, Fedora 39 and later), X11 or Wayland: the same five programs |
+| `speedy-blupi-sdl3-1.6.0-android.apk` | Android 7.0 or newer (arm64-v8a, x86_64): Speedy Blupi, Speedy Blupi 2, the demos and Valueware |
+| `speedy-blupi-sdl3-1.6.0-web.zip` | a web browser: the five programs as WebAssembly, the page, `serve.py`; also at https://openeggbert.github.io/blupi_recon/ |
 | `SHA256SUMS.txt` | checksums |
 
 All packages are built on Debian 13 from the release tag: Linux natively (it needs glibc 2.38; 1.2.0's,
@@ -166,9 +175,9 @@ package with Emscripten.
   `eggbert-value-sdl3` or `blupi-demo-sdl3`. The Windows executables are not code-signed, so
   SmartScreen may ask for confirmation ("More info", "Run anyway").
 - **Android:** install the APK. It is signed with a new key: uninstall 1.2.0 or older first (that also
-  removes the games you imported; import them again). It updates 1.4.0 and 1.5.x in place.
-  Choose a game folder to import; the app copies it into its own storage. It tells the two games apart,
-  and after a second import it asks which game to start.
+  removes the games you imported; import them again). It updates 1.4.0 and later in place.
+  Choose a game folder to import; the app copies it into its own storage. It tells the games and the
+  editions apart, and after a second import it asks which one to start.
 
 ## What you get
 
@@ -182,6 +191,7 @@ package with Emscripten.
   - smooth motion between ticks;
   - redraw at the monitor's rate or the original 20 per second;
   - window or full screen (Alt+Enter), and fit-the-window or whole-pixel scaling;
+  - the images at two to four times their resolution, from the next start (Windows and Linux);
   - the language.
 - **Languages:**
   - Speedy Blupi: English, German, French.
@@ -202,18 +212,21 @@ package with Emscripten.
 ## Known limitations
 
 - **Multiplayer** is tested automatically (two and four players on one machine, Windows and Linux;
-  through a Free Direct server on one machine, also between a browser and Linux) and was played between
-  real devices for both games, but has had little real-world play beyond that. Also:
-  - an Android player who switches away from the game is likely to drop out of a session;
+  through a Free Direct server on one machine, also between a browser and Linux; over a link that delays,
+  loses and reorders packets; a host or a player that leaves or stalls) and was played between real
+  devices for both games, but has had little real-world play beyond that. Also:
+  - an Android player's game is kept in its session while the app is in the background; this was tested
+    by pausing the desktop program, not on a device;
   - fds.openeggbert.com is the one public Free Direct server so far; any group can run its own
     (port/docs/FREE_DIRECT_SERVER.md).
   - `wss://` from the desktop was tested on Linux and on Windows under Wine (against fds.openeggbert.com
     and certificate test sites), not yet on a real Windows PC.
-- **Android:** the 1.5.x APKs were built but not run (no device or emulator was available); `wss://`
-  there is untested. A player's own
+- **Android:** the 1.5.x and 1.6.0 APKs were built but not run (no device or emulator was available);
+  `wss://` there is untested. A player's own
   language file goes into a `languages` folder inside the game folder before importing it. Gamepads and
-  running in the background have had little testing. The 1.3 and 1.5 additions (the address and server
-  screens, the gamepad as the keyboard) are built for Android but untested there, and the edition programs
-  are desktop only.
+  running in the background have had little testing. The 1.3, 1.5 and 1.6 additions (the address and
+  server screens, the gamepad as the keyboard, the demos and Valueware) are built for Android but untested
+  there. Higher-resolution images are not available on Android and in the browser yet (no way to bring
+  a pack in).
 - **Linux:** the first-run folder dialog needs the desktop's file chooser portal (or `zenity`). Without
   it, start the game with `--data "<game folder>"`, or put the port's files into the game's folder.
