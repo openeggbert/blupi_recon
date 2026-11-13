@@ -1,6 +1,6 @@
 # Writes the built-in language packs (FILES, '|'-separated) to OUT as C arrays
 # and the table k_builtinPacks[] of {file name, bytes, size}, for
-# game/language.cpp. The packs are UTF-8 text, embedded byte for byte.
+# common/ui/language_service.cpp. The packs are UTF-8 text, embedded byte for byte.
 string(REPLACE "|" ";" files "${FILES}")
 set(arrays "")
 set(table "")

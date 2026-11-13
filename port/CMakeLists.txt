@@ -247,14 +247,14 @@ set(BLUPI_SB1_PORT_SOURCES
     common/ui/options_screen.cpp
     common/ui/address_screen.cpp
     common/ui/settings.cpp
-    games/sb1/game/language.cpp)
+    common/ui/language_service.cpp)
 add_library(blupi_game STATIC ${BLUPI_SB1_PORT_SOURCES} $<TARGET_OBJECTS:blupi_hist>)
 target_link_libraries(blupi_game PRIVATE blupi_hist_context PUBLIC blupi_platform blupi_app)
 target_compile_definitions(blupi_game PRIVATE BLUPI_PORT_VERSION="${BLUPI_PORT_VERSION}")
 target_include_directories(blupi_game PRIVATE ${BLUPI_GAME_DIR})
 
 # The built-in language packs (languages/*.txt, port/docs/LANGUAGES.md),
-# embedded for game/language.cpp.
+# embedded for common/ui/language_service.cpp (games/sb1/game/language_catalog.h).
 file(GLOB BLUPI_LANGUAGE_PACKS CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/languages/*.txt)
 list(SORT BLUPI_LANGUAGE_PACKS)
 string(REPLACE ";" "|" BLUPI_LANGUAGE_PACK_ARG "${BLUPI_LANGUAGE_PACKS}")

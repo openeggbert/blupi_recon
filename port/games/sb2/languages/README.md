@@ -18,6 +18,6 @@ resource parser as SB1); executables are never run. The equivalent CLI is:
 
 [EVIDENCE] SB2 Blupi en/de/fr have identical code and character tables (docs/MULTI_GAME.md).
 All packs therefore use `variant=en`, with no character overrides. Edition and installed
-language fingerprints (file size and FNV-1a only) live in `game/language.cpp`; the title
+language fingerprints (file size and FNV-1a only) live in `game/language_catalog.h`; the title
 image identifies the edition even when the original executable is absent. Built-in
 strings retain the originals' bytes through the common Windows-1252 pack encoder.

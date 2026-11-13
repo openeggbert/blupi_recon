@@ -1,5 +1,7 @@
-// Port language support for Speedy Blupi 1 and Speedy Eggbert 1
-// (port/docs/LANGUAGES.md). Port-owned; no historical origin.
+// Port language support, shared by both games (port/docs/LANGUAGES.md). Port-owned; no historical
+// origin. Compiled in each game's own header context, like the Display options screen; what differs
+// between the games is data, in that game's game/language_catalog.h: the default variant, the
+// built-in packs, the known executables and title images, and the game's id.
 //
 // - The edition (Blupi or Eggbert) is recognised from the data (the title
 //   image), the installed language from the installed executable (its size
@@ -19,6 +21,7 @@
 #include "platform/host.h"
 #include "platform/language.h"
 #include "platform/vfs.h"
+#include "game/language_catalog.h"   // the game's catalog (namespace blupi::language_catalog)
 
 #include <map>
 #include <set>
@@ -27,12 +30,14 @@
 
 extern char table_char[];
 
-std::string g_portLanguageVariant = "us";
+namespace catalog = blupi::language_catalog;
+
+std::string g_portLanguageVariant = catalog::kDefaultVariant;
 
 // game/port_switches.h
 extern "C" int blupi_language_de(void)
 {
-	return g_portLanguageVariant == "de";
+	return catalog::kGermanLayout && g_portLanguageVariant == "de";
 }
 
 // Host paths: the forced include maps fopen to the game file system.
@@ -48,41 +53,11 @@ namespace
 {
 namespace lang = blupi::language;
 
-struct BuiltinPack
-{
-	const char* file;
-	const unsigned char* data;
-	size_t size;
-};
-#include "language_packs.inc"   // k_builtinPacks[] (cmake/embed_packs.cmake)
-
-struct KnownBuild
-{
-	unsigned long long hash;   // FNV-1a 64 of the whole file
-	long size;
-	const char* edition;
-	const char* code;
-};
-
-// The executables of the editions and languages we know (2026-10-22).
-const KnownBuild k_builds[] = {
-	{0xd640855283598e8aULL, 535552, "blupi", "us"},
-	{0x610b8c906f647304ULL, 538112, "blupi", "de"},
-	{0xbef9df9c1ae3cf57ULL, 538112, "blupi", "fr"},
-	{0xf8f0339277cb092dULL, 534528, "eggbert", "en"},
-	{0xce7ac17f5f5dcd4cULL, 537088, "eggbert", "de"},
-	{0xf7a88c99973366f9ULL, 537088, "eggbert", "es"},
-	{0xd0c7f8ae9ceb08c7ULL, 537088, "eggbert", "fr"},
-	{0xce181f1e1c988a20ULL, 536576, "eggbert", "it"},
-	{0x459defd64dd9b032ULL, 536576, "eggbert", "pt"},
-};
-
-// The editions. IMAGE08\INIT.BLP, the title image, tells them apart; the
-// version is the one their title screen shows (docs/EGGBERT.md).
-const struct { unsigned long long hash; const char* edition; const char* version; } k_titles[] = {
-	{0xe9654ea706e78a9bULL, "blupi", "Version 1.0"},
-	{0x847cfb0febbd955aULL, "eggbert", "Version 1.1"},
-};
+using catalog::BuiltinPack;
+using catalog::k_builtinPacks;
+using catalog::KnownBuild;
+using catalog::k_builds;
+using catalog::k_titles;
 
 const int  kCharBytes = 6;
 const int  kTableSize = 256 * kCharBytes;
@@ -134,11 +109,7 @@ bool ReadFile(const std::string& path, std::string& out, long limit)
 
 const char* EditionFromData()
 {
-#if BLUPI_EDITION_KEY == 1 || BLUPI_EDITION_KEY == 2
-	return "eggbert";   // the eGames Demo and Valueware programs (port/docs/EDITIONS.md)
-#elif BLUPI_EDITION_KEY == 3
-	return "blupi";     // the June 1998 demo program
-#endif
+	if (catalog::kForcedEdition != NULL) return catalog::kForcedEdition;   // the edition programs
 	std::string path = blupi::vfs::resolve_read("image08\\init.blp");
 	std::string bytes;
 	if (path.empty() || !ReadFile(path, bytes, 4 << 20)) return NULL;
@@ -192,7 +163,7 @@ void LoadPacks()
 	{
 		lang::Pack pack;
 		std::string text((const char*)b.data, b.size);
-		if (lang::parse(text, std::string("built-in ") + b.file, pack) && pack.game == "sb1" &&
+		if (lang::parse(text, std::string("built-in ") + b.file, pack) && pack.game == catalog::kGame &&
 			pack.edition == g_edition)
 		{
 			g_packs.push_back(pack);
@@ -208,7 +179,7 @@ void LoadPacks()
 		lang::Pack pack;
 		bool ok = lang::parse(text, path, pack);
 		Log(pack);
-		if (!ok || pack.game != "sb1" || (!pack.edition.empty() && pack.edition != g_edition)) continue;
+		if (!ok || pack.game != catalog::kGame || (!pack.edition.empty() && pack.edition != g_edition)) continue;
 		int same = Find(pack.code);
 		if (same >= 0) g_packs[same] = pack;
 		else g_packs.push_back(pack);
@@ -360,7 +331,7 @@ void PortLanguageInit(const std::string& wanted)
 	g_edition = edition != NULL ? edition : installed != NULL ? installed->edition : "blupi";
 	g_installed = installed != NULL && g_edition == installed->edition ? installed->code : "";
 	LoadPacks();
-	g_fallback = Find(g_edition == "eggbert" ? "en" : "us");
+	g_fallback = Find(g_edition == "eggbert" ? "en" : catalog::kBlupiEnglish);
 
 	int pick = wanted.empty() ? -1 : Find(wanted);
 	if (pick < 0 && !g_installed.empty()) pick = Find(g_installed);
@@ -440,6 +411,13 @@ extern "C" const char* blupi_version_text(void)
 		if (g_edition == t.edition) return t.version;
 	}
 	return k_titles[0].version;
+}
+
+const char* PortEditionCredit()
+{
+	for (const auto& t : k_titles)
+		if (g_edition == t.edition) return t.credit;
+	return k_titles[0].credit;
 }
 
 bool PortLanguageExport(const std::string& which, const std::string& path)

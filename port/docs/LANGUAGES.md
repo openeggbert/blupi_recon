@@ -145,8 +145,11 @@ other language changes ([../../docs/EGGBERT.md](../../docs/EGGBERT.md), `ctest -
 
 - `common/platform/language.cpp`: the format, UTF-8 and Windows-1252. No game types, so every game
   can use it.
-- `games/sb1/game/language.cpp`: recognising the edition and the installed build, the packs, applying a
-  pack. Its strings answer `LoadString`, and its `[chars]` entries go into `table_char`, the
+- `common/ui/language_service.cpp` (since after 1.5.2 shared by both games, compiled in each game's
+  context; before, each game had its own copy): recognising the edition and the installed build, the
+  packs, applying a pack. What differs between the games is data in each game's
+  `game/language_catalog.h`: the game's id, the default variant, the built-in packs, the known
+  executables and the title images. Its strings answer `LoadString`, and its `[chars]` entries go into `table_char`, the
   font table, which is restored before each pack. A letter outside Windows-1252 gets a code
   the font leaves blank.
 - `games/sb1/game/port_switches.h`: `LANGUAGE_DE`, the pack's `variant` as the shared code sees it.
