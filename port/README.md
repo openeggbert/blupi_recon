@@ -173,7 +173,7 @@ The same options exist for one run on the command line: `--wide auto|off|16:9|85
 at two to four times its resolution (`--hd-scale N`, default 2) with a pack of re-drawn images in the
 game's folder layout, such as the sheets re-rendered from the original 3D models. The game still runs in
 640x480; only the presentation is larger. The settings file keeps `hdScale` and `hdPack`; the Display
-options screen has no switch for it yet.
+options screen sets the scale (**Images**: Original, 2x, 3x, 4x), used from the next start.
 
 **Speedy Eggbert 1** (the eGames edition, version 1.1 of the game) is the same game: point the
 port at its folder. Version 1.1 changes no gameplay. Like 1.1, the port then shows "Version 1.1"

@@ -106,6 +106,8 @@ variant = de                           <- the original's code variant (see below
   | 9014 | Fit the window |
   | 9015 | Whole pixels |
   | 9016 | Language |
+  | 9017 | Images (higher-resolution images, port/docs/HD.md) |
+  | 9018 | next start |
 
   The multiplayer address screen (port 1.3.0) and the provider list's Internet entry:
 
