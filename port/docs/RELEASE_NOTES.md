@@ -219,8 +219,9 @@ package with Emscripten.
     by pausing the desktop program, not on a device;
   - fds.openeggbert.com is the one public Free Direct server so far; any group can run its own
     (port/docs/FREE_DIRECT_SERVER.md).
-  - `wss://` from the desktop was tested on Linux and on Windows under Wine (against fds.openeggbert.com
-    and certificate test sites), not yet on a real Windows PC.
+  - `wss://` from the desktop was tested on Linux, on Windows under Wine and on Windows 10 (against
+    fds.openeggbert.com and certificate test sites; on Windows 10 also a game with a Linux host through
+    fds.openeggbert.com).
 - **Android:** the 1.5.x and 1.6.0 APKs were built but not run (no device or emulator was available);
   `wss://` there is untested. A player's own
   language file goes into a `languages` folder inside the game folder before importing it. Gamepads and

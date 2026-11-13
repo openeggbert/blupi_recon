@@ -20,7 +20,7 @@ numbers are in [STATUS.md](STATUS.md).
 - **CRT evidence objects** (STDARGV.C, CRT0DAT.C) compiled from the selected VC5 tree. They are never
   linked into the game.
 - **The historical `__FILE__` path** for `sound.cpp`, exactly as for the build
-  ([BUILD_PATH.md](BUILD_PATH.md)). Without it the gate is **INCOMPLETE**, and INCOMPLETE is never a pass.
+  ([BUILD_PATH.md](research/BUILD_PATH.md)). Without it the gate is **INCOMPLETE**, and INCOMPLETE is never a pass.
 
 ## Proof tiers
 
@@ -112,6 +112,6 @@ build/relink refactor.
 | Target model, editions, languages, source rules | [MULTI_GAME.md](MULTI_GAME.md), [EGGBERT.md](EGGBERT.md), [SB2.md](SB2.md), [SB1_DEMO.md](SB1_DEMO.md) |
 | Comparator internals, folded bodies, data proofs | [WORKFLOW.md](WORKFLOW.md), [MATCHING.md](MATCHING.md) |
 | Toolchain identification | [TOOLCHAIN.md](TOOLCHAIN.md) |
-| Whole-image and linker research | [SB1_CLOSURE.md](SB1_CLOSURE.md), [HISTLINK.md](HISTLINK.md), [LINK_ICF.md](LINK_ICF.md) |
+| Whole-image and linker research | [SB1_CLOSURE.md](research/SB1_CLOSURE.md), [HISTLINK.md](research/HISTLINK.md), [LINK_ICF.md](LINK_ICF.md) |
 | Equivalence certificates | [STANDALONE.md](STANDALONE.md), `tools/equivalence*.py`, `tests/test_equivalence.py` |
 | Everything else (studies, TU reports, sweeps) | [research/README.md](research/README.md) |

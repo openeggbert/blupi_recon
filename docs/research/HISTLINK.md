@@ -3,7 +3,7 @@
 [UPDATED 2026-10-25] Current use: `tools/histlink.py --tool sp3-link|rtm-link|rtm-cvtres` (the RTM LINK
 and CVTRES modes came later, in `22129ec` and `47c1d87`), normally started by `tools/relink.py
 --historical-host` or `--historical-cvtres-only`. This is verification tooling; the ordinary build does not
-use it ([BUILDING.md](BUILDING.md)). The SP3-only description below is the original round-2 record.
+use it ([BUILDING.md](../BUILDING.md)). The SP3-only description below is the original round-2 record.
 
 [EVIDENCE] HEAD advanced during final review to `4a357bc`, a documentation-only
 TreatEventBase correction. The measured object sets stayed byte-identical;

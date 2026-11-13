@@ -30,8 +30,8 @@ Current release: **1.5.2** (Windows x64, Linux x86-64, Android and web packages)
 | `games/sb1/editions.cmake` | port | The edition programs: the shared TUs from `../games/sb1-eggbert-demo/`, `../games/sb1-eggbert-value/` (overlays on `../src`) and `../games/sb1-blupi-demo/src/`, compiled unchanged, and `games/sb1/game` compiled again with `BLUPI_EDITION_KEY` ([EDITIONS.md](docs/EDITIONS.md)) |
 | `games/sb2/` | port, partly derived from historical TUs | `blupi2`: six platform adapters in `game/` (`main`←`blupi`, pixmap, sound, misc, movie, network), derived from SB1's adapters and SB2's reconstructed bodies; `ddutil` is replaced by the render device. `game/event.cpp`←`games/sb2/src/event.cpp` selects the original edition's phase data and quit/intro/retry behavior. SB2 state hash, edition/language service (version and optional credit data), forced switches, const scene builder/end of tick (SB2 `decblock.cpp`/`decor.cpp` using SB1's split), wide editor derivative (SB2 `event.cpp`/`decdesign.cpp`, all eleven tools), test probes and original resource strings in `languages/`. `res/`: its icon, the same waving pose from SB2's green Blupi sheet (`tools/make_icon.py --game sb2`). Optional wide/interpolated/display-rate presentation follows SB1; faithful 640×480 tick rendering remains the reference. Status: [SB2_PORT.md](docs/SB2_PORT.md) |
 | `common/scene/commands.h` | port, shared by both games | Scene command storage, layer/coverage types and faithful replay (including gauge snapshots); adapters supply historical types, text calls and channel/size constants. Entity identities, visibility, scene builders, views and end-of-tick changes remain game-owned |
-| `common/ui/` | port, shared by both games | The language service (`language_service.cpp`; each game's data in `game/language_catalog.h`, since after 1.5.2). Display options framework (posted commands, game buttons/fonts, presentation overlay) compiled in each game's own header context; entry placement supplied by the game. Plain JSON settings load/save; each game supplies its file name and user root |
-| `common/pixmap/` | port, shared by both games | CPixmap's port support (since after 1.5.2; consolidation stage 4): the rendering devices, the DirectDraw registry entries, blit and colour-key helpers, the image and palette loaders (`pixmap_port.h`) and the presentation helpers (`pixmap_present.h`), included by each game's `pixmap.cpp` and compiled in its context. CPixmap's policy, clipping and icon tables stay in the game |
+| `common/ui/` | port, shared by both games | The language service (`language_service.cpp`; each game's data in `game/language_catalog.h`, since 1.6.0). Display options framework (posted commands, game buttons/fonts, presentation overlay) compiled in each game's own header context; entry placement supplied by the game. Plain JSON settings load/save; each game supplies its file name and user root |
+| `common/pixmap/` | port, shared by both games | CPixmap's port support (since 1.6.0; consolidation stage 4): the rendering devices, the DirectDraw registry entries, blit and colour-key helpers, the image and palette loaders (`pixmap_port.h`) and the presentation helpers (`pixmap_present.h`), included by each game's `pixmap.cpp` and compiled in its context. CPixmap's policy, clipping and icon tables stay in the game |
 | `common/presentation/timing.h` | port, shared by both games | Fixed tick scheduling with dropped missed ticks, presentation alpha and timing diagnostics; no game or compat headers |
 | `common/render/` | port | Rendering device interface and commands (`device.h`), software reference renderer (8 bpp palettized and RGB565 surfaces, DirectDraw blit rules), BMP reader. No SDL, no Win32 names |
 | `common/platform/` | port | SDL3 host: window/presentation, input, touch controls, timing, audio mixer, MIDI synthesizer, file system roots, the language-pack format, icon, `SDL_main` entry (calls the game's `BlupiMain`). No game names: the game passes its own (e.g. its user folder's) |
@@ -170,7 +170,7 @@ The same options exist for one run on the command line: `--wide auto|off|16:9|85
 `--interpolate`, `--present display|tick`, `--fullscreen`, `--integer-scale`, `--scale N`,
 `--language CODE`.
 
-**Higher-resolution images** (after 1.5.2; [docs/HD.md](docs/HD.md)): `--hd-pack <folder>` shows the game
+**Higher-resolution images** (since 1.6.0; [docs/HD.md](docs/HD.md)): `--hd-pack <folder>` shows the game
 at two to four times its resolution (`--hd-scale N`, default 2) with a pack of re-drawn images in the
 game's folder layout, such as the sheets re-rendered from the original 3D models. The game still runs in
 640x480; only the presentation is larger. The settings file keeps `hdScale` and `hdPack`; the Display
@@ -305,7 +305,7 @@ Not implemented / known gaps (each fails the way the original did when the servi
   device, the game reads it as its joystick as above and this mode is off. On Android this code
   is built but untested.
 - **MouseType 2/3** (Windows cursors): the original's own cursors, the historical resources
-  `src/res/*.cur` compiled in (since after 1.5.2; `ctest -R cursor_resources`), enlarged with the
+  `src/res/*.cur` compiled in (since 1.6.0; `ctest -R cursor_resources`), enlarged with the
   frame (the window's height over 480, whole times) as the 640x480 full screen showed them. Where a
   platform has no custom cursors, the nearest system cursor. The default MouseType 1 (game-drawn
   cursor) is exact.

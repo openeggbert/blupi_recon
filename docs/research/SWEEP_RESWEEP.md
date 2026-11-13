@@ -15,7 +15,7 @@ Six newly STRICT, distinct target bodies add 682 unique oracle bytes. The `candi
 | `MoveChargeDetect` | `0x13800` | 159 | 160 | imported `IntersectRect` |
 | `MoveObjectPriority` | `0x13c10` | 160 | 160 | `UpdateCaisse` |
 
-All six are `STRICT` with proven relocations where present. The candidate sources are [decblupi.cpp](../scratch/resweep/decblupi.cpp) and [decmove.cpp](../scratch/resweep/decmove.cpp). No canonical source or header was changed.
+All six are `STRICT` with proven relocations where present. The candidate sources are [decblupi.cpp](../../scratch/resweep/decblupi.cpp) and [decmove.cpp](../../scratch/resweep/decmove.cpp). No canonical source or header was changed.
 
 ## Compiler findings
 

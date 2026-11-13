@@ -145,7 +145,7 @@ other language changes ([../../docs/EGGBERT.md](../../docs/EGGBERT.md), `ctest -
 
 - `common/platform/language.cpp`: the format, UTF-8 and Windows-1252. No game types, so every game
   can use it.
-- `common/ui/language_service.cpp` (since after 1.5.2 shared by both games, compiled in each game's
+- `common/ui/language_service.cpp` (since 1.6.0 shared by both games, compiled in each game's
   context; before, each game had its own copy): recognising the edition and the installed build, the
   packs, applying a pack. What differs between the games is data in each game's
   `game/language_catalog.h`: the game's id, the default variant, the built-in packs, the known

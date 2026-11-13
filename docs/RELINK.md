@@ -457,7 +457,7 @@ separate open items.
 and prints a banner; the image is for layout measurement only (never a match claim, never executed). Objects:
 `verify.py --build-dir linkdiag` with scratch/linkfix candidates (decor tables + table_decor_action +
 DecorNextAction in decblock.cpp, the three SB2-only decmove callers removed, table_adapt_decor moved, pixtables-only
-dectables.cpp, empty obstacle.cpp; docs/LINK_CONTEXT.md). Gate: GetBlupiInfo and MockeryDetect regress (context).
+dectables.cpp, empty obstacle.cpp; docs/research/LINK_CONTEXT.md). Gate: GetBlupiInfo and MockeryDetect regress (context).
 
 [EVIDENCE] **First successful natural link** (`build/relink/diag/`): zero unresolved and zero duplicate symbols.
 - `.text` virtual size is only 48 bytes below the oracle; `.rdata` is 5,884 bytes larger, which moves `.data` up one
@@ -480,7 +480,7 @@ network.cpp's `APP_GUID` (0x2c2c0): IID_IDirectPlay2, 2A, 3, 3A, CLSID_DirectPla
 IID_IDirectPlay. That is the DX6 dplay.h list **without IID_IDirectPlay4/4A** (VC5's own DPLAY.H is DirectX 3 and has
 only IID_IDirectPlay). So network.cpp defined `INITGUID` before including a **DirectX 5 SDK** dplay.h, and dxguid.lib
 was not linked. The manifest therefore uses `C:\tools\dx5sdk\INCLUDE` since the DX5 integration (zero regressions,
-docs/LINK_CONTEXT.md); link with the DX5 libraries and without dxguid.lib.
+docs/research/LINK_CONTEXT.md); link with the DX5 libraries and without dxguid.lib.
 [EVIDENCE] src/network.cpp now starts with `#define INITGUID` (2026-10-18): it emits the ten dplay.h GUIDs and
 APP_GUID in the oracle's order and bytes (IID_IDirectPlay2 first, APP_GUID at +0xa0), all 19 accepted network.cpp
 functions stay STRICT, and tools/relink.py links C:	ools\dx5sdk\LIB without dxguid.lib. Remaining unresolved link
@@ -560,7 +560,7 @@ The unmodified LINK 5.10 (C:	ools\msvc5_sp3\VC\BIN\LINK.EXE) runs under a launch
 all 111 of LINK's MSVCRT imports are bound in process memory to the VC5 redistributable MSVCRT.DLL (loaded under a private
 name because the modern msvcrt.dll is a KnownDLL), and the clock APIs LINK uses report the oracle link time 1998-10-14
 07:17:39 UTC. Neither tool nor runtime file is modified and no output byte is edited; repeated links are byte-identical.
-Details: docs/HISTLINK.md (worker sol-icf).
+Details: docs/research/HISTLINK.md (worker sol-icf).
 Result with the current objects: TimeDateStamp 0x36245013 (equal); `.text` same-offset equal bytes 23,062 -> 109,395
 (the historical qsort orders contributions as the original LINK did); `.rdata` 4,652 / 4,978; `.rsrc` exact; `.data` size
 exact. Whole file: same size, 66,966 bytes differ, 66,622 of them in `.text` (open functions shift code); header

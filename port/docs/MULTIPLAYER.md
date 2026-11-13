@@ -98,9 +98,15 @@ different games or editions never do (the protocol id and the content check belo
   `net_tls_online` (`-DBLUPI_TEST_ONLINE_SERVER=wss://...`): a real server with the system's trust.
   [EVIDENCE, 2026-11-12] `wss://fds.openeggbert.com` welcomed the probe on Linux (CA bundle) and on
   Windows under Wine (the system check); badssl.com's expired, wrong-name, self-signed and
-  untrusted-root certificates were refused on both. Not tested: Android, and real Windows.
+  untrusted-root certificates were refused on both. Not tested: Android.
+  [EVIDENCE, 2026-11-13] On Windows 10 (a VirtualBox VM, the 1.6.0 package): `test_net_tls` was welcomed
+  by `wss://fds.openeggbert.com` 6 times out of 6 (one earlier attempt, made just after the VM's network
+  came up, ended with "the server does not answer"), and refused badssl.com's four certificates with the
+  right reasons (expired, another name, not trusted twice). A Speedy Blupi game through
+  `wss://fds.openeggbert.com`: the Linux 1.6.0 program hosted (room and session), the Windows 10 program
+  joined with the room ID, and both reached play.
 
-## Robustness (after 1.5.2, 2026-11-13)
+## Robustness (1.6.0, 2026-11-13)
 
 [EVIDENCE] Tests on Linux (`tests/net_session.py`; SB1 on Speedy Blupi data, SB2 on Speedy Eggbert 2
 data; every test runs twice and both runs must repeat exactly, except where noted):

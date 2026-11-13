@@ -1,6 +1,6 @@
 # Source-build baseline and behavioral exceptions (2026-10-19)
 
-The milestone is consolidated; see [RECOVERY_MILESTONE.md](RECOVERY_MILESTONE.md)
+The milestone is consolidated; see [RECOVERY_MILESTONE.md](research/RECOVERY_MILESTONE.md)
 for retained artifacts and restoration of historical experiment paths.
 
 [EVIDENCE] All 19 translation units and checked-in resources compile and link

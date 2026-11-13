@@ -1,7 +1,7 @@
 # Remaining-blocker checks (2026-10-19)
 
 Cleanup note: the historical paths below were consolidated into the local research
-archive; restore scripts as described in [RECOVERY_MILESTONE.md](RECOVERY_MILESTONE.md).
+archive; restore scripts as described in [RECOVERY_MILESTONE.md](research/RECOVERY_MILESTONE.md).
 Large intermediates must be regenerated. The findings below remain the canonical record.
 
 [EVIDENCE] Fresh checks of commit `78617ac` produced no new STRICT function. Canonical source and

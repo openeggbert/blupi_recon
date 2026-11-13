@@ -42,7 +42,7 @@ reconstruction. The port builds each as a program of its own, next to `blupi-sdl
 (`BLUPI_TEST_DATA_EGGBERT_DEMO`, `BLUPI_TEST_DATA_EGGBERT_VALUE`, `BLUPI_TEST_DATA_BLUPI_DEMO`), shows
 the title screen and plays the attract-mode demo.
 
-**Fidelity (after 1.5.2, 2026-11-13):**
+**Fidelity (1.6.0, 2026-11-13):**
 
 - [EVIDENCE] **Cross-build oracle.** Each edition's ordinary historical build (`tools/build.py`, from
   this repository's source in the win10 VM; never the original) ran under Wine against the port
@@ -63,7 +63,7 @@ the title screen and plays the attract-mode demo.
   `golden_eggbert-value_attract8`, `golden_blupi-demo_attract8` (`tests/golden/`, 7,500 frames,
   a checkpoint every 10), recorded on unplayed data from the code that matched the oracle. They are the
   regression gate for these programs, as the other goldens are for theirs.
-- **Android (after 1.5.2):** the app has the three editions too: `libeggbert_demo.so`,
+- **Android (since 1.6.0):** the app has the three editions too: `libeggbert_demo.so`,
   `libeggbert_value.so` and `libblupi_demo.so`, each run by its own activity in a process of its own,
   with its import in `files/game-<edition>` and its saves in a folder of its own. The importer tells
   the editions apart by their installed files (`GameFolder.java`, `ctest -R android_game_folder`): the

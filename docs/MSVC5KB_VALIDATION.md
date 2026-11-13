@@ -153,7 +153,7 @@ This document records the KB transfer checks against Speedy Blupi 1. **[EVIDENCE
   DecorNextAction is STRICT (272 bytes); the last state restores GetBlupiInfo. Every state regresses MouseMove, whose
   TU has no aggregate replacement. Sound's sandbox build-path limitation is expected.
 - **[EVIDENCE]** 859 serial `ctxsweep_tu.py` diagnostic compiles check all accepted peers with private headers beside
-  its generated TU. [LINK_CONTEXT.md](LINK_CONTEXT.md#authentic-aggregate-experiment-sol-macros-2026-10-18) records
+  its generated TU. [LINK_CONTEXT.md](research/LINK_CONTEXT.md#authentic-aggregate-experiment-sol-macros-2026-10-18) records
   every regression and bounded window, including new IsVentillo thresholds 106/150. Masked byte equality is diagnostic
   only; full verifier outcomes provide acceptance evidence. No probe declarations are retained in candidate source.
 - **[EVIDENCE, negative]** The six changed TUs preserve helper-control non-relocation function bytes except
@@ -185,7 +185,7 @@ needed declarations; exact historical ordering is not established by PB.
 PB b0270ab's decmove.h has only two one-argument prototypes (cost four),
 and its movement/icon tables are not SB1's moving-object animation tables.
 Supervisor gate outside the sandbox: `tools/verify.py --accept` 113,344 / 141,488, zero regressions; integrated
-(docs/LINK_CONTEXT.md "DX5 state integrated").
+(docs/research/LINK_CONTEXT.md "DX5 state integrated").
 
 ## LINK 5.10 ICF survivor order (sol-icf, 2026-10-18)
 
@@ -308,7 +308,7 @@ baseline 4,668 masked bytes, 1995/2029. The 208-run sweep was not repeated.
 
 [HYPOTHESIS] REG-11, ALLOC-16 and ALLOC-17 are stated as general VC5 SP3 /O2 mechanisms because they are decoded
 from c2 code paths and checked on every SB1 instance found; they are not validated on any other code base or flag
-set. Transfer notes for Blood II: docs/BLOOD2_TRANSFER.md.
+set. Transfer notes for Blood II: docs/research/BLOOD2_TRANSFER.md.
 
 ## Final targeted experiments (2026-10-19, round 4)
 

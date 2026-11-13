@@ -6,7 +6,8 @@ The single current status page for every historical executable and the SDL3 port
 re-run on that day with identical results. On **2026-11-12** the
 Russian edition was documented ([EGGBERT_RU.md](EGGBERT_RU.md)), the port's provenance map was
 updated, this page moved to `main`, and the port section (5) was re-run for port 1.5.0, and again
-for port 1.5.2 (`wss://` on the desktop and Android) the same day.
+for port 1.5.2 (`wss://` on the desktop and Android) the same day. On **2026-11-13** it was re-run for
+port 1.6.0, with the Windows package also checked on Windows 10.
  Each figure is marked **fresh** (re-run for this page) or
 **doc** (taken from the cited document). Progress is reported per executable; no figure here is a
 combined metric. The previous SB1-only page is preserved as
@@ -108,7 +109,7 @@ with each original.
 
 - **SB1 US:** almost all of its differences are a +16 shift. LINK keeps a different copy of a folded
   empty function (an ICF survivor), plus the CRT filter survivor and the import order. Its Rich count
-  is 268 against 270 ([SB1_CLOSURE.md](SB1_CLOSURE.md), [BLOCKER_CHECKS.md](BLOCKER_CHECKS.md)).
+  is 268 against 270 ([SB1_CLOSURE.md](research/SB1_CLOSURE.md), [BLOCKER_CHECKS.md](BLOCKER_CHECKS.md)).
 - **The original linker inputs are underdetermined,** and that limit applies to every target.
 - **SB1 demo:** its own resource script since 2026-11-11; `.rsrc` differs in the directory timestamps
   only. LINK keeps a different copy of a folded destructor and `ChangePhase` is 16 bytes longer, which
@@ -146,8 +147,24 @@ Fresh: consolidation stage 1, on commit `a4a2352`. Details are in [BUILDING.md](
 The port is five native programs: `blupi-sdl3` (SB1, Eggbert 1), `blupi2-sdl3` (Blupi 2, Eggbert 2),
 and since 1.3.0 `eggbert-demo-sdl3`, `eggbert-value-sdl3` and `blupi-demo-sdl3` (the editions with
 source of their own). They compile the historical game TUs unchanged: 12 from `src/` and 11 from
-`games/sb2/src/` ([port/README.md](../port/README.md)). Release 1.5.2 has Windows, Linux, Android and
-web packages.
+`games/sb2/src/` ([port/README.md](../port/README.md)). Release 1.6.0 has Windows, Linux, Android and
+web packages; since 1.6.0 the Android app has all five programs too.
+
+**Fresh results (2026-11-13, port 1.6.0, tag `port-v1.6.0`):**
+
+- **Linux test suite: 308 / 308 passed** in the release build (`port/tools/linux_release.sh`, `ctest -j 1`,
+  3,628 s), with the new tests for Ogg Vorbis and FLAC tracks, the original cursors, the higher-resolution
+  images (`hd_*`), the editions' goldens, and multiplayer through a lossy, delaying and reordering link
+  and with members leaving, killed or suspended.
+- **Windows:** 46 / 46 of the network, launcher and golden subset under Wine. **On Windows 10** (the
+  VirtualBox VM, the package itself): the tour, German tour and editor goldens, Speedy Eggbert 2's attract
+  mode and the attract modes of the Speedy Eggbert Demo (8 bpp), Valueware (16 bpp) and the June 1998 demo
+  (8 bpp) replayed identically; the three HD checks found every display (811, 1,511 and 1,511) the exact
+  enlargement of the faithful frame, with 17 images from the test pack in the two pack runs;
+  `test_music_pcm` (Ogg and FLAC) and `fidelity_stdio_sb1` passed; `wss://` and a game with a Linux host
+  through fds.openeggbert.com worked ([port/docs/MULTIPLAYER.md](../port/docs/MULTIPLAYER.md)).
+- **Web:** the five programs pass in Chrome and Firefox, and the relay game in both.
+- **Android:** built and signed (all five programs, arm64-v8a and x86_64), not run.
 
 **Fresh results (2026-11-12, port 1.5.2, tag `port-v1.5.2`):**
 
@@ -184,7 +201,7 @@ web packages.
 | Eggbert 1 (each language) | 12 | 24 | 16 | 14 | 6 | 72 |
 | Blupi 2 (each language) | 11 | 30 | 17 | 15 | 7 | 80 |
 | Eggbert 2 | 11 | 27 | 17 | 15 | 7 | 77 |
-| SB1 demo | outside the supported catalog (F454); goldens and the Wine oracle since after 1.5.2 | | | | | |
+| SB1 demo | outside the supported catalog (F454); goldens and the Wine oracle since 1.6.0 | | | | | |
 
 **Runtime evidence** (doc: [port/docs/ORACLE.md](../port/docs/ORACLE.md) and
 [port/oracle/SB1_SAVE.md](../port/oracle/SB1_SAVE.md)):
@@ -193,7 +210,7 @@ web packages.
   2,200 frames identical for SB1 and for each SB2 edition, at 8 and 16 bpp.
 - **SB1 screen tour:** identical except for the multiplayer provider list.
 - **SB1 US save interchange:** identical in one recorded scenario, at both depths.
-- **Under Wine on Linux (after 1.5.2):** the ordinary historical builds against the port, attract mode,
+- **Under Wine on Linux (since 1.6.0):** the ordinary historical builds against the port, attract mode,
   2,200 displays each: SB1 US at 16 and 8 bpp and Speedy Eggbert 1 at 16 bpp identical (the SB1 rows
   repeat the Windows result), and the editions too: the Speedy Eggbert Demo (8 bpp), Valueware (16 and
   8 bpp) and the June 1998 demo (8 bpp) ([port/docs/ORACLE.md](../port/docs/ORACLE.md)).
@@ -207,25 +224,26 @@ These are bounded receipts, not whole-game certification.
   and Android, with LAN discovery, a content check and `--net-join`; an in-game address entry since
   1.3.0; and since 1.5.0 play through a Free Direct server (rooms with secret IDs, no open ports), which
   is also the browser's way. Tested automatically on one machine and, for each game, by the user between
-  real devices (1.2.0); little other real-world play. After 1.5.2: tests through a lossy, delaying,
+  real devices (1.2.0); little other real-world play. Since 1.6.0: tests through a lossy, delaying,
   reordering proxy, with members killed or quitting in play and in the lobby, and with an app in the
   background as on Android, with a session keep-alive (port/docs/MULTIPLAYER.md, "Robustness").
 - **AVI movies:** not played; the phase is skipped.
-- **SB2 CD audio:** plays ripped tracks the player supplies (`music/trackNN.wav`, port 1.3.0; also `.ogg` and `.flac` after 1.5.2); without
+- **SB2 CD audio:** plays ripped tracks the player supplies (`music/trackNN.wav`, port 1.3.0; also `.ogg` and `.flac` since 1.6.0); without
   them it fails and logs once. No archive holds the tracks.
 - **MIDI:** played with a modern SoundFont, not the 1998 device's timbre.
-- **Higher-resolution images (after 1.5.2):** an optional presentation at 2 to 4 times the resolution,
+- **Higher-resolution images (since 1.6.0):** an optional presentation at 2 to 4 times the resolution,
   with a pack of re-drawn images ([port/docs/HD.md](../port/docs/HD.md)); the faithful frame, traces and
   goldens are unchanged, and without a pack every presented frame is the exact enlargement of the faithful
   one (`ctest -R '^hd_'`). Desktop only for now.
-- **Coverage gaps:** hardware gamepads and Android keyboard/background are open. SB2 on Android
+- **Coverage gaps:** hardware gamepads and the Android keyboard are open; the Android background
+  keep-alive is tested on the desktop only. SB2 on Android
   (since 1.2.0-rc2) is checked on the emulator (start, menus, touch controls, play) and by the user's
   multiplayer test.
 
 ## 6. Where work stands
 
 - **Matching.** The SB1 and SB2 function residues are at the limit of the current evidence: the
-  open functions need authentic source or context evidence (docs/SB1_CLOSURE.md, docs/SB2.md
+  open functions need authentic source or context evidence (docs/research/SB1_CLOSURE.md, docs/SB2.md
   section 12). Matching research resumes only on new evidence.
 - **Whole image.** The original linker inputs (dead contributions, TU population, order) are
   underdetermined by the binaries. Experimental witnesses, such as branch `sb1-histlink`, are
@@ -233,8 +251,10 @@ These are bounded receipts, not whole-game certification.
 - **Consolidation.** Stages 1 (ordinary builds), 2 (this documentation) and 3 (port cleanup: Linux
   release and test portability, Android import, port docs; `083944a`) are done, and stage 4 (the port's
   shared services: languages, CPixmap's and CSound's port support) on branch `port-improvements-2`
-  (2026-11-13), each part gated by the full suite and the Wine oracle. Stage 5 is optional
-  (docs/CONSOLIDATION_PLAN.md).
-- **Port.** 1.5.2 ships the five programs on Windows, Linux and the web (the two games on Android),
-  with multiplayer on a LAN, by address, and through a Free Direct server (`ws://` or `wss://`). Open: running the Android
-  build on a device and tests on real networks (simulated faults: after 1.5.2).
+  (2026-11-13), each part gated by the full suite and the Wine oracle. Stage 5 (local hygiene) is done
+  on branch `consol-5` (2026-11-13): 29 research documents moved into `docs/research/`; those named by
+  pinned or historical files stay in `docs/` (docs/CONSOLIDATION_PLAN.md).
+- **Port.** 1.6.0 ships the five programs on Windows, Linux, Android and the web, with multiplayer on a
+  LAN, by address, and through a Free Direct server (`ws://` or `wss://`). Open: running the Android
+  build on a device, and play on real networks beyond one game between Windows 10 and Linux through
+  fds.openeggbert.com (simulated faults since 1.6.0).

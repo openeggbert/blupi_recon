@@ -50,7 +50,7 @@ records it as DEGRADED.
 under an audit hook that records each file opened and each module imported.
 
 **Historical `__FILE__` paths.** `sound.cpp` embeds its build path through `TRY_DS`
-(docs/BUILD_PATH.md):
+(docs/research/BUILD_PATH.md):
 
 - SB1 builds use `F:\Profil\sound.cpp` (a temporary drive mapping), so drive F: must be free.
 - Blupi 2 uses `D:\Blupi\Profil\sound.cpp`, and Eggbert 2 uses `D:\Blupi\Profil egames 2\sound.cpp`.
@@ -149,7 +149,7 @@ environment, shared with `tools/relink.py`; `build.json` records the DLLs actual
 - **Base, alignment and object order** are each manifest's `standalone_link`. They are chosen
   ordinary-build settings: the object order is the text order of the originals' TU anchors.
   [EVIDENCE] They are not a claim of the original linker inputs, TU population or source layout
-  (docs/SB1_CLOSURE.md). Eggbert 1's originals place `menu` before `jauge`; the shared SB1 order is
+  (docs/research/SB1_CLOSURE.md). Eggbert 1's originals place `menu` before `jauge`; the shared SB1 order is
   kept for all SB1 targets.
 - **Blupi 2's overlay** is staged by `tools/source_tree.py`, so that quoted includes resolve to the
   edition's headers. The logical TU names stay in `games/sb2/src/`.
@@ -179,7 +179,7 @@ What varies between builds:
 | Resource-directory timestamps (RTM CVTRES) | Same: the current time | Fixed by a clock-fixed CVTRES (below); SP3 CVTRES writes 0 |
 | Object `TimeDateStamp`, and the COFF `.file` record (absolute source path) | VC5 | `sections_sha256` per object covers code and data only. The linked image does not contain them |
 | Unavailable historical `__FILE__` path | Host or sandbox | `DEGRADED`; different `.data`; never accepted |
-| Original linker inputs, TU population, link order | Underdetermined by the evidence (docs/SB1_CLOSURE.md) | Not modelled by the ordinary build; it is not the original image |
+| Original linker inputs, TU population, link order | Underdetermined by the evidence (docs/research/SB1_CLOSURE.md) | Not modelled by the ordinary build; it is not the original image |
 
 **A fixed timestamp (since 2026-11-12).** Every target records its original's own PE link time and
 resource-directory time in `targets.json` (`build_time`). These values are a chosen build setting, not
@@ -218,7 +218,7 @@ What the build records and checks:
 
 - [OPEN] **No byte-identical whole image is claimed for any target.**
   - SB1 US: the verification relink of the same sources is `557ca92e…`, which still differs from the
-    original (docs/SB1_CLOSURE.md).
+    original (docs/research/SB1_CLOSURE.md).
   - SB2: `.data` virtual size +32 (docs/SB2.md).
 - **The toolchain roots are fixed under `C:\tools`.** There is no override yet.
 - **The compile locks live in each checkout's `build/locks`.** Two checkouts building at once are not

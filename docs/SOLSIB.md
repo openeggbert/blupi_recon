@@ -512,7 +512,7 @@ and remove `int m_900`. No constants or method declarations change.
 |---|---|---|
 | m_name | Starts `0x490`, 96 bytes | Starts `0x490`, 100 bytes. |
 | m_names | Wrapper array starts `0x4f0`; each text starts four bytes later | Plain row zero starts `0x4f4`, stride 100, preserving every row text address in DrawButtons. |
-| m_bNamesExist | Starts `0x8d8` | Starts `0x8dc`. Target DrawButtons `+0x1af3` reads `[this + fileIndex*4 + 0x8dc]`; the same canonical discrepancy was independently recorded for ReadAll in docs/SWEEP_SWEEPA.md. |
+| m_bNamesExist | Starts `0x8d8` | Starts `0x8dc`. Target DrawButtons `+0x1af3` reads `[this + fileIndex*4 + 0x8dc]`; the same canonical discrepancy was independently recorded for ReadAll in docs/research/SWEEP_SWEEPA.md. |
 | m_900 / m_filenameBuffer | Unused scalar at `0x900`; filenames at `0x904` | Scalar removed; the longer presence array ends at `0x904`, so filenames and all subsequent members retain their offsets. |
 
 **[EVIDENCE]** The GAMER clear-button access uses the one-based gamer number:

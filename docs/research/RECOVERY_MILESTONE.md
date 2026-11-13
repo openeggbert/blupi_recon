@@ -11,13 +11,13 @@ The cnc-ddraw smoke test reached the first level and exited normally.
 
 | Question | Canonical record |
 |---|---|
-| Build without the original executable | [STANDALONE.md](STANDALONE.md), `tools/build.py`, `recon.json` |
-| Byte-exact acceptance and exceptions | [WORKFLOW.md](WORKFLOW.md), `evidence/equivalence/`, `tools/verify.py` |
-| Runtime setup and color depth | [RUNTIME.md](RUNTIME.md), `tools/runtime_smoke.ps1` |
-| Remaining 40 differing code bytes | [RESIDUAL_CAUSES.md](RESIDUAL_CAUSES.md), [STATUS.md](STATUS.md) |
-| Historical compiler runtime controls | [BLOCKER_CHECKS.md](BLOCKER_CHECKS.md) |
-| Independent Planet compiler evidence | [PLANET_ORACLE.md](PLANET_ORACLE.md), `tools/planet_oracle.py` |
-| Compiler findings and negative experiments | `msvc5kb/catalog.json`, [STEERING.md](STEERING.md) |
+| Build without the original executable | [STANDALONE.md](../STANDALONE.md), `tools/build.py`, `recon.json` |
+| Byte-exact acceptance and exceptions | [WORKFLOW.md](../WORKFLOW.md), `evidence/equivalence/`, `tools/verify.py` |
+| Runtime setup and color depth | [RUNTIME.md](../RUNTIME.md), `tools/runtime_smoke.ps1` |
+| Remaining 40 differing code bytes | [RESIDUAL_CAUSES.md](../RESIDUAL_CAUSES.md), [STATUS.md](../STATUS.md) |
+| Historical compiler runtime controls | [BLOCKER_CHECKS.md](../BLOCKER_CHECKS.md) |
+| Independent Planet compiler evidence | [PLANET_ORACLE.md](../PLANET_ORACLE.md), `tools/planet_oracle.py` |
+| Compiler findings and negative experiments | `msvc5kb/catalog.json`, [STEERING.md](../STEERING.md) |
 
 [OPEN] Neither full-image byte identity nor exhaustive gameplay equivalence is
 claimed. The two strict body matches and original linker placement remain parked
