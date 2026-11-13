@@ -1,0 +1,167 @@
+name: SDL3 port build and tests
+# Builds the SDL3 port (port/README.md) for Linux, the web (Emscripten) and Windows (MinGW-w64
+# cross build) and runs the tests that need no game data: the repository holds none, and none may
+# be added (port/AGENTS.md). Linux also runs net_tls against a free-direct-server built here; the
+# Windows programs run under Wine. The data-dependent suite (goldens, demos, multiplayer games)
+# stays a local release step (port/docs/RELEASING.md).
+on:
+  push:
+    paths: ['port/**', 'src/**', 'games/**', '.github/workflows/port.yml']
+  pull_request:
+    paths: ['port/**', 'src/**', 'games/**', '.github/workflows/port.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: port-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  SDL3_TAG: release-3.4.16
+  EMSDK_VERSION: 6.0.9
+  # free-direct-server for net_tls: the commit the port's relay tests were made with
+  # (port/docs/MULTIPLAYER.md), and the IXWebSocket release it is tested with.
+  FREE_DIRECT_COMMIT: d9c8edb357e5aef81d16d395daef287d48e046ec
+  IXWEBSOCKET_TAG: v11.4.6
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Packages
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -qy --no-install-recommends ninja-build g++-14 python3 openssl libssl-dev \
+            libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxi-dev libxss-dev libxtst-dev \
+            libxfixes-dev libwayland-dev libxkbcommon-dev libdecor-0-dev libegl-dev libgles-dev \
+            libdrm-dev libgbm-dev libasound2-dev libpulse-dev libudev-dev libdbus-1-dev
+      - id: sdl3-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/sdl3
+          key: sdl3-linux-${{ env.SDL3_TAG }}-gcc14
+      - name: SDL3
+        if: steps.sdl3-cache.outputs.cache-hit != 'true'
+        run: |
+          git clone -q --depth 1 --branch "$SDL3_TAG" https://github.com/libsdl-org/SDL.git ~/sdl3-src
+          cmake -S ~/sdl3-src -B ~/sdl3-build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc-14 \
+            -DCMAKE_INSTALL_PREFIX="$HOME/sdl3" -DSDL_TESTS=OFF -DSDL_EXAMPLES=OFF -DSDL_TEST_LIBRARY=OFF
+          cmake --build ~/sdl3-build -j 4
+          cmake --install ~/sdl3-build >/dev/null
+      - name: free-direct-server
+        run: |
+          git clone -q --depth 1 --branch "$IXWEBSOCKET_TAG" https://github.com/machinezone/IXWebSocket.git ~/ixwebsocket
+          git init -q ~/free-direct
+          git -C ~/free-direct fetch -q --depth 1 https://github.com/openeggbert/free-direct.git "$FREE_DIRECT_COMMIT"
+          git -C ~/free-direct checkout -q FETCH_HEAD
+          cmake -S ~/free-direct/server -B ~/free-direct-build -G Ninja -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_COMPILER=g++-14 -DFREE_DIRECT_IXWEBSOCKET_SOURCE_DIR="$HOME/ixwebsocket"
+          cmake --build ~/free-direct-build -j 4
+          find ~/free-direct-build -maxdepth 2 -name free-direct-server -type f
+      - name: Configure
+        run: |
+          cmake -S port -B build/port -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+            -DCMAKE_C_COMPILER=gcc-14 -DCMAKE_CXX_COMPILER=g++-14 -DCMAKE_PREFIX_PATH="$HOME/sdl3" \
+            -DBLUPI_BUNDLE_SOUNDFONT=OFF \
+            -DBLUPI_TEST_RELAY_SERVER="$(find ~/free-direct-build -maxdepth 2 -name free-direct-server -type f | head -n 1)"
+      - name: Build
+        run: cmake --build build/port -j 4
+      - name: Tests (no game data)
+        run: |
+          export LD_LIBRARY_PATH="$HOME/sdl3/lib"
+          ctest --test-dir build/port -N | tail -n 1
+          ctest --test-dir build/port -j 4 --output-on-failure --timeout 600
+
+  web:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true   # the GeneralUser GS SoundFont of the site
+      - name: Packages
+        run: sudo apt-get update -q && sudo apt-get install -qy --no-install-recommends ninja-build
+      - id: emsdk-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/emsdk
+          key: emsdk-${{ env.EMSDK_VERSION }}
+      - name: Emscripten SDK
+        if: steps.emsdk-cache.outputs.cache-hit != 'true'
+        run: |
+          git clone -q --depth 1 https://github.com/emscripten-core/emsdk.git ~/emsdk
+          ~/emsdk/emsdk install "$EMSDK_VERSION"
+          ~/emsdk/emsdk activate "$EMSDK_VERSION"
+      - name: SDL3 sources
+        run: |
+          git clone -q --depth 1 --branch "$SDL3_TAG" https://github.com/libsdl-org/SDL.git build/third_party/SDL3-3.4.16
+      - name: Build
+        run: |
+          . ~/emsdk/emsdk_env.sh >/dev/null
+          emcmake cmake -S build/third_party/SDL3-3.4.16 -B build/port-web/sdl3-build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release -DSDL_SHARED=OFF -DSDL_STATIC=ON -DSDL_TESTS=OFF -DSDL_EXAMPLES=OFF \
+            -DSDL_TEST_LIBRARY=OFF -DCMAKE_INSTALL_PREFIX="$PWD/build/port-web/sdl3"
+          cmake --build build/port-web/sdl3-build -j 4
+          cmake --install build/port-web/sdl3-build >/dev/null
+          emcmake cmake -S port -B build/port-web/port -G Ninja -DCMAKE_BUILD_TYPE=Release \
+            -DSDL3_DIR="$PWD/build/port-web/sdl3/lib/cmake/SDL3" -DBLUPI_BUNDLE_SOUNDFONT=OFF
+          cmake --build build/port-web/port -j 4
+      - name: Package
+        run: python3 port/tools/package_web.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-site
+          path: build/release/speedy-blupi-sdl3-*-web.zip
+          retention-days: 14
+
+  windows:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Packages
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -qy --no-install-recommends ninja-build python3 \
+            g++-mingw-w64-x86-64-posix gcc-mingw-w64-x86-64-posix binutils-mingw-w64-x86-64 wine wine64
+      - id: sdl3-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/sdl3-mingw
+          key: sdl3-mingw-${{ env.SDL3_TAG }}
+      - name: SDL3 (SDL3.dll)
+        if: steps.sdl3-cache.outputs.cache-hit != 'true'
+        run: |
+          git clone -q --depth 1 --branch "$SDL3_TAG" https://github.com/libsdl-org/SDL.git ~/sdl3-src
+          cmake -S ~/sdl3-src -B ~/sdl3-build -G Ninja -DCMAKE_TOOLCHAIN_FILE="$PWD/port/cmake/mingw-w64-x86_64.cmake" \
+            -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$HOME/sdl3-mingw" \
+            -DSDL_SHARED=ON -DSDL_STATIC=OFF -DSDL_TEST_LIBRARY=OFF -DSDL_TESTS=OFF -DSDL_EXAMPLES=OFF
+          cmake --build ~/sdl3-build -j 4
+          cmake --install ~/sdl3-build >/dev/null
+      - name: Wine
+        run: |
+          # As port/tools/windows_release.sh: a quiet prefix of its own and the MinGW runtime DLLs on
+          # WINEPATH for the test programs (the game programs link them in).
+          GCCDIR=$(dirname "$(x86_64-w64-mingw32-g++-posix -print-libgcc-file-name)")
+          winpath() { printf 'Z:%s' "$1" | tr '/' '\\'; }
+          cat > "$HOME/wine-run" <<EOF
+          #!/bin/sh
+          export WINEPREFIX="$HOME/wine"
+          export WINEDEBUG=-all
+          export WINEDLLOVERRIDES="mscoree,mshtml="
+          export WINEPATH='$(winpath "$GCCDIR");$(winpath /usr/x86_64-w64-mingw32/lib)'
+          unset DISPLAY WAYLAND_DISPLAY
+          exec wine "\$@"
+          EOF
+          chmod 0755 "$HOME/wine-run"
+          WINEPREFIX="$HOME/wine" WINEDEBUG=-all WINEDLLOVERRIDES="mscoree,mshtml=" wineboot -i
+          WINEPREFIX="$HOME/wine" wineserver -w
+      - name: Configure
+        run: |
+          cmake -S port -B build/port-windows -G Ninja -DCMAKE_TOOLCHAIN_FILE="$PWD/port/cmake/mingw-w64-x86_64.cmake" \
+            -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_PREFIX_PATH="$HOME/sdl3-mingw" \
+            -DCMAKE_FIND_ROOT_PATH="$HOME/sdl3-mingw" -DCMAKE_CROSSCOMPILING_EMULATOR="$HOME/wine-run" \
+            -DBLUPI_BUNDLE_SOUNDFONT=OFF
+      - name: Build
+        run: cmake --build build/port-windows -j 4
+      - name: Tests under Wine (no game data)
+        run: |
+          ctest --test-dir build/port-windows -N | tail -n 1
+          ctest --test-dir build/port-windows -j 2 --output-on-failure --timeout 600 -E '^fidelity_map$'
