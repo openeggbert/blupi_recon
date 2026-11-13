@@ -79,6 +79,11 @@ The port's own options are on the game's settings screen, under
 - Language: the game's languages (Speedy Blupi: English, German, French;
   Speedy Eggbert: English, German, Spanish, French, Italian, Portuguese),
   switched at once. It starts in the language of your installed game.
+- Images: Original, 2x, 3x or 4x, from the next start. With a pack of
+  re-drawn images (a folder with the game's IMAGE08/IMAGE16 folders, each
+  image that many times larger), start once with --hd-pack FOLDER, or set
+  "hdPack" in the settings file; without one the original images are shown
+  enlarged.
 
 None of them changes how the game plays.
 
@@ -142,6 +147,10 @@ Music
 The original played its MIDI music through Windows' synthesizer; the port
 plays it with the GeneralUser GS SoundFont (soundfont.sf2). Another SoundFont
 placed in your files folder as soundfont.sf2 replaces it.
+
+Speedy Blupi 2 and Speedy Eggbert 2 can play the CD's music instead (CDAudio=1
+in the game's data/config.def): rip the CD's tracks into the game folder as
+music/track02.wav (or .ogg, .flac), music/track03..., one file per track.
 
 
 Command line

@@ -1,4 +1,4 @@
-# Speedy Blupi SDL3 port 1.5.2
+# Speedy Blupi SDL3 port 1.6.0
 
 The native port of **Speedy Blupi** (Epsitec, 1998) and **Speedy Blupi 2** (2001), and of their
 eGames editions **Speedy Eggbert** and **Speedy Eggbert 2**, for Windows, Linux, Android and web
@@ -6,7 +6,10 @@ browsers. It is
 built from this repository's reconstruction of the original programs' source, compiled unchanged with
 a modern compiler, plus a small platform layer on SDL3.
 
-Version 1.5.2 lets the Windows, Linux and Android programs reach a Free Direct server over `wss://`
+Version 1.6 shows the games at up to four times their resolution with a pack of re-drawn images, plays
+Speedy Blupi 2's CD music from Ogg Vorbis and FLAC files, makes multiplayer hold up on poor networks and
+in Android's background, brings the original Windows cursors, and adds the demos and Valueware to the
+Android app. Version 1.5.2 lets the Windows, Linux and Android programs reach a Free Direct server over `wss://`
 (TLS) as well. Version 1.5.1 gives the web page a server to play on, fds.openeggbert.com. Version 1.5 plays
 multiplayer through a Free Direct server, without open ports and also in the browser,
 where it can be played at https://openeggbert.github.io/blupi_recon/. Version 1.4 runs all five programs
@@ -18,7 +21,7 @@ Blupi 2 and Speedy Eggbert 2, and the original multiplayer of all four games.
 **The original games' files are not included.** You need your own copy of the game: the CD or the
 installed game. On the first start the port asks for its folder and remembers it.
 
-## Since 1.5.2 (not yet released)
+## New in 1.6.0
 
 - **Speedy Blupi 2's CD music from Ogg Vorbis or FLAC files:** besides `music/track02.wav`, the
   track may be `music/track02.ogg` or `music/track02.flac`, which take far less room.
@@ -37,6 +40,12 @@ installed game. On the first start the port asks for its folder and remembers it
   (port/docs/HD.md).
 - **The original Windows cursors with `MouseType=2` or `3`:** the games' own arrows, hourglass and
   hand from their resources, instead of the system's cursors, enlarged with the window.
+- **Images on the Display options screen:** Original, 2x, 3x or 4x, used from the next start (the
+  pack's folder is set with `--hd-pack` or `hdPack` in the settings file).
+- **Behind the scenes:** the two games share their language, image and sound support code
+  (consolidation stage 4), and every push to `main` builds the Linux, Windows and web programs on GitHub.
+  The demos' and Valueware's attract modes were checked frame by frame against their original programs'
+  rebuilds (under Wine).
 
 ## New in 1.5.2
 
