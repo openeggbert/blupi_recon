@@ -91,7 +91,8 @@ uninstall the debug build first, which also removes its imported game data.
 4. Web: build as in port/docs/WEB.md, `python3 port/tools/package_web.py`, then
    `port/tools/web_check.mjs` in Chrome and with `--browser firefox`, and with `--relay`.
 5. Continuous integration (`.github/workflows/port.yml`) builds the Linux, web and Windows programs on
-   every push that touches the port or the historical source, and runs the tests that need no game data
+   every push to `main` that touches the port or the historical source (not on feature branches or pull
+   requests), and runs the tests that need no game data
    (Linux, and Windows under Wine without the two stdio tests above), plus `net_tls` against a
    free-direct-server built in the job. It never sees game data, so it does not replace steps 2 to 4.
 6. `python3 port/tools/package_release.py sums`, tag `port-v<version>`, push the tag, and publish a

@@ -3,13 +3,12 @@ name: SDL3 port build and tests
 # cross build) and runs the tests that need no game data: the repository holds none, and none may
 # be added (port/AGENTS.md). Linux also runs net_tls against a free-direct-server built here; the
 # Windows programs run under Wine. The data-dependent suite (goldens, demos, multiplayer games)
-# stays a local release step (port/docs/RELEASING.md).
+# stays a local release step (port/docs/RELEASING.md). It runs only on pushes to main that touch
+# the port, the historical source or this file (feature branches and pull requests do not start it).
 on:
   push:
+    branches: [main]
     paths: ['port/**', 'src/**', 'games/**', '.github/workflows/port.yml']
-  pull_request:
-    paths: ['port/**', 'src/**', 'games/**', '.github/workflows/port.yml']
-  workflow_dispatch:
 permissions:
   contents: read
 concurrency:
