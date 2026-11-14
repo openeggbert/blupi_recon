@@ -317,6 +317,8 @@ async function relayCheck() {
       document.dispatchEvent(new ClipboardEvent("paste", {clipboardData: data})); return true; })()`).catch((e) => e.message);
     if (pasted !== true) failures.push("the page's paste failed: " + pasted);
   }
+  // The page's datagrams: a WebRTC data channel to the server, when the server offers one.
+  const rtc = await page.evaluate("Module.blupiRtc ? [Module.blupiRtc.sent, Module.blupiRtc.received] : null");
   const user = path.join(output, "relay-client-user");
   await mkdir(user, {recursive: true});
   const client = spawn(path.resolve(options["relay-client"]), ["--data", path.resolve(dir), "--user", user, "--windowed",
@@ -334,6 +336,10 @@ async function relayCheck() {
   await writeFile(path.join(output, "relay-server.log"), serverLog);
   const browserLog = await page.evaluate("document.querySelector('#log').textContent");
   await writeFile(path.join(output, "relay-browser-log.txt"), browserLog);
+  const rtcPlayed = await page.evaluate("Module.blupiRtc ? [Module.blupiRtc.sent, Module.blupiRtc.received] : null");
+  console.log(`${name}: WebRTC datagrams sent/received by the page: ${JSON.stringify(rtcPlayed)} (at the room: ${JSON.stringify(rtc)})`);
+  if (options["expect-webrtc"] && !(rtcPlayed && rtcPlayed[0] > 0 && rtcPlayed[1] > 0))
+    failures.push("no datagrams through the page's WebRTC data channel");
   await page.canvasShot("relay-play");
   const trace = await readFile(path.join(output, "relay-client.trace"), "utf8").catch(() => "");
   const clientPlayed = trace.split("\n").some((line) => line.split(" ")[1] === "1525");

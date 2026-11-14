@@ -8,6 +8,9 @@
 #include <cstring>
 #ifndef __EMSCRIPTEN__
 #include <enet/enet.h>
+#else
+#include <emscripten.h>
+EM_JS_DEPS(blupi_relay_rtc, "$stringToUTF8,$lengthBytesUTF8,$UTF8ToString");
 #endif
 
 namespace blupi::net {
@@ -22,10 +25,12 @@ enum : uint8_t {
     Welcome = 0x81, ErrorMsg = 0x82, RoomCreated = 0x83, RoomJoined = 0x84, SessionList = 0x85,
     SessionHosted = 0x86, SessionJoined = 0x87, PeerJoinedMsg = 0x88, PeerLeftMsg = 0x89,
     SessionEndedMsg = 0x8A, DeliverMsg = 0x8B,
+    RtcOfferMsg = 0x0C, RtcAnswerMsg = 0x8C,   // WebRTC signalling (browsers' datagrams)
 };
 // Datagrams (the protocol's "Datagrams"; ../free-direct/src/relay/RelayDatagram.hpp).
 constexpr uint32_t kDatagramMagic = 0x55524446;   // "FDRU"
-constexpr uint8_t kWelcomeFlagDatagrams = 0x02;
+constexpr uint8_t kWelcomeFlagDatagrams = 0x02, kWelcomeFlagWebRtc = 0x04;
+constexpr auto kWebRtcTimeout = std::chrono::milliseconds(10000);
 constexpr size_t kMaxDatagram = 1200;
 constexpr uint8_t DatagramBind = 0x01, DatagramData = 0x02, DatagramBindAck = 0x81, DatagramDeliver = 0x82;
 constexpr auto kBindRetry = std::chrono::milliseconds(250), kBindTimeout = std::chrono::milliseconds(3000);
@@ -86,6 +91,8 @@ struct Relay::Datagrams {
 #ifndef __EMSCRIPTEN__
     ENetSocket socket = ENET_SOCKET_NULL;
     ENetAddress server{};
+#else
+    bool offerSent = false;
 #endif
     std::array<uint8_t, 16> token{};
     enum class State { Binding, Bound, Off } state = State::Binding;
@@ -104,13 +111,23 @@ struct Relay::Datagrams {
         buffer.dataLength = d.size();
         return enet_socket_send(socket, &server, &buffer, 1) == int(d.size());
 #else
-        (void)d;
-        return false;
+        // The page's data channel (StartDatagrams): unordered, without retransmissions.
+        return EM_ASM_INT({
+            var R = Module.blupiRtc;
+            if (!R || !R.dc || R.dc.readyState !== 'open') return 0;
+            try { R.dc.send(HEAPU8.slice($0, $0 + $1)); R.sent++; return 1; } catch (e) { return 0; }
+        }, d.data(), int(d.size())) != 0;
 #endif
     }
     ~Datagrams() {
 #ifndef __EMSCRIPTEN__
         if (socket != ENET_SOCKET_NULL) enet_socket_destroy(socket);
+#else
+        EM_ASM({
+            var R = Module.blupiRtc;
+            if (R && R.pc) { try { R.pc.close(); } catch (e) {} }
+            Module.blupiRtc = null;
+        });
 #endif
     }
 };
@@ -140,18 +157,65 @@ void Relay::StartDatagrams(uint16_t port, const std::array<uint8_t, 16>& token)
     datagrams = std::move(d);
     ServiceDatagrams();   // the first Bind
 #else
+    // A browser: a WebRTC peer connection to the server with one data channel, unordered and
+    // without retransmissions, so a lost datagram is lost as over UDP. Its offer, complete with the
+    // candidates, goes to the server as RtcOffer (ServiceDatagrams); the answer comes back as
+    // RtcAnswer (Handle). The server sends BindAck over the channel when it opens.
     (void)port;
-    (void)token;
+    const bool ok = EM_ASM_INT({
+        if (typeof RTCPeerConnection === 'undefined') return 0;
+        // (No commas outside parentheses: EM_ASM's code is a macro argument.)
+        var R = Module.blupiRtc = {};
+        R.pc = null; R.dc = null; R.offer = null; R.inbox = []; R.failed = false;
+        R.sent = 0; R.received = 0;   // datagrams, for port/tools/web_check.mjs
+        try {
+            R.pc = new RTCPeerConnection({iceServers: []});
+            var options = {};
+            options.ordered = false;
+            options.maxRetransmits = 0;
+            R.dc = R.pc.createDataChannel('datagrams', options);
+            R.dc.binaryType = 'arraybuffer';
+            R.dc.onmessage = function(e) { if (e.data instanceof ArrayBuffer) { R.inbox.push(e.data); R.received++; } };
+            R.pc.onicegatheringstatechange = function() {
+                if (R.pc.iceGatheringState === 'complete' && R.offer === null) R.offer = R.pc.localDescription.sdp;
+            };
+            R.pc.createOffer().then(function(o) { return R.pc.setLocalDescription(o); })
+                .catch(function() { R.failed = true; });
+        } catch (e) { R.failed = true; }
+        return 1;
+    }) != 0;
+    if (!ok) return;
+    auto d = std::make_unique<Datagrams>();
+    d->token = token;
+    d->started = Clock::now();
+    datagrams = std::move(d);
 #endif
 }
 
 void Relay::ServiceDatagrams()
 {
-#ifndef __EMSCRIPTEN__
     if (!datagrams) return;
     Datagrams& d = *datagrams;
-    // The socket is read in every state: the server sends by UDP once it has a Bind, even if its
-    // BindAck never came back.
+    auto deliver = [this, &d](const uint8_t* buffer, size_t n) {
+        if (n < 5 || n > kMaxDatagram || Get32(buffer) != kDatagramMagic) return;
+        if (buffer[4] == DatagramBindAck && d.state == Datagrams::State::Binding) {
+            d.state = Datagrams::State::Bound;
+#ifdef __EMSCRIPTEN__
+            std::fprintf(stderr, "network: server datagrams on (WebRTC)\n");
+#else
+            std::fprintf(stderr, "network: server datagrams on (UDP port %u)\n", unsigned(d.server.port));
+#endif
+        } else if (buffer[4] == DatagramDeliver && n >= 9) {
+            RelayEvent e;
+            e.kind = RelayEvent::Deliver;
+            e.connection = Get32(buffer + 5);
+            e.payload.assign(buffer + 9, buffer + n);
+            events.push_back(std::move(e));
+        }
+    };
+    // Read in every state: the server sends datagrams once it has a Bind (or an open channel),
+    // even if its BindAck never came back.
+#ifndef __EMSCRIPTEN__
     uint8_t buffer[kMaxDatagram + 1];
     for (int i = 0; i < 256; ++i) {
         ENetAddress from{};
@@ -160,24 +224,46 @@ void Relay::ServiceDatagrams()
         b.dataLength = sizeof(buffer);
         const int n = enet_socket_receive(d.socket, &from, &b, 1);
         if (n <= 0) break;
-        if (from.host != d.server.host || from.port != d.server.port || n < 5 || size_t(n) > kMaxDatagram ||
-            Get32(buffer) != kDatagramMagic) continue;
-        if (buffer[4] == DatagramBindAck && d.state == Datagrams::State::Binding) {
-            d.state = Datagrams::State::Bound;
-            std::fprintf(stderr, "network: server datagrams on (UDP port %u)\n", unsigned(d.server.port));
-        } else if (buffer[4] == DatagramDeliver && n >= 9) {
-            RelayEvent e;
-            e.kind = RelayEvent::Deliver;
-            e.connection = Get32(buffer + 5);
-            e.payload.assign(buffer + 9, buffer + n);
-            events.push_back(std::move(e));
+        if (from.host != d.server.host || from.port != d.server.port) continue;
+        deliver(buffer, size_t(n));
+    }
+#else
+    for (int i = 0; i < 256; ++i) {
+        const int n = EM_ASM_INT({
+            var R = Module.blupiRtc;
+            return R && R.inbox.length ? R.inbox[0].byteLength : -1;
+        });
+        if (n < 0) break;
+        std::vector<uint8_t> buffer(size_t(n) + 1);
+        EM_ASM({ HEAPU8.set(new Uint8Array(Module.blupiRtc.inbox.shift()), $0); }, buffer.data());
+        deliver(buffer.data(), size_t(n));
+    }
+    if (!d.offerSent && d.state == Datagrams::State::Binding) {
+        const int length = EM_ASM_INT({
+            var R = Module.blupiRtc;
+            return R && R.offer !== null ? lengthBytesUTF8(R.offer) : (R && R.failed ? -2 : -1);
+        });
+        if (length == -2) d.started = Clock::time_point{};   // no offer: give up at once (below)
+        if (length >= 0) {
+            std::vector<uint8_t> sdp(size_t(length) + 1);
+            EM_ASM({ stringToUTF8(Module.blupiRtc.offer, $0, $1); }, sdp.data(), length + 1);
+            Writer w(RtcOfferMsg);
+            w.Bytes(sdp.data(), size_t(length));
+            d.offerSent = socket.Send(w.b);
         }
     }
+#endif
     const auto now = Clock::now();
-    if (d.state == Datagrams::State::Binding && now - d.started > kBindTimeout) {
+#ifndef __EMSCRIPTEN__
+    const auto timeout = Clock::duration(kBindTimeout);
+#else
+    const auto timeout = Clock::duration(kWebRtcTimeout);
+#endif
+    if (d.state == Datagrams::State::Binding && now - d.started > timeout) {
         d.state = Datagrams::State::Off;
-        std::fprintf(stderr, "network: server datagrams off: no answer over UDP; everything over the WebSocket\n");
+        std::fprintf(stderr, "network: server datagrams off: no answer; everything over the WebSocket\n");
     }
+#ifndef __EMSCRIPTEN__
     if (d.state == Datagrams::State::Off) return;
     if (now - d.lastBind >= (d.state == Datagrams::State::Binding ? Clock::duration(kBindRetry) : Clock::duration(kKeepAlive))) {
         d.lastBind = now;   // a Bind again keeps a NAT's mapping open
@@ -296,6 +382,21 @@ bool Relay::Handle(const std::vector<uint8_t>& message, uint8_t want, std::vecto
         if (r.ok) { e.payload.assign(message.begin() + 5, message.end()); events.push_back(std::move(e)); }
         break;
     }
+    case RtcAnswerMsg: {
+#ifdef __EMSCRIPTEN__
+        // The server's answer to the data channel's offer (StartDatagrams).
+        std::string sdp(message.begin() + 1, message.end());
+        EM_ASM({
+            var R = Module.blupiRtc;
+            if (!R || !R.pc) return;
+            var answer = {};
+            answer.type = 'answer';
+            answer.sdp = UTF8ToString($0);
+            R.pc.setRemoteDescription(answer).catch(function() { R.failed = true; });
+        }, sdp.c_str());
+#endif
+        break;
+    }
     case ErrorMsg: {
         const uint8_t request = r.U8(); r.U16(); const std::string text = r.Str();
         error = text.empty() ? "the server refused the request" : text;
@@ -354,12 +455,17 @@ bool Relay::Connect(const std::string& address, const std::string& password, con
     const uint8_t flags = r.U8();
     connected = r.ok;
     if (!connected) { error = "the server's answer is not understood"; socket.Close(); return false; }
-    if (flags & kWelcomeFlagDatagrams) {
-        // The server's UDP port and this connection's token (a server before datagrams sends neither).
+    if (flags & (kWelcomeFlagDatagrams | kWelcomeFlagWebRtc)) {
+        // The server's UDP port (0: none) and this connection's token (a server before datagrams
+        // sends neither). A browser has no UDP: it asks for a WebRTC data channel instead.
         const uint16_t port = r.U16();
         std::array<uint8_t, 16> token{};
         for (auto& byte : token) byte = r.U8();
-        if (r.ok) StartDatagrams(port, token);
+#ifdef __EMSCRIPTEN__
+        if (r.ok && (flags & kWelcomeFlagWebRtc)) StartDatagrams(0, token);
+#else
+        if (r.ok && (flags & kWelcomeFlagDatagrams)) StartDatagrams(port, token);
+#endif
     }
     return connected;
 }

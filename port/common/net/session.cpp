@@ -123,7 +123,7 @@ struct Session::Impl {
             if (link.late150 == link.reported && !(last && link.messages)) continue;
             std::fprintf(stderr, "network: link from player %u%s: %u messages, %u over 150 ms late, "
                          "%u over 250 ms, the latest %.0f ms\n", origin,
-                         relay ? (relay->DatagramsOn() ? " (server, UDP)" : " (server)") : "",
+                         relay ? (relay->DatagramsOn() ? " (server, datagrams)" : " (server)") : "",
                          link.messages, link.late150, link.late250, link.worst);
             link.reported = link.late150;
         }

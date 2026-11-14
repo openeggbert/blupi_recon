@@ -194,7 +194,13 @@ where one lost packet holds back every message behind it until TCP resends it; t
   socket's address to its connection, and game messages that need not arrive (the session's
   unreliable flag: positions) go as datagrams; whatever must arrive, and everything when UDP gets no
   answer within 3 s, stays on the WebSocket. A lost datagram loses only itself, as over ENet on a LAN.
-  ENet's sockets, so IPv4; not in a browser (no UDP there; WebRTC is planned). [EVIDENCE] The relay
+  ENet's sockets, so IPv4. **In a browser** (no UDP) the same datagrams go over a WebRTC data
+  channel to the server, unordered and without retransmissions, when the server offers it: the page's
+  offer goes as RtcOffer over the WebSocket, the answer comes back as RtcAnswer, and the server sends
+  BindAck over the channel when it opens; no STUN or TURN server is needed. [EVIDENCE]
+  `port/tools/web_check.mjs --relay --expect-webrtc`: with the browser hosting and a native program
+  on UDP, the page sent 411 datagrams and received 401 through its channel in Chrome, 409 and 423 in
+  Firefox. [EVIDENCE] The relay
   tests check that every program binds (`network: server datagrams on`). With the measurement below
   repeated with datagrams on, the client counted 1068 messages from the host, 2 over 150 ms late and
   1 over 250 ms (the latest 271 ms), against 47 and 16 over the WebSocket alone; the late ones are

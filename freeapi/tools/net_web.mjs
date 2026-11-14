@@ -276,6 +276,14 @@ try {
   await client.screenshot("play");
   const clientAfter = await client.command("Page.captureScreenshot", {format: "png"});
   if (clientBefore.data === clientAfter.data) throw new Error("the client's screen did not change while the host walked");
+  // The pages' datagrams: a WebRTC data channel each, when the server offers them (free-direct's
+  // RelayDatagramsWeb.cpp); the walk's positions go through the host's.
+  const rtc = [];
+  for (const page of [host, client])
+    rtc.push(await page.evaluate("Module.freeDirectRtc ? [Module.freeDirectRtc.sent, Module.freeDirectRtc.received] : null"));
+  console.log("WebRTC datagrams sent/received: host", JSON.stringify(rtc[0]), "client", JSON.stringify(rtc[1]));
+  if (options["expect-webrtc"] && !(rtc[0] && rtc[0][0] > 0 && rtc[1] && rtc[1][1] > 0))
+    throw new Error("no datagrams through the pages' WebRTC data channels");
   const stillPlaying = [await host.evaluate("Module._BlupiWebPhase()"), await client.evaluate("Module._BlupiWebPhase()")];
   if (stillPlaying.some((p) => p !== PHASE.play)) throw new Error("left the game: " + stillPlaying);
   for (const page of [host, client]) {

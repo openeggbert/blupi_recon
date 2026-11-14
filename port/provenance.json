@@ -425,9 +425,9 @@
     "port/common/net/game_protocol.h": "0312dc2ebef6290a1b3e4f696e0f007d82657829885c36417d47fbb4f822a4d5",
     "port/common/net/keepalive.cpp": "c611fab4b78d417bd44082eb0ab0f6f51d9597881c9a787891eec3242dec8581",
     "port/common/net/keepalive.h": "0c25a4187ada161f9fea5cd2a3c80b187c1a9cdcba6d2c8878445bc95b276141",
-    "port/common/net/relay.cpp": "0946a26e6947b2808253ca829eef8a862b027ed8d7691b3b0c39d0a572991e87",
+    "port/common/net/relay.cpp": "7fbef0b1c6419e1e4a3e64189daba4bb1c3cdb16bc83d56d5b718df80b64900e",
     "port/common/net/relay.h": "c2d20ee5f235e37631c0cc7b9085169eeeba330d6b58289eff59b3645cf94025",
-    "port/common/net/session.cpp": "0d74c2a1ed1374f94361cf1c2e92db39d8f4299a995e00e484a0f69bc0f52199",
+    "port/common/net/session.cpp": "0a937de81981fde9fdf95142e74404fb6d7834deda4a02633bd757a8aaed3867",
     "port/common/net/session.h": "23d490b332c55f96cb4fba2c5ca8dbe7a1e49dc93632b3e97b7b9d82b203766e",
     "port/common/net/tls.cpp": "40039be39e4cbd7b3c52a05ee79b7c70682685b965ce2ff1f02f76f5a2aec5be",
     "port/common/net/tls.h": "e0c01c1385b03c470afe0a4ae41911a51850b039194fb76b8792eaabd236367c",
@@ -3828,14 +3828,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "22b70e595a62aab583ac6dd5f169681196080f74",
-        "disposition": "Reviewed: an intentional transport difference within the existing replacement. Unreliable messages (the game's own non-guaranteed sends) may go by UDP to the server, as the original DirectPlay sent them; reliable ones and all control traffic stay on the WebSocket; no UDP answer means everything over the WebSocket. The test lockstep sends everything reliably, so its traces are unaffected.",
+        "commit": "2b4a71c1dd23be4b05d7a0692efc03a5bb015a1b",
+        "disposition": "Reviewed: in the web build the unreliable messages that go by UDP on the desktop go over a WebRTC data channel to the server when it offers one; reliable and control traffic stay on the WebSocket; no channel means everything over the WebSocket. The desktop path is unchanged apart from the shared code's structure.",
         "changed_paths": [
           "port/common/net/relay.cpp",
-          "port/common/net/relay.h",
           "port/common/net/session.cpp"
         ],
-        "evidence_scope": "Relay tests net_sb1_relay, net_sb1_relay_three, net_sb1_relay_wss, net_sb2_relay pass and check that every program binds its datagrams; real-time stall measurement with tests/tcp_stall.py (port/docs/MULTIPLAYER.md); Windows cross-build (MinGW) compiles. The goldens are not affected and were not rerun."
+        "evidence_scope": "All 26 network tests (ctest -R ^net_) on Linux; web_check.mjs --relay --expect-webrtc in Chrome and Firefox (datagrams through the page's channel, browser host and native client reach PLAY); freeapi net_web.mjs --expect-webrtc. The goldens are not affected and were not rerun."
       }
     },
     {
@@ -7003,14 +7002,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "22b70e595a62aab583ac6dd5f169681196080f74",
-        "disposition": "Reviewed: an intentional transport difference within the existing replacement. Unreliable messages (the game's own non-guaranteed sends) may go by UDP to the server, as the original DirectPlay sent them; reliable ones and all control traffic stay on the WebSocket; no UDP answer means everything over the WebSocket. The test lockstep sends everything reliably, so its traces are unaffected.",
+        "commit": "2b4a71c1dd23be4b05d7a0692efc03a5bb015a1b",
+        "disposition": "Reviewed: in the web build the unreliable messages that go by UDP on the desktop go over a WebRTC data channel to the server when it offers one; reliable and control traffic stay on the WebSocket; no channel means everything over the WebSocket. The desktop path is unchanged apart from the shared code's structure.",
         "changed_paths": [
           "port/common/net/relay.cpp",
-          "port/common/net/relay.h",
           "port/common/net/session.cpp"
         ],
-        "evidence_scope": "Relay tests net_sb1_relay, net_sb1_relay_three, net_sb1_relay_wss, net_sb2_relay pass and check that every program binds its datagrams; real-time stall measurement with tests/tcp_stall.py (port/docs/MULTIPLAYER.md); Windows cross-build (MinGW) compiles. The goldens are not affected and were not rerun."
+        "evidence_scope": "All 26 network tests (ctest -R ^net_) on Linux; web_check.mjs --relay --expect-webrtc in Chrome and Firefox (datagrams through the page's channel, browser host and native client reach PLAY); freeapi net_web.mjs --expect-webrtc. The goldens are not affected and were not rerun."
       }
     },
     {
@@ -20043,6 +20041,15 @@
         "F275"
       ],
       "scope": "Port network transport only (common/net/relay.*, session.cpp's relay calls) and its tests. The historical CNetwork contract and the game messages are unchanged; only how an unreliable message travels to the server."
+    },
+    {
+      "commit": "2b4a71c1dd23be4b05d7a0692efc03a5bb015a1b",
+      "round": "Multiplayer through a Free Direct server in a browser: datagrams over a WebRTC data channel",
+      "reviewed_edges": [
+        "F056",
+        "F275"
+      ],
+      "scope": "Port network transport only (common/net/relay.cpp's Emscripten datagram channel, session.cpp's diagnostic label) and test tools. The historical CNetwork contract and the game messages are unchanged."
     }
   ]
 }
