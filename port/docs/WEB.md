@@ -44,6 +44,22 @@ unchanged, apart from the few points below. This is separate from the repository
   1.5.1). The page offers `fds.openeggbert.com` (`DEFAULT_SERVER` in `web/loader.js`), run as described
   in [FREE_DIRECT_SERVER.md](FREE_DIRECT_SERVER.md). Desktop and browser players can share a room. [EVIDENCE] `port/tools/web_check.mjs
   --relay`: Chrome hosts, a native Linux program joins, both reach PLAY.
+- **The canvas's own pixels.** SDL sizes the canvas buffer in CSS pixels, so on a screen with a
+  devicePixelRatio above 1 (Windows at 125 % or 150 %, a zoomed page) the browser stretches it once
+  more. With `image-rendering: pixelated` that stretch was nearest-neighbour and uneven: some rows and
+  columns twice as thick, in a window and in full screen (Alt+Enter). The page's CSS now lets the
+  browser stretch smoothly, and the program draws its own enlargement evenly (`sharp_frame` in
+  `common/platform/host.cpp`: a whole-factor nearest enlargement, then linear filtering down to the
+  canvas; whole multiples and "Whole pixels" stay plain nearest). SDL's high-pixel-density canvas was
+  tried and rejected: SDL 3.4 recreates the window for the WebGL renderer and then pins the canvas to the
+  window's size (`width:1280px;height:960px` inline), which broke the page's layout; and SDL's pixel-art
+  sampling falls back to nearest in WebGL. [EVIDENCE, 2026-11-14] measured in headless Chrome on a 1920×1080
+  screen at device pixel ratios 1, 1.25, 1.5 and 2, in a window and in full screen: the canvas buffers
+  and the page's layout are those of 1.6.0; at ratios above 1 no row or column is doubled any more
+  (1.6.0: a fifth to a half of them); at ratio 1 in full screen every enlarged pixel is the same width
+  (1.6.0: 2 and 3 screen pixels). Above ratio 1 the picture is even but softer than at 1, since the
+  canvas stays in CSS pixels. The Free API web page (`freeapi/web/style.css`) had the same doubled rows
+  and columns and now uses the same smooth stretch; at ratio 1 its picture is unchanged.
 - **No folder dialog in the program** (`host::choose_folder` returns nothing). The page does it
   before the start.
 - **The SoundFont** (GeneralUser GS) is a file of the site (`soundfont/soundfont.sf2`). The loader

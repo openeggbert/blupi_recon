@@ -11,7 +11,9 @@ button:disabled { opacity: .45; cursor: default; }
 button:focus-visible, a:focus-visible, .button:focus-within { outline: 3px solid white; outline-offset: 3px; }
 .actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
 .hint, footer { font-size: .9rem; color: #b3c5d5; }
-canvas { width: 100%; max-width: 960px; height: auto; aspect-ratio: 4/3; display: block; background: #000; image-rendering: pixelated; touch-action: none; }
+/* The browser's stretch of the canvas (devicePixelRatio, full screen) is smooth: with pixelated it was
+   nearest-neighbour, and at 125 % or 150 % some rows and columns came out twice as thick (blocky). */
+canvas { width: 100%; max-width: 960px; height: auto; aspect-ratio: 4/3; display: block; background: #000; image-rendering: auto; touch-action: none; }
 canvas:fullscreen { object-fit: contain; height: 100%; max-width: none; background: #000; }
 pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 240px; overflow-y: auto; }
 .games { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
