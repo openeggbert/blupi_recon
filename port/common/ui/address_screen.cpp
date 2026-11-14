@@ -161,12 +161,19 @@ std::string& Field()
 	return s_focus == 0 ? s_server : s_room;
 }
 
+// The characters of a server's field: host names, IPv4 addresses and a port, a ws:// or wss:// URL
+// and its path (the address field: the same without '/').
+bool ServerChar(int c)
+{
+	const bool alnum = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
+	return alnum || c == '.' || c == '-' || c == ':' || c == '/';
+}
+
 bool Allowed(int c)
 {
 	const bool alnum = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
 	if (s_mode == Mode::Server && s_focus == 1) return alnum || c == '-';   // a room ID
-	// Host names, IPv4 addresses and a port; for a server also a ws:// or wss:// URL and its path.
-	return alnum || c == '.' || c == '-' || c == ':' || (s_mode == Mode::Server && c == '/');
+	return ServerChar(c) && (s_mode == Mode::Server || c != '/');
 }
 
 // The texts that act on a click: the new room's ID (Room mode) and Paste (Server mode).
@@ -216,8 +223,10 @@ void Paste(const std::string& text)
 	std::string server, room;
 	if (s_mode == Mode::Server && blupi::net::Invite(text, server, room))
 	{
+		// The server by its own field's rule, whichever field has the focus (a link pasted into the
+		// room field kept only its letters and digits: example.org became exampleorg).
 		if (!server.empty()) s_server.clear();
-		for (char c : server) if (s_server.size() < (size_t)kMaxLength && Allowed((unsigned char)c)) s_server += c;
+		for (char c : server) if (s_server.size() < (size_t)kMaxLength && ServerChar((unsigned char)c)) s_server += c;
 		if (!room.empty())
 		{
 			s_room = room;
@@ -382,7 +391,15 @@ bool PortAddressKey(UINT message, WPARAM wParam)
 
 void PortAddressPaste(const std::string& text)
 {
-	if (s_open) Paste(text);
+	if (!s_open) return;
+	const int failure = blupi::host::paste_failure();
+	blupi::host::log_info(("server screen: paste of " + std::to_string(text.size()) + " characters" +
+	                       (failure == 1 ? " (the browser refused)" : failure == 2 ? " (no text)" : "")).c_str());
+	if (failure == 1 && s_mode == Mode::Server)
+		s_error = PortLanguageText(9046, "The browser keeps the clipboard: press Ctrl+V.");
+	else if (failure == 2 && s_mode == Mode::Server)
+		s_error = PortLanguageText(9047, "There is no text on the clipboard.");
+	else Paste(text);
 }
 
 bool PortAddressCommand(UINT message)

@@ -160,6 +160,9 @@ void copy_text(const char* text);
 // browser handles itself: its own paste event arrives the same way.
 void request_paste(bool fromKeys);
 const std::string& pasted_text();
+// Why the last Paste event has no text: 0 it has text, 1 the browser refused to read the clipboard
+// (its permission), 2 the clipboard holds no text.
+int paste_failure();
 // Ctrl (or Cmd) held: the server screen's copy and paste keys.
 bool control_held();
 bool shift_held();

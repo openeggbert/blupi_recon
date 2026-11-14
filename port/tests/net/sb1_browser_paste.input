@@ -1,0 +1,6 @@
+# SB1 in a browser for port/tools/web_check.mjs --paste: to the server screen, where the check pastes
+# with a real Ctrl+V and with a click on Paste. The server (?server=) is never contacted.
+40 click 112 430    # title: dice -> choose player
+70 click 127 431    # choose player: multiplayer service (EnumProviders)
+100 click 160 130   # service: provider row 0, the only one in a browser: the Free Direct server
+110 click 242 407   # service: OK -> sessions + the server screen

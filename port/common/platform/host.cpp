@@ -31,6 +31,15 @@ SDL_Cursor*   g_cursor = nullptr;
 bool g_gameCursorSet = false;               // set_game_cursor: the original's cursor, MouseType 2/3
 GameCursor g_gameCursor = GameCursor::Arrow;
 int g_gameCursorScale = 0;                  // its enlargement when it was made
+bool g_systemCursorWanted = true;           // show_system_cursor (the game's ShowCursor count)
+bool g_gameCursorEmpty = false;             // the game's empty cursor, drawn as no cursor
+// The system cursor shows when the game wants it and its cursor is not the empty one. (Before, a hidden
+// empty cursor was never shown again: the next cursor was set, but stayed invisible.)
+void update_cursor_visibility()
+{
+    if (g_systemCursorWanted && !g_gameCursorEmpty) SDL_ShowCursor();
+    else SDL_HideCursor();
+}
 int cursor_scale();
 void apply_game_cursor();
 void (*g_waitBefore)() = nullptr;           // set_event_wait_hooks
@@ -327,6 +336,10 @@ bool translate(SDL_Event& ev, Event& out)
         out = Event{EventType::Quit};
         return true;
     case SDL_EVENT_WINDOW_FOCUS_GAINED:
+        // The cursor again as the game left it (in a browser, a change made while the mouse was away
+        // from the canvas was not applied to it).
+        if (g_gameCursorSet) apply_game_cursor();
+        else update_cursor_visibility();
         out = Event{EventType::FocusGained};
         return true;
     case SDL_EVENT_WINDOW_FOCUS_LOST:
@@ -545,13 +558,20 @@ bool init(const char* title, int logicalWidth, int logicalHeight, const Options&
     // and the clipboard read that request_paste starts.
     EM_ASM({
         Module.blupiPaste = function(text) {
-            if (typeof text !== 'string' || !text.length) return;
+            if (typeof text !== 'string' || !text.length) { _blupi_host_paste_failed(2); return; }
             stringToUTF8(text, _blupi_host_paste_buffer(), $0);
             _blupi_host_pasted();
         };
         document.addEventListener('paste', function(event) {
             if (event.clipboardData) Module.blupiPaste(event.clipboardData.getData('text/plain'));
         });
+        // SDL prevents the browser's default action of every key pressed with Ctrl, so Ctrl+V (Cmd+V)
+        // never became the browser's paste event above: it is kept from SDL instead. The game has no
+        // use for Ctrl+V; Shift+Insert already reached the browser.
+        window.addEventListener('keydown', function(event) {
+            if ((event.ctrlKey || event.metaKey) && !event.altKey && (event.key === 'v' || event.key === 'V'))
+                event.stopImmediatePropagation();
+        }, true);
     }, kPasteBuffer);
 #endif
     return true;
@@ -809,8 +829,8 @@ void warp_mouse(int x, int y)
 void show_system_cursor(bool show)
 {
     if (g_headless) return;
-    if (show) SDL_ShowCursor();
-    else SDL_HideCursor();
+    g_systemCursorWanted = show;
+    update_cursor_visibility();
 }
 
 namespace
@@ -855,13 +875,15 @@ void apply_game_cursor()
             SDL_DestroySurface(surface);
         }
     }
+    g_gameCursorEmpty = c == nullptr && g_gameCursor == GameCursor::Empty;
+    if (c == nullptr && !g_gameCursorEmpty) c = system_cursor(g_gameCursor);
     if (c == nullptr)
     {
-        if (g_gameCursor == GameCursor::Empty) { SDL_HideCursor(); return; }
-        c = system_cursor(g_gameCursor);
+        update_cursor_visibility();
+        return;
     }
-    if (c == nullptr) return;
     SDL_SetCursor(c);
+    update_cursor_visibility();
     if (g_cursor) SDL_DestroyCursor(g_cursor);
     g_cursor = c;
     g_gameCursorScale = scale;
@@ -921,10 +943,12 @@ void room_created(const char* room, const char* server)
 namespace
 {
 std::string g_pasted;   // request_paste's text, for the EventType::Paste it queued
+int g_pasteFailure = 0; // paste_failure()
 
-void paste_arrived(const char* text)
+void paste_arrived(const char* text, int failure = 0)
 {
     g_pasted = text != nullptr ? text : "";
+    g_pasteFailure = g_pasted.empty() ? (failure != 0 ? failure : 2) : 0;
     g_pending.push_back(Event{EventType::Paste});
 }
 }  // namespace
@@ -949,9 +973,12 @@ void request_paste(bool fromKeys)
 #ifdef SDL_PLATFORM_EMSCRIPTEN
     // Ctrl+V and Shift+Insert are the browser's: its paste event follows (init's listener).
     if (fromKeys) return;
+    // A click asks the browser for the clipboard: it may ask the player first (Chrome) or show its
+    // own Paste button (Firefox); a refusal is said on the screen, with Ctrl+V as the way that works.
     EM_ASM({
-        if (navigator.clipboard && navigator.clipboard.readText)
-            navigator.clipboard.readText().then(function(text) { Module.blupiPaste(text); }).catch(function() {});
+        if (!navigator.clipboard || !navigator.clipboard.readText) { _blupi_host_paste_failed(1); return; }
+        navigator.clipboard.readText().then(function(text) { Module.blupiPaste(text); })
+            .catch(function(e) { console.log('paste: the browser refused to read the clipboard: ' + e); _blupi_host_paste_failed(1); });
     });
 #else
     (void)fromKeys;
@@ -962,6 +989,7 @@ void request_paste(bool fromKeys)
 }
 
 const std::string& pasted_text() { return g_pasted; }
+int paste_failure() { return g_pasteFailure; }
 
 bool control_held() { return !g_headless && (SDL_GetModState() & (SDL_KMOD_CTRL | SDL_KMOD_GUI)) != 0; }
 bool shift_held() { return !g_headless && (SDL_GetModState() & SDL_KMOD_SHIFT) != 0; }
@@ -1174,5 +1202,9 @@ extern "C" EMSCRIPTEN_KEEPALIVE char* blupi_host_paste_buffer()
 extern "C" EMSCRIPTEN_KEEPALIVE void blupi_host_pasted()
 {
     blupi::host::paste_arrived(blupi_host_paste_buffer());
+}
+extern "C" EMSCRIPTEN_KEEPALIVE void blupi_host_paste_failed(int failure)
+{
+    blupi::host::paste_arrived(nullptr, failure);
 }
 #endif

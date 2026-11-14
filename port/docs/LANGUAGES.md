@@ -141,6 +141,8 @@ variant = de                           <- the original's code variant (see below
   | 9043 | Click the ID to share it. They choose the same server (Android, a touch screen's browser) |
   | 9044 | Copied to the clipboard. |
   | 9045 | Paste |
+  | 9046 | The browser keeps the clipboard: press Ctrl+V. (after 1.7.0) |
+  | 9047 | There is no text on the clipboard. (after 1.7.0) |
 
 ## How the built-in packs are made
 
