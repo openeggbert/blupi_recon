@@ -425,9 +425,9 @@
     "port/common/net/game_protocol.h": "0312dc2ebef6290a1b3e4f696e0f007d82657829885c36417d47fbb4f822a4d5",
     "port/common/net/keepalive.cpp": "c611fab4b78d417bd44082eb0ab0f6f51d9597881c9a787891eec3242dec8581",
     "port/common/net/keepalive.h": "0c25a4187ada161f9fea5cd2a3c80b187c1a9cdcba6d2c8878445bc95b276141",
-    "port/common/net/relay.cpp": "40fc5e3251c82167033fe7b2072739f473f549f323bc01f552ab0f9ec1564ae2",
-    "port/common/net/relay.h": "955cd324bf86ffe2a630a0808b593996f74df18b22c3ff4469dce464f9fd4d09",
-    "port/common/net/session.cpp": "a1db33f6cd58c69db39496da09e7dc319e5d4b4cf96af820325f9ee18f48252a",
+    "port/common/net/relay.cpp": "0946a26e6947b2808253ca829eef8a862b027ed8d7691b3b0c39d0a572991e87",
+    "port/common/net/relay.h": "c2d20ee5f235e37631c0cc7b9085169eeeba330d6b58289eff59b3645cf94025",
+    "port/common/net/session.cpp": "0d74c2a1ed1374f94361cf1c2e92db39d8f4299a995e00e484a0f69bc0f52199",
     "port/common/net/session.h": "23d490b332c55f96cb4fba2c5ca8dbe7a1e49dc93632b3e97b7b9d82b203766e",
     "port/common/net/tls.cpp": "40039be39e4cbd7b3c52a05ee79b7c70682685b965ce2ff1f02f76f5a2aec5be",
     "port/common/net/tls.h": "e0c01c1385b03c470afe0a4ae41911a51850b039194fb76b8792eaabd236367c",
@@ -3828,12 +3828,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "b96aee12dcb833bb99e80f2cd815ba0869fb0b38",
-        "disposition": "Reviewed: presentation-layer change after the frame is composed. For Fit the window at a non-whole factor the frame is enlarged nearest by the next whole factor into a render target and shrunk linearly into the same letterbox rect; whole factors and Whole pixels are drawn as before. The game's frame, input mapping (logical presentation unchanged) and all historical-derived code are unchanged.",
+        "commit": "22b70e595a62aab583ac6dd5f169681196080f74",
+        "disposition": "Reviewed: an intentional transport difference within the existing replacement. Unreliable messages (the game's own non-guaranteed sends) may go by UDP to the server, as the original DirectPlay sent them; reliable ones and all control traffic stay on the WebSocket; no UDP answer means everything over the WebSocket. The test lockstep sends everything reliably, so its traces are unaffected.",
         "changed_paths": [
-          "port/common/platform/host.cpp"
+          "port/common/net/relay.cpp",
+          "port/common/net/relay.h",
+          "port/common/net/session.cpp"
         ],
-        "evidence_scope": "ctest -R 'hd|launcher|present|scale|host|wide|render' 93/93; desktop under Xvfb at 1440x1080 (2.25 times): even steps with one soft edge; web in headless Chrome at device pixel ratios 1 to 2, window and full screen: buffers and layout as in 1.6.0, no doubled rows or columns above ratio 1, even pixel widths at ratio 1, the dice click lands. The goldens compare composed frames and were not rerun for this presentation-only change."
+        "evidence_scope": "Relay tests net_sb1_relay, net_sb1_relay_three, net_sb1_relay_wss, net_sb2_relay pass and check that every program binds its datagrams; real-time stall measurement with tests/tcp_stall.py (port/docs/MULTIPLAYER.md); Windows cross-build (MinGW) compiles. The goldens are not affected and were not rerun."
       }
     },
     {
@@ -7001,12 +7003,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "b96aee12dcb833bb99e80f2cd815ba0869fb0b38",
-        "disposition": "Reviewed: presentation-layer change after the frame is composed. For Fit the window at a non-whole factor the frame is enlarged nearest by the next whole factor into a render target and shrunk linearly into the same letterbox rect; whole factors and Whole pixels are drawn as before. The game's frame, input mapping (logical presentation unchanged) and all historical-derived code are unchanged.",
+        "commit": "22b70e595a62aab583ac6dd5f169681196080f74",
+        "disposition": "Reviewed: an intentional transport difference within the existing replacement. Unreliable messages (the game's own non-guaranteed sends) may go by UDP to the server, as the original DirectPlay sent them; reliable ones and all control traffic stay on the WebSocket; no UDP answer means everything over the WebSocket. The test lockstep sends everything reliably, so its traces are unaffected.",
         "changed_paths": [
-          "port/common/platform/host.cpp"
+          "port/common/net/relay.cpp",
+          "port/common/net/relay.h",
+          "port/common/net/session.cpp"
         ],
-        "evidence_scope": "ctest -R 'hd|launcher|present|scale|host|wide|render' 93/93; desktop under Xvfb at 1440x1080 (2.25 times): even steps with one soft edge; web in headless Chrome at device pixel ratios 1 to 2, window and full screen: buffers and layout as in 1.6.0, no doubled rows or columns above ratio 1, even pixel widths at ratio 1, the dice click lands. The goldens compare composed frames and were not rerun for this presentation-only change."
+        "evidence_scope": "Relay tests net_sb1_relay, net_sb1_relay_three, net_sb1_relay_wss, net_sb2_relay pass and check that every program binds its datagrams; real-time stall measurement with tests/tcp_stall.py (port/docs/MULTIPLAYER.md); Windows cross-build (MinGW) compiles. The goldens are not affected and were not rerun."
       }
     },
     {
@@ -20030,6 +20034,15 @@
         "F474"
       ],
       "scope": "Presentation only: how the finished frame is enlarged to the window (platform/host.cpp present via sharp_frame) and the web pages' CSS. The composed frame, its hashes, the goldens and every game behaviour are unchanged; headless runs never present."
+    },
+    {
+      "commit": "22b70e595a62aab583ac6dd5f169681196080f74",
+      "round": "Multiplayer through a Free Direct server: unreliable messages as UDP datagrams",
+      "reviewed_edges": [
+        "F056",
+        "F275"
+      ],
+      "scope": "Port network transport only (common/net/relay.*, session.cpp's relay calls) and its tests. The historical CNetwork contract and the game messages are unchanged; only how an unreliable message travels to the server."
     }
   ]
 }
