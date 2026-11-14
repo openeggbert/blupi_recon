@@ -1,4 +1,4 @@
-# Speedy Blupi SDL3 port 1.6.0
+# Speedy Blupi SDL3 port 1.7.0
 
 The native port of **Speedy Blupi** (Epsitec, 1998) and **Speedy Blupi 2** (2001), and of their
 eGames editions **Speedy Eggbert** and **Speedy Eggbert 2**, for Windows, Linux, Android and web
@@ -6,7 +6,9 @@ browsers. It is
 built from this repository's reconstruction of the original programs' source, compiled unchanged with
 a modern compiler, plus a small platform layer on SDL3.
 
-Version 1.6 shows the games at up to four times their resolution with a pack of re-drawn images, plays
+Version 1.7 makes games through a Free Direct server smoother (the other players' positions no longer
+stop and jump when a packet is lost, where the server offers datagrams), lets players copy, paste and
+share a room's ID, and keeps every pixel the same size in full screen and in the browser. Version 1.6 shows the games at up to four times their resolution with a pack of re-drawn images, plays
 Speedy Blupi 2's CD music from Ogg Vorbis and FLAC files, makes multiplayer hold up on poor networks and
 in Android's background, brings the original Windows cursors, and adds the demos and Valueware to the
 Android app. Version 1.5.2 lets the Windows, Linux and Android programs reach a Free Direct server over `wss://`
@@ -20,6 +22,33 @@ Blupi 2 and Speedy Eggbert 2, and the original multiplayer of all four games.
 
 **The original games' files are not included.** You need your own copy of the game: the CD or the
 installed game. On the first start the port asks for its folder and remembers it.
+
+## New in 1.7.0
+
+- **Smoother games through a Free Direct server:** the other players' Blupis no longer stop and then
+  jump ("teleport") when a packet is lost on the way. Positions now go as datagrams, which a loss only
+  drops, instead of waiting behind the lost packet on the server's TCP connection: by UDP from the
+  Windows, Linux and Android programs, over a WebRTC data channel from the browser. This needs a server
+  that offers them (free-direct-server of 2026-11-14 or later, with its UDP ports open); with an older
+  server, or where UDP does not get through, everything goes over the WebSocket as before. In a test
+  with a 300 ms stall of the connection every 3 seconds, the stops over 250 ms fell from 16 to 1 in 78 s.
+- **Shorter way between players:** in play, every player's messages go to the others straight through
+  the server, no longer through the host's computer and back (two crossings of the Internet instead of
+  four between players who are not the host).
+- **Not compatible with 1.6.0 and earlier in multiplayer:** the session format changed (version 2), so
+  every player of a game needs 1.7.0; rooms and sessions keep older programs out.
+- **Copy, paste and share a room's ID:** a click on the new room's ID copies it (nothing is copied by
+  itself any more), and on Android and on a phone's or tablet's browser it opens the share sheet. On the
+  server screen, Ctrl+V, Shift+Insert, a right click on a field or the Paste text above the room field
+  pastes an ID, a message with an ID in it, or the web page's link, which fills in the server too. In the
+  browser the clipboard now really works (1.5 and 1.6 said the ID was on the clipboard, but in a browser
+  it was not).
+- **Even pixels at any size:** with Fit the window, the picture is enlarged by a whole factor and then
+  smoothed down to the window, so every pixel has the same size (before, at 1080 lines some were 2 and
+  some 3 screen pixels wide). In the browser, a screen at 125 %, 150 % or 200 % no longer doubles some
+  rows and columns. Whole pixels is unchanged.
+- **Link diagnostics:** in play the programs note on standard error, per player, how many messages came
+  late (`network: link from player N ...`), which helps to tell a poor link from other trouble.
 
 ## New in 1.6.0
 
@@ -160,10 +189,10 @@ installed game. On the first start the port asks for its folder and remembers it
 
 | File | For |
 |---|---|
-| `speedy-blupi-sdl3-1.6.0-windows-x64.zip` | 64-bit Windows 10 or 11: `blupi-sdl3`, `blupi2-sdl3`, `eggbert-demo-sdl3`, `eggbert-value-sdl3`, `blupi-demo-sdl3`, `SDL3.dll` |
-| `speedy-blupi-sdl3-1.6.0-linux-x86_64.tar.gz` | x86-64 Linux with glibc 2.38 or newer (Debian 13, Ubuntu 24.04, Fedora 39 and later), X11 or Wayland: the same five programs |
-| `speedy-blupi-sdl3-1.6.0-android.apk` | Android 7.0 or newer (arm64-v8a, x86_64): Speedy Blupi, Speedy Blupi 2, the demos and Valueware |
-| `speedy-blupi-sdl3-1.6.0-web.zip` | a web browser: the five programs as WebAssembly, the page, `serve.py`; also at https://openeggbert.github.io/blupi_recon/ |
+| `speedy-blupi-sdl3-1.7.0-windows-x64.zip` | 64-bit Windows 10 or 11: `blupi-sdl3`, `blupi2-sdl3`, `eggbert-demo-sdl3`, `eggbert-value-sdl3`, `blupi-demo-sdl3`, `SDL3.dll` |
+| `speedy-blupi-sdl3-1.7.0-linux-x86_64.tar.gz` | x86-64 Linux with glibc 2.38 or newer (Debian 13, Ubuntu 24.04, Fedora 39 and later), X11 or Wayland: the same five programs |
+| `speedy-blupi-sdl3-1.7.0-android.apk` | Android 7.0 or newer (arm64-v8a, x86_64): Speedy Blupi, Speedy Blupi 2, the demos and Valueware |
+| `speedy-blupi-sdl3-1.7.0-web.zip` | a web browser: the five programs as WebAssembly, the page, `serve.py`; also at https://openeggbert.github.io/blupi_recon/ |
 | `SHA256SUMS.txt` | checksums |
 
 All packages are built on Debian 13 from the release tag: Linux natively (it needs glibc 2.38; 1.2.0's,
@@ -218,16 +247,20 @@ package with Emscripten.
   - an Android player's game is kept in its session while the app is in the background; this was tested
     by pausing the desktop program, not on a device;
   - fds.openeggbert.com is the one public Free Direct server so far; any group can run its own
-    (port/docs/FREE_DIRECT_SERVER.md).
+    (port/docs/FREE_DIRECT_SERVER.md). Datagrams (UDP, WebRTC) work only once a server runs
+    free-direct-server of 2026-11-14 or later with its UDP ports open.
+  - the datagrams were tested on one machine (Linux programs, Chrome and Firefox, a stalling proxy), not
+    yet over real networks; the WebRTC channel needs no STUN or TURN server, as the server has a public
+    address.
   - `wss://` from the desktop was tested on Linux, on Windows under Wine and on Windows 10 (against
     fds.openeggbert.com and certificate test sites; on Windows 10 also a game with a Linux host through
     fds.openeggbert.com).
-- **Android:** the 1.5.x and 1.6.0 APKs were built but not run (no device or emulator was available);
+- **Android:** the 1.5.x to 1.7.0 APKs were built but not run (no device or emulator was available);
   `wss://` there is untested. A player's own
   language file goes into a `languages` folder inside the game folder before importing it. Gamepads and
-  running in the background have had little testing. The 1.3, 1.5 and 1.6 additions (the address and
-  server screens, the gamepad as the keyboard, the demos and Valueware) are built for Android but untested
-  there. Higher-resolution images are not available on Android and in the browser yet (no way to bring
+  running in the background have had little testing. The 1.3, 1.5, 1.6 and 1.7 additions (the address and
+  server screens, the gamepad as the keyboard, the demos and Valueware, UDP datagrams and the share
+  sheet) are built for Android but untested there. Higher-resolution images are not available on Android and in the browser yet (no way to bring
   a pack in).
 - **Linux:** the first-run folder dialog needs the desktop's file chooser portal (or `zenity`). Without
   it, start the game with `--data "<game folder>"`, or put the port's files into the game's folder.
