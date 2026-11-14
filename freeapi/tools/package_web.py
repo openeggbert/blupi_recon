@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Refresh the browser shell around existing WASM builds; optionally package it."""
 import argparse
+import re
 from pathlib import Path
 from shutil import copyfile
 from zipfile import ZIP_DEFLATED, ZipFile
@@ -19,7 +20,12 @@ def main():
             for name in ('game.js', 'game.wasm', 'game.data'):
                 if not (destination / name).is_file():
                     parser.error(f'Missing compiled game: {destination / name}')
-            html = (web / 'game.html.in').read_text().replace('@BLUPI_GAME@', game).replace('@BLUPI_EDITION@', edition)
+            # The page's hires scale is the build's (CMakeLists.txt configures it into the build's
+            # index.html, which build_web.sh copied here); a refresh keeps it, 0 if it has none.
+            previous = destination / 'index.html'
+            found = re.search(r'data-hires-scale="([0-9])"', previous.read_text()) if previous.is_file() else None
+            html = ((web / 'game.html.in').read_text().replace('@BLUPI_GAME@', game).replace('@BLUPI_EDITION@', edition)
+                    .replace('@BLUPI_WEB_HIRES_ATTRIBUTE@', found.group(1) if found else '0'))
             (destination / 'index.html').write_text(html)
             for name in ('player.js', 'style.css'):
                 copyfile(web / name, destination / name)
