@@ -1,4 +1,4 @@
-# Speedy Blupi SDL3 port 1.7.0
+# Speedy Blupi SDL3 port 1.7.1
 
 The native port of **Speedy Blupi** (Epsitec, 1998) and **Speedy Blupi 2** (2001), and of their
 eGames editions **Speedy Eggbert** and **Speedy Eggbert 2**, for Windows, Linux, Android and web
@@ -6,7 +6,8 @@ browsers. It is
 built from this repository's reconstruction of the original programs' source, compiled unchanged with
 a modern compiler, plus a small platform layer on SDL3.
 
-Version 1.7 makes games through a Free Direct server smoother (the other players' positions no longer
+Version 1.7.1 fixes pasting a room's ID in the browser and a cursor that could stay hidden. Version 1.7
+makes games through a Free Direct server smoother (the other players' positions no longer
 stop and jump when a packet is lost, where the server offers datagrams), lets players copy, paste and
 share a room's ID, and keeps every pixel the same size in full screen and in the browser. Version 1.6 shows the games at up to four times their resolution with a pack of re-drawn images, plays
 Speedy Blupi 2's CD music from Ogg Vorbis and FLAC files, makes multiplayer hold up on poor networks and
@@ -22,6 +23,20 @@ Blupi 2 and Speedy Eggbert 2, and the original multiplayer of all four games.
 
 **The original games' files are not included.** You need your own copy of the game: the CD or the
 installed game. On the first start the port asks for its folder and remembers it.
+
+## New in 1.7.1
+
+- **Ctrl+V works in the browser:** on the server screen it pastes a room's ID again. In 1.7.0 it did
+  nothing in a browser (the page's input library kept the browser from pasting); Shift+Insert, a right
+  click and the Paste text worked.
+- **A pasted link keeps its server's dots:** with the room field selected, the web page's link filled the
+  server as `exampleorg` instead of `example.org` (in every program).
+- **When the clipboard cannot be read, the screen says so:** if the browser refuses (the Paste text or a
+  right click ask its permission) or the clipboard holds no text, the server screen tells you, instead of
+  doing nothing. Ctrl+V needs no permission.
+- **The cursor no longer stays hidden** after the game showed its empty cursor (with the Windows
+  cursors, `MouseType=2` or `3`); and the cursor is set again when the window gets the focus back.
+- Multiplayer is the same as in 1.7.0: 1.7.0 and 1.7.1 play together; 1.6.0 and earlier do not.
 
 ## New in 1.7.0
 
@@ -189,10 +204,10 @@ installed game. On the first start the port asks for its folder and remembers it
 
 | File | For |
 |---|---|
-| `speedy-blupi-sdl3-1.7.0-windows-x64.zip` | 64-bit Windows 10 or 11: `blupi-sdl3`, `blupi2-sdl3`, `eggbert-demo-sdl3`, `eggbert-value-sdl3`, `blupi-demo-sdl3`, `SDL3.dll` |
-| `speedy-blupi-sdl3-1.7.0-linux-x86_64.tar.gz` | x86-64 Linux with glibc 2.38 or newer (Debian 13, Ubuntu 24.04, Fedora 39 and later), X11 or Wayland: the same five programs |
-| `speedy-blupi-sdl3-1.7.0-android.apk` | Android 7.0 or newer (arm64-v8a, x86_64): Speedy Blupi, Speedy Blupi 2, the demos and Valueware |
-| `speedy-blupi-sdl3-1.7.0-web.zip` | a web browser: the five programs as WebAssembly, the page, `serve.py`; also at https://openeggbert.github.io/blupi_recon/ |
+| `speedy-blupi-sdl3-1.7.1-windows-x64.zip` | 64-bit Windows 10 or 11: `blupi-sdl3`, `blupi2-sdl3`, `eggbert-demo-sdl3`, `eggbert-value-sdl3`, `blupi-demo-sdl3`, `SDL3.dll` |
+| `speedy-blupi-sdl3-1.7.1-linux-x86_64.tar.gz` | x86-64 Linux with glibc 2.38 or newer (Debian 13, Ubuntu 24.04, Fedora 39 and later), X11 or Wayland: the same five programs |
+| `speedy-blupi-sdl3-1.7.1-android.apk` | Android 7.0 or newer (arm64-v8a, x86_64): Speedy Blupi, Speedy Blupi 2, the demos and Valueware |
+| `speedy-blupi-sdl3-1.7.1-web.zip` | a web browser: the five programs as WebAssembly, the page, `serve.py`; also at https://openeggbert.github.io/blupi_recon/ |
 | `SHA256SUMS.txt` | checksums |
 
 All packages are built on Debian 13 from the release tag: Linux natively (it needs glibc 2.38; 1.2.0's,
@@ -255,7 +270,7 @@ package with Emscripten.
   - `wss://` from the desktop was tested on Linux, on Windows under Wine and on Windows 10 (against
     fds.openeggbert.com and certificate test sites; on Windows 10 also a game with a Linux host through
     fds.openeggbert.com).
-- **Android:** the 1.5.x to 1.7.0 APKs were built but not run (no device or emulator was available);
+- **Android:** the 1.5.x to 1.7.1 APKs were built but not run (no device or emulator was available);
   `wss://` there is untested. A player's own
   language file goes into a `languages` folder inside the game folder before importing it. Gamepads and
   running in the background have had little testing. The 1.3, 1.5, 1.6 and 1.7 additions (the address and
