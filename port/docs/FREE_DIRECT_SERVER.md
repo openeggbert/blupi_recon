@@ -22,12 +22,20 @@ networks that let only 443 out, or with a password. Those programs send no `Orig
 On the server (Debian or Ubuntu; it needs a C++20 compiler, CMake and git). TLS is nginx's job, so the
 server is built without it. The server's code is on free-direct's default branch, `develop`.
 
+The server also takes the players' positions as datagrams, where a lost packet does not hold up the
+others (port/docs/MULTIPLAYER.md, "Lag through a Free Direct server"): over UDP from the desktop and
+Android programs, and over WebRTC data channels from browsers. WebRTC needs libdatachannel (with
+OpenSSL) at build time; without it browsers keep everything on the WebSocket.
+
 ```bash
-sudo apt install build-essential cmake ninja-build git
+sudo apt install build-essential cmake ninja-build git libssl-dev
 git clone --branch v11.4.6 --depth 1 https://github.com/machinezone/IXWebSocket ~/deps/IXWebSocket-v11.4.6
+git clone --branch v0.24.6 --depth 1 https://github.com/paullouisageneau/libdatachannel ~/deps/libdatachannel-v0.24.6
+git -C ~/deps/libdatachannel-v0.24.6 submodule update --init --depth 1 deps/libjuice deps/usrsctp deps/plog
 git clone --branch develop https://github.com/openeggbert/free-direct ~/free-direct
 cmake -S ~/free-direct/server -B ~/free-direct/build-server -G Ninja -DCMAKE_BUILD_TYPE=Release \
-  -DFREE_DIRECT_IXWEBSOCKET_SOURCE_DIR=$HOME/deps/IXWebSocket-v11.4.6 -DFREE_DIRECT_RELAY_TLS=OFF
+  -DFREE_DIRECT_IXWEBSOCKET_SOURCE_DIR=$HOME/deps/IXWebSocket-v11.4.6 -DFREE_DIRECT_RELAY_TLS=OFF \
+  -DFREE_DIRECT_LIBDATACHANNEL_SOURCE_DIR=$HOME/deps/libdatachannel-v0.24.6
 cmake --build ~/free-direct/build-server
 sudo install -m 755 ~/free-direct/build-server/free-direct-server /usr/local/bin/
 free-direct-server --help
@@ -136,8 +144,12 @@ renewal.
 
 ## 4. Firewall
 
-Open TCP 80 and 443 (nginx) and TCP 51325 (the desktop and Android programs), for example
-`sudo ufw allow 80,443,51325/tcp`.
+Open TCP 80 and 443 (nginx) and TCP 51325 (the desktop and Android programs), and for the datagrams
+UDP 51325 (desktop and Android) and UDP 51326 (browsers' WebRTC), for example
+`sudo ufw allow 80,443,51325/tcp` and `sudo ufw allow 51325:51326/udp`. nginx carries only the
+WebSocket; the datagrams go straight to the server. With the UDP ports closed games still work, with
+the lag of a lossy link. The service's log says `datagrams on UDP port 51325` and `WebRTC data channels
+on UDP port 51326` when it starts.
 
 ## 5. Check
 
