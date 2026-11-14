@@ -128,6 +128,15 @@ uninstall the debug build first, which also removes its imported game data.
 6. Tag `port-v<version>` on the release commit and publish a GitHub release with the three
    packages, `SHA256SUMS.txt` and the notes from `docs/RELEASE_NOTES.md`.
 
+## 1.7.1
+
+As 1.7.0, all four packages from one commit on the Debian 13 host (2026-11-14): fixes of pasting in
+the browser, a pasted link's server and the cursor after an empty one. The Linux package ran the whole
+suite (309 tests, glibc 2.38); the Windows build the Wine subset (47 tests); the web package
+passed `web_check.mjs` in Chrome and Firefox, with `--relay --expect-webrtc` in both, and the new
+`--paste` (a real Ctrl+V and a click on Paste) in Chrome. The relay tests ran against free-direct
+develop 6fd78f8 (room IDs without 0). The Android APK was built and signed (versionCode 10701), not run.
+
 ## 1.7.0
 
 As 1.6.0, all four packages from one commit on the Debian 13 host (2026-11-14). The Linux package ran
