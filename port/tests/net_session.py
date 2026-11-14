@@ -264,6 +264,12 @@ def check(work, codes, players, internet_port=None, relay=False, scenario=None):
     if internet_port is not None:
         expect["client"] = (f"Internet address 127.0.0.1:{internet_port}", "joined session")
     if relay:
+        # Every program binds its UDP address on the server (datagrams for what need not arrive);
+        # under the test lockstep all messages are guaranteed, so they still use the WebSocket.
+        for name in names:
+            log = (work / f"{name}.log").read_text(encoding="utf-8", errors="replace")
+            if "network: server datagrams on" not in log:
+                failures.append(f"{name}: no datagrams with the server (see {work / (name + '.log')})")
         expect["host"] = ("provider Free Direct server", "server room created", "created session", "START")
         for name in names[1:]:
             expect[name] = ("provider Free Direct server", "server room joined", "joined session")
