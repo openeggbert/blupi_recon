@@ -66,7 +66,14 @@ different games or editions never do (the protocol id and the content check belo
   the room field: Ctrl+V, Shift+Insert, a right click on a field, or the Paste text above the room field.
   A paste takes the room ID alone, a sentence with an ID in the server's form, or the web page's link,
   which fills the server as well (`Invite` in `common/net/relay.cpp`); a browser asks for permission to
-  read the clipboard on the first right click or Paste, while its own Ctrl+V needs none. Typing the ID
+  read the clipboard on the first right click or Paste, while its own Ctrl+V needs none. When the
+  browser refuses, or the clipboard holds no text, the screen says so. [EVIDENCE, after 1.7.0] In 1.7.0
+  Ctrl+V did nothing in a browser: SDL 3.4 prevents the default action of every key pressed with Ctrl,
+  so the browser's paste never happened; the page now keeps Ctrl+V from SDL (`host.cpp`). And a link
+  pasted while the room field had the focus lost the server's dots (`example.org` became `exampleorg`):
+  the server is now filtered by its own field's rule. `port/tools/web_check.mjs --paste` pastes with a
+  real Ctrl+V (a key event whose editing command runs only if the page lets it) and with a click on
+  Paste, and reads the game's log line `server screen: paste of N characters`. Typing the ID
   still works. (1.5.0 to 1.6.0 copied the ID as soon as the room existed, and in a browser not at all:
   SDL 3.4 has no browser clipboard.) The last server and room are
   remembered (`netServer`, `netRoom`); `--net-server` and `--net-room` fill the screen, and the password

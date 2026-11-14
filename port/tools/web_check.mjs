@@ -89,8 +89,8 @@ async function launch(name) {
 }
 
 // The checks' view of one page, on top of three browser operations.
-function pageOf(name, {evaluate, navigate, screenshot, errors, consoleLines}) {
-  return {name, errors, consoleLines, evaluate,
+function pageOf(name, {evaluate, navigate, screenshot, errors, consoleLines, command}) {
+  return {name, errors, consoleLines, evaluate, command,
     async waitFor(expression, timeout = 60000) {
       const deadline = Date.now() + timeout;
       while (Date.now() < deadline) {
@@ -237,7 +237,7 @@ async function launchChrome(name) {
     if (result.exceptionDetails) throw new Error(name + ": " + JSON.stringify(result.exceptionDetails));
     return result.result.value;
   };
-  return pageOf(name, {evaluate, errors, consoleLines,
+  return pageOf(name, {evaluate, errors, consoleLines, command,
     navigate: (url) => command("Page.navigate", {url}),
     screenshot: async (r) => Buffer.from((await command("Page.captureScreenshot", {format: "png", clip: {...r, scale: 1}})).data, "base64"),
   });
@@ -354,8 +354,83 @@ async function relayCheck() {
 
 const alarm = setTimeout(() => { console.error("web_check exceeded 15 minutes"); cleanup(); process.exit(1); }, 900000);
 function cleanup() { for (const b of browsers) b.kill("SIGKILL"); http.close(); }
+// Pasting on the server screen (--paste, Chrome): a real Ctrl+V, sent the way a key press reaches the
+// page (its editing command runs only if the page does not prevent the key's default), then a click on
+// the Paste text, which reads the clipboard with the page's permission. The game's log says what it got.
+async function pasteCheck() {
+  const {name} = options.programs[0];
+  const page = await launch(name + "-paste");
+  await page.goto(`${base}/index.html?program=${name}&test-import=/test-data/${name}&test-play=1` +
+                  `&server=${encodeURIComponent("ws://127.0.0.1:9")}&test-input=/test-input/sb1_browser_paste.input`);
+  await page.waitFor("!document.querySelector('#canvas').hidden", 240000);
+  await new Promise((r) => setTimeout(r, 12000));   // the script's frame 110 opens the server screen
+  const pasted = async (id) => {
+    for (let i = 0; i < 50; i++) {
+      const log = await page.evaluate("document.querySelector('#log').textContent");
+      const lines = log.split("\n").filter((l) => l.includes("server screen: paste"));
+      if (lines.length > id) return lines[id];
+      await new Promise((r) => setTimeout(r, 100));
+    }
+    return null;
+  };
+  await page.evaluate("navigator.clipboard.writeText('ABCDE-FGHJK-MNPQR-STVWX')");
+  await page.command("Input.dispatchKeyEvent", {type: "rawKeyDown", modifiers: 2, key: "v", code: "KeyV",
+    windowsVirtualKeyCode: 86, nativeVirtualKeyCode: 86, commands: ["paste"]});
+  await page.command("Input.dispatchKeyEvent", {type: "keyUp", modifiers: 2, key: "v", code: "KeyV",
+    windowsVirtualKeyCode: 86, nativeVirtualKeyCode: 86});
+  const keys = await pasted(0);
+  console.log(`${name}: Ctrl+V: ${keys}`);
+  if (!keys || !keys.includes("paste of 23 characters")) failures.push("Ctrl+V did not paste the room ID");
+  await page.canvasShot("paste-keys");
+  await page.evaluate("navigator.clipboard.writeText('https://example.org/?server=example.org&room=QRSTV-WXYZ1-23456-789AB')");
+  const point = await page.evaluate("(() => {const r=document.querySelector('#canvas').getBoundingClientRect();return {x:r.x+r.width*500/640,y:r.y+r.height*176/480}})()");
+  for (const type of ["mouseMoved", "mousePressed", "mouseReleased"])
+    await page.command("Input.dispatchMouseEvent", {type, x: point.x, y: point.y, button: "left", clickCount: 1});
+  const click = await pasted(1);
+  console.log(`${name}: the Paste text: ${click}`);
+  if (!click || !click.includes("paste of 68 characters")) failures.push("the Paste text did not paste the link");
+  await page.canvasShot("paste-click");
+}
+
+// The cursor after the window lost the focus and got it back (--focus, Chrome): the mouse on the game,
+// then out of the canvas and the window blurred (another window clicked), then back. The game's own
+// cursor (MouseType 1, the default) must be drawn again where the mouse is.
+async function focusCheck() {
+  const {name} = options.programs[0];
+  const page = await launch(name + "-focus");
+  await page.goto(`${base}/index.html?program=${name}&test-import=/test-data/${name}&test-play=1`);
+  await page.waitFor("!document.querySelector('#canvas').hidden", 240000);
+  await new Promise((r) => setTimeout(r, 6000));
+  const at = async (gx, gy) => page.evaluate(`(() => {const r=document.querySelector('#canvas').getBoundingClientRect();return {x:r.x+r.width*${gx}/640,y:r.y+r.height*${gy}/480}})()`);
+  const move = async (p) => page.command("Input.dispatchMouseEvent", {type: "mouseMoved", x: p.x, y: p.y});
+  const state = async (label) => {
+    const css = await page.evaluate("document.querySelector('#canvas').style.cursor");
+    await page.canvasShot("focus-" + label);
+    console.log(`${name}: ${label}: canvas cursor style '${css}'`);
+  };
+  const inside = await at(320, 240), inside2 = await at(330, 250);
+  await move(inside); await new Promise((r) => setTimeout(r, 800)); await state("before");
+  for (const [label, order] of [["leave-blur", ["leave", "blur", "focus", "enter"]],
+                                ["blur-inside", ["blur", "focus", "enter"]],
+                                ["blur-leave", ["blur", "leave", "enter", "focus"]],
+                                ["unfocused-over-game", ["blur", "leave", "enter"]]]) {
+    for (const step of order) {
+      if (step === "leave") await move({x: 3, y: 3});
+      if (step === "blur") await page.evaluate("window.dispatchEvent(new FocusEvent('blur'))");
+      if (step === "focus") await page.evaluate("window.dispatchEvent(new FocusEvent('focus'))");
+      if (step === "enter") { await move(inside); await new Promise((r) => setTimeout(r, 200)); await move(inside2); }
+      await new Promise((r) => setTimeout(r, 600));
+    }
+    await state(label);
+    await move(inside);
+    await new Promise((r) => setTimeout(r, 400));
+  }
+}
+
 try {
-  if (options.relay) await relayCheck();
+  if (options.focus) await focusCheck();
+  else if (options.paste) await pasteCheck();
+  else if (options.relay) await relayCheck();
   else for (const {name} of options.programs) {
     const page = await launch(name);
     const url = `${base}/index.html?program=${name}`;
@@ -391,7 +466,7 @@ try {
   clearTimeout(alarm);
   cleanup();
 }
-console.log(failures.length ? "FAIL\n" + failures.join("\n") : options.relay
+console.log(failures.length ? "FAIL\n" + failures.join("\n") : options.paste ? "PASS: Ctrl+V and the Paste text pasted on the server screen" : options.relay
   ? "PASS: a browser and a native program played one game through a Free Direct server"
   : "PASS: every program imported its files, started, and started again from the stored files");
 process.exit(failures.length ? 1 : 0);
