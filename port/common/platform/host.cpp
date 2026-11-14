@@ -179,6 +179,42 @@ void close_gamepad(SDL_JoystickID id)
     }
 }
 
+// Fit the window at a size that is not a whole multiple of the frame: nearest sampling alone made some
+// pixels one screen pixel wider than others (2 and 3 at 2.25 times, 1080 lines), which looks blocky.
+// The frame is first enlarged by the next whole factor with nearest sampling (into g_sharp), then
+// shrunk to the window with linear filtering: every pixel the same size, sharp but for a soft edge.
+// Whole multiples, "Whole pixels" and a frame shrunk to the window are drawn as before. Plain render
+// targets, so it works with every renderer, WebGL included.
+SDL_Texture* g_sharp = nullptr;
+int g_sharpW = 0, g_sharpH = 0;
+
+SDL_Texture* sharp_frame(int textureW, int textureH)
+{
+    if (g_integerScale) return g_texture;
+    SDL_FRect shown{};
+    if (!SDL_GetRenderLogicalPresentationRect(g_renderer, &shown) || shown.h <= 0) return g_texture;
+    const float scale = shown.h / (float)textureH;
+    if (scale < 1.0f || SDL_fabsf(scale - SDL_roundf(scale)) < 0.01f) return g_texture;
+    const int factor = (int)SDL_ceilf(scale);
+    const int w = textureW * factor, h = textureH * factor;
+    const Sint64 limit = SDL_GetNumberProperty(SDL_GetRendererProperties(g_renderer),
+                                               SDL_PROP_RENDERER_MAX_TEXTURE_SIZE_NUMBER, 4096);
+    if (w > limit || h > limit) return g_texture;
+    if (g_sharp == nullptr || g_sharpW != w || g_sharpH != h)
+    {
+        if (g_sharp) SDL_DestroyTexture(g_sharp);
+        g_sharp = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, w, h);
+        g_sharpW = w;
+        g_sharpH = h;
+        if (g_sharp == nullptr) return g_texture;
+        SDL_SetTextureScaleMode(g_sharp, SDL_SCALEMODE_LINEAR);
+    }
+    if (!SDL_SetRenderTarget(g_renderer, g_sharp)) return g_texture;
+    SDL_RenderTexture(g_renderer, g_texture, nullptr, nullptr);   // nearest, the whole target
+    SDL_SetRenderTarget(g_renderer, nullptr);
+    return g_sharp;
+}
+
 // Sets the presented view width: texture and logical presentation follow.
 void apply_view_width(int width)
 {
@@ -523,6 +559,8 @@ bool init(const char* title, int logicalWidth, int logicalHeight, const Options&
 
 void shutdown()
 {
+    if (g_sharp) SDL_DestroyTexture(g_sharp);
+    g_sharp = nullptr;
     if (g_cursor) SDL_DestroyCursor(g_cursor);
     if (g_texture) SDL_DestroyTexture(g_texture);
     if (g_renderer) SDL_DestroyRenderer(g_renderer);
@@ -595,9 +633,10 @@ void present(const uint32_t* argb, int width)
     if (g_headless || g_texture == nullptr) return;
     if (width != g_viewWidth * g_frameScale) return;   // composed before a resize: the next one fits
     SDL_UpdateTexture(g_texture, nullptr, argb, width * 4);
+    SDL_Texture* frame = sharp_frame(width, g_height * g_frameScale);
     SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
     SDL_RenderClear(g_renderer);
-    SDL_RenderTexture(g_renderer, g_texture, nullptr, nullptr);
+    SDL_RenderTexture(g_renderer, frame, nullptr, nullptr);
     if (touch::mode() != touch::Mode::Off)
     {
         // The controls in output pixels, also over the bars beside the frame.

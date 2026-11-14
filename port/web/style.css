@@ -48,7 +48,11 @@ button:disabled { opacity: 0.5; cursor: default; }
 #status { min-height: 1.5em; color: var(--muted); }
 canvas {
   display: block; width: 100%; max-width: 960px; aspect-ratio: 4 / 3; margin: 0 auto;
-  background: #000; outline: none; image-rendering: pixelated;
+  background: #000; outline: none;
+  /* The browser's own stretch of the canvas (devicePixelRatio, the box's size) is smooth: nearest-
+     neighbour (pixelated) made some rows and columns twice as thick as others at 125 % or 150 %.
+     The program draws whole-pixel sharpness itself (platform/host.cpp sharp_frame). */
+  image-rendering: auto;
 }
 #log {
   max-height: 240px; overflow: auto; padding: 8px; margin-top: 16px;

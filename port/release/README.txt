@@ -75,7 +75,9 @@ The port's own options are on the game's settings screen, under
 - Frame rate: "Monitor" redraws at your display's rate, "Original" 20 times
   per second like the 1998 game.
 - Display (window or full screen) and Scaling (fit the window, or whole
-  pixels only).
+  pixels only). Fit the window keeps every pixel the same size at any
+  window size: the picture is enlarged by a whole factor and then smoothed
+  down to the window.
 - Language: the game's languages (Speedy Blupi: English, German, French;
   Speedy Eggbert: English, German, Spanish, French, Italian, Portuguese),
   switched at once. It starts in the language of your installed game.
