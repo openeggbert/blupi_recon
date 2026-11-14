@@ -587,6 +587,11 @@ if(BLUPI_TEST_RELAY_SERVER AND BLUPI_TEST_DATA AND BLUPI_TEST_PYTHON)
         --exe $<TARGET_FILE:blupi>${BLUPI_TEST_LAUNCHER} --data "${BLUPI_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
         --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb1_relay" --relay "${BLUPI_TEST_RELAY_SERVER}")
     set_tests_properties(net_sb1_relay PROPERTIES TIMEOUT 600 RUN_SERIAL TRUE)
+    # Three players: in play the two members' messages go straight to each other through the server.
+    add_test(NAME net_sb1_relay_three COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_session.py"
+        --exe $<TARGET_FILE:blupi>${BLUPI_TEST_LAUNCHER} --data "${BLUPI_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
+        --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb1_relay_three" --relay "${BLUPI_TEST_RELAY_SERVER}" --players 3)
+    set_tests_properties(net_sb1_relay_three PROPERTIES TIMEOUT 600 RUN_SERIAL TRUE)
 endif()
 if(BLUPI_TLS AND BLUPI_TEST_RELAY_SERVER AND BLUPI_TEST_PYTHON)
     add_test(NAME net_tls COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_tls.py"

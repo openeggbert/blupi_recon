@@ -1,0 +1,14 @@
+# SB1 second client through a Free Direct server (port/tests/net_session.py --relay --players 3): as
+# sb1_client_relay.input, in lobby slot 2. In play the two clients' messages go straight to each other
+# through the server (route 2), not through the host.
+40 click 112 430    # title: dice -> choose player
+70 click 127 431    # choose player: multiplayer service (EnumProviders)
+100 click 160 210   # service: provider row 2, "Internet through a Free Direct server"
+240 click 242 407   # service: OK -> CreateProvider(2), EnumSessions (no room yet) -> sessions + server screen
+250 key 13          # server screen: Enter -> connect, join the host's room; the refresh lists its session
+292 click 140 130   # sessions: row 0
+300 click 140 407   # sessions: join -> lobby (JOIN, slot 2)
+312 click 308 202   # lobby: ready (slot 2), well before the host's ready at 330: the host's lobby table
+                    # of that tick would set this client's flag back (the game's own lobby, as on a LAN)
+400 keydown 39      # play: walk
+440 keyup 39

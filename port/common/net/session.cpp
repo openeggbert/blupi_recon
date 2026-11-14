@@ -21,6 +21,12 @@ constexpr uint32_t Magic = 0x4e455431, DiscoveryQuery = 0x51445442, DiscoveryAns
 enum Kind { Hello = 1, Welcome, Refuse, Members, Data, Query, Answer, Gone };
 // Envelope: magic, protocol, version, kind, epoch, origin, sequence, tick, length, content (64-bit).
 constexpr size_t Header = 44, MaxQueue = 1024;
+// The relay payload's first byte: the sender's reliability choice, and whether the server delivered
+// the message to every member itself (route 2: no host relays it).
+constexpr uint8_t RelayReliable = 1, RelayFannedOut = 2;
+// The game's tick (g_timerInterval), for the link diagnostics only: a message's delay is measured
+// against the tick its sender stamped on it.
+constexpr double TickMs = 50;
 constexpr enet_uint32 kPeerTimeoutLimit = 32, kPeerTimeoutMinMs = 5000, kPeerTimeoutMaxMs = 10000;
 Options options;
 uint32_t currentTick = 0;
@@ -69,6 +75,9 @@ struct Session::Impl {
     bool host = false, active = false, started = false;
     std::string name, player, error;
     std::array<uint32_t,4> members{};
+    // The Free Direct server: each member's connection there (Members), so that a member takes the
+    // others' messages straight from the server once the game has started (route 2).
+    std::array<uint32_t,4> connections{};
     struct Peer { uint32_t id = 0; unsigned count = 0; Clock::time_point since = Clock::now(); };
     // Peers by handle: an ENetPeer*, or a relay connection ID.
     std::map<uintptr_t,Peer> peers;
@@ -79,6 +88,45 @@ struct Session::Impl {
     std::map<uint32_t,uint32_t> received;
     uint32_t released[4] = {0,0,0,0};   // test lockstep: released sequence per origin id 1..4
     bool synced = false;                // joiner: membership counts applied once
+
+    // Link diagnostics: how late each origin's messages arrive in play, against the ticks its sender
+    // stamped on them. A message is late by how much more its arrival trails its tick than the
+    // earliest arrival of the last second did; a player who stands still sends nothing and is not
+    // late. Late messages are what a stalled connection delivers in a burst, and over 250 ms (the
+    // game's 5 ticks of prediction, CDecor::DoNetSmooth) another player's Blupi stops and jumps.
+    struct Link {
+        std::deque<std::pair<double,double>> recent;   // arrival, arrival minus tick (ms)
+        unsigned messages = 0, late150 = 0, late250 = 0, reported = 0;
+        double worst = 0;
+    };
+    std::map<uint32_t,Link> links;
+    Clock::time_point lastReport = Clock::now();
+    void Arrived(uint32_t origin, uint32_t tick) {
+        if (options.testSync || !started) return;
+        const double now = std::chrono::duration<double,std::milli>(Clock::now().time_since_epoch()).count();
+        const double offset = now - tick * TickMs;
+        Link& link = links[origin];
+        while (!link.recent.empty() && now - link.recent.front().first > 1000) link.recent.pop_front();
+        double base = offset;
+        for (const auto& r : link.recent) base = std::min(base, r.second);
+        link.recent.push_back({now, offset});
+        const double late = offset - base;
+        ++link.messages;
+        if (late > 150) ++link.late150;
+        if (late > 250) ++link.late250;
+        link.worst = std::max(link.worst, late);
+    }
+    void Report(bool last) {
+        if (!last && Clock::now() - lastReport < std::chrono::seconds(30)) return;
+        lastReport = Clock::now();
+        for (auto& [origin, link] : links) {
+            if (link.late150 == link.reported && !(last && link.messages)) continue;
+            std::fprintf(stderr, "network: link from player %u%s: %u messages, %u over 150 ms late, "
+                         "%u over 250 ms, the latest %.0f ms\n", origin, relay ? " (server)" : "",
+                         link.messages, link.late150, link.late250, link.worst);
+            link.reported = link.late150;
+        }
+    }
 
     std::vector<uint8_t> Packet(Kind kind, uint32_t origin, uint32_t seq, const void* body, size_t n) {
         std::vector<uint8_t> b(Header+n);
@@ -105,6 +153,16 @@ struct Session::Impl {
     void Broadcast(const std::vector<uint8_t>& b, bool reliable = true, uintptr_t except = 0) {
         for (auto& [peer, state] : peers) if (state.id && peer != except && !Write(peer,b,reliable)) Fail("reliable enqueue failed");
     }
+    // A game message in play through the Free Direct server: the server gives it to every other
+    // member at once (route 2), so a member's message no longer goes through the host and back,
+    // two crossings of the Internet instead of four. Before the start the host relays as before:
+    // who is in the session can still change, and every member must see the lobby in one order.
+    bool FanOut(const std::vector<uint8_t>& b, bool reliable) {
+        std::vector<uint8_t> payload; payload.reserve(b.size()+1);
+        payload.push_back(uint8_t((reliable ? RelayReliable : 0) | RelayFannedOut));
+        payload.insert(payload.end(),b.begin(),b.end());
+        return relay->Data(2,0,payload);
+    }
     void Fail(const char* why) {
         if (active) departures.push_back({1,true});
         active = false; error = why;
@@ -112,10 +170,13 @@ struct Session::Impl {
     void Membership() {
         // Member ids, then how many data messages each has sent so far (as the host knows it): a new
         // member never receives the earlier ones, so the test lockstep must not wait for them.
-        std::vector<uint8_t> b(32);
+        std::vector<uint8_t> b(48);
         for (unsigned i = 0; i < 4; ++i) {
             Put(b,4*i,members[i]);
             Put(b,16+4*i,members[i] == id ? sequence : members[i] ? received[members[i]] : 0);
+            // Their connections on the Free Direct server (0: the host's own, or no server).
+            for (const auto& [peer, state] : peers)
+                if (relay && members[i] && state.id == members[i]) Put(b,32+4*i,uint32_t(peer));
         }
         Broadcast(Packet(Members,1,0,b.data(),b.size()));
     }
@@ -137,7 +198,7 @@ struct Session::Impl {
         for (auto& member:members) if (member==gone) member=0;
         Membership();
     }
-    void Accept(uintptr_t peer, const uint8_t* b, size_t n, bool reliable) {
+    void Accept(uintptr_t peer, const uint8_t* b, size_t n, bool reliable, bool fannedOut = false) {
         if (n < Header || Get(b,0) != Magic || Get(b,32) != n-Header) return;
         const auto kind = Kind(Get(b,12));
         const uint32_t origin = Get(b,20), seq = Get(b,24);
@@ -184,8 +245,8 @@ struct Session::Impl {
             return;
         }
         if (Get(b,16) != epoch || !active) return;
-        if (!host && kind == Members && origin == 1 && length == 32) {
-            for (unsigned i=0;i<4;++i) members[i] = Get(body,4*i);
+        if (!host && kind == Members && origin == 1 && length == 48) {
+            for (unsigned i=0;i<4;++i) { members[i] = Get(body,4*i); connections[i] = Get(body,32+4*i); }
             if (!synced) {
                 for (unsigned i=0;i<4;++i) {
                     const uint32_t member=members[i], sent=Get(body,16+4*i);
@@ -209,6 +270,12 @@ struct Session::Impl {
             if (Clock::now()-state.since >= std::chrono::seconds(1)) { state.count=0; state.since=Clock::now(); }
             if (++state.count > 512) { Reject(peer,"payload rate exceeded"); return; }
         } else if (origin == id || std::find(members.begin(),members.end(),origin) == members.end()) return;
+        else if (relay && peer != uintptr_t(relayHost)) {
+            // Straight from another member (route 2): only its own messages, from its own connection.
+            const auto slot = std::find(members.begin(),members.end(),origin) - members.begin();
+            if (!fannedOut || connections[slot] == 0 || uintptr_t(connections[slot]) != peer) return;
+        }
+        Arrived(origin,Get(b,28));
         // A full queue (a game that does not read, e.g. suspended in the background): an unreliable
         // message, a state the next one replaces, is dropped as UDP may drop it; a reliable one takes
         // the place of the oldest unreliable one, and only a queue of reliable messages fails.
@@ -223,7 +290,7 @@ struct Session::Impl {
         }
         if (keep) incoming.push_back({origin,seq,Get(b,28),reliable,std::vector<uint8_t>(body,body+length)});
         received[origin] = std::max(received[origin],seq);
-        if (host) Broadcast(std::vector<uint8_t>(b,b+n),reliable,peer);
+        if (host && !fannedOut) Broadcast(std::vector<uint8_t>(b,b+n),reliable,peer);
     }
 };
 
@@ -386,11 +453,14 @@ void Session::Service(unsigned waitMs) {
             } else if (e.kind==RelayEvent::SessionEnded) {
                 p->Fail(p->host ? "the server ended the session" : "host disconnected; host migration unsupported");
             } else if (e.kind==RelayEvent::Deliver && !e.payload.empty()) {
-                if (p->host ? !p->peers.count(uintptr_t(e.connection)) : e.connection!=p->relayHost) continue;
-                p->Accept(uintptr_t(e.connection),e.payload.data()+1,e.payload.size()-1,(e.payload[0]&1)!=0);
+                const bool member=std::find(p->connections.begin(),p->connections.end(),e.connection)!=p->connections.end();
+                if (p->host ? !p->peers.count(uintptr_t(e.connection)) : e.connection!=p->relayHost && !member) continue;
+                p->Accept(uintptr_t(e.connection),e.payload.data()+1,e.payload.size()-1,(e.payload[0]&RelayReliable)!=0,
+                          (e.payload[0]&RelayFannedOut)!=0);
             }
         }
         if (!any && waitMs) Pause(waitMs);
+        if (p->active) p->Report(false);
         return;
     }
     if (!p->socket) return;
@@ -431,13 +501,15 @@ void Session::Service(unsigned waitMs) {
         }
     }
     enet_host_flush(p->socket);
+    if (p->active) p->Report(false);
 }
 bool Session::Send(const void* data,size_t n,bool reliable) {
     if (!p->active || n<2 || n>200 || !data) return false;
     reliable = reliable || options.testSync;
     auto b=p->Packet(Data,p->id,++p->sequence,data,n);
     if (options.testSync) testSent=p->sequence;
-    if (p->host) p->Broadcast(b,reliable);
+    if (p->relay && p->started) { if (!p->FanOut(b,reliable)) { p->Fail("send enqueue failed"); return false; } }
+    else if (p->host) p->Broadcast(b,reliable);
     else if (!p->Write(p->Server(),b,reliable)) { p->Fail("send enqueue failed"); return false; }
     if (p->socket) enet_host_flush(p->socket);
     return p->active;
@@ -459,6 +531,7 @@ bool Session::Receive(Message& message) {
 bool Session::Departed(Departure& d) { if (p->departures.empty()) return false; d=p->departures.front(); p->departures.pop_front(); return true; }
 void Session::Start() { p->started=true; }
 void Session::Close(unsigned deadlineMs) {
+    p->Report(true);   // also after the host has gone
     // Leaving a session in the server's room keeps the connection and the room (cnetwork.cpp owns them).
     if (p->relay && p->relay->Connected()) {
         if (p->host) p->relay->CloseSession();
@@ -501,6 +574,7 @@ std::string ControlPath(const char* kind,long tick) {
 }
 }
 bool BeginTestTick(long tick) {
+    currentTick=uint32_t(tick);   // the envelope's tick: the test lockstep's, and the link diagnostics'
     if (!options.testSync) return true;
     const auto path=ControlPath("grant",tick); if (path.empty()) return false;
     // Longer than a peer timeout (kPeerTimeoutMaxMs): the supervisor holds a tick back that long

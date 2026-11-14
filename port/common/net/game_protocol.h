@@ -13,7 +13,10 @@
 #pragma pop_macro("rand")
 
 namespace blupi::net::game {
-constexpr uint32_t Version = 1;
+// The session envelope's version (net/session.cpp), also in the Free Direct server's compatibility
+// identity: 2 since the Members message names the members' server connections and members send
+// game messages in play straight to each other through the server, which version 1 cannot read.
+constexpr uint32_t Version = 2;
 struct Rules {
     const char* game;          // content fingerprint prefix: "sb1", "sb2"
     uint32_t protocol;         // session protocol id
