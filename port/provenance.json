@@ -422,12 +422,12 @@
     "port/common/compat/src/win32.cpp": "283938589f1e27fbf6948d6577d128ce956d7b0c279efc471ee4babb82427bab",
     "port/common/net/cnetwork.cpp": "2f9f88951f205493f2fd7fffaba94be3f312d72eccf9980308f0a039d688b42e",
     "port/common/net/game_protocol.cpp": "d3eda1a01db576ae734c3cb4d5a087a48b937c24bfb57965581e2501e75d6c8e",
-    "port/common/net/game_protocol.h": "2c953d4ac8917db6019b31943ccb26da2fc8b9a9064fa1ef4029addeaf9cd62d",
+    "port/common/net/game_protocol.h": "0312dc2ebef6290a1b3e4f696e0f007d82657829885c36417d47fbb4f822a4d5",
     "port/common/net/keepalive.cpp": "c611fab4b78d417bd44082eb0ab0f6f51d9597881c9a787891eec3242dec8581",
     "port/common/net/keepalive.h": "0c25a4187ada161f9fea5cd2a3c80b187c1a9cdcba6d2c8878445bc95b276141",
     "port/common/net/relay.cpp": "40fc5e3251c82167033fe7b2072739f473f549f323bc01f552ab0f9ec1564ae2",
     "port/common/net/relay.h": "955cd324bf86ffe2a630a0808b593996f74df18b22c3ff4469dce464f9fd4d09",
-    "port/common/net/session.cpp": "04750648de8dffabd1ff22aec02c3dff19446316a57a7e3cc5577bf99a2223c2",
+    "port/common/net/session.cpp": "a1db33f6cd58c69db39496da09e7dc319e5d4b4cf96af820325f9ee18f48252a",
     "port/common/net/session.h": "23d490b332c55f96cb4fba2c5ca8dbe7a1e49dc93632b3e97b7b9d82b203766e",
     "port/common/net/tls.cpp": "40039be39e4cbd7b3c52a05ee79b7c70682685b965ce2ff1f02f76f5a2aec5be",
     "port/common/net/tls.h": "e0c01c1385b03c470afe0a4ae41911a51850b039194fb76b8792eaabd236367c",
@@ -3896,19 +3896,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "e30e57d9229a8b29c0d7553ecd0e148898781a06",
-        "disposition": "Reviewed: port-only additions to the server screen and the platform layer (clipboard on request, paste event, share sheet, invitation parser). The historical TUs, CNetwork's message flow and every game screen are unchanged; the server screen is drawn over the session screen as before. No 1.6.0 behaviour of the game changes.",
+        "commit": "86e4f1380d391acb0d4ac737ec8b46e900bc8088",
+        "disposition": "Reviewed: an intentional transport difference within the existing replacement. In play a member's messages reach the others through the server's route 2 instead of through the host; the host still relays before the start, so lobby order is unchanged; origin is checked against the sender's server connection. Link diagnostics only write to stderr and are off under the test lockstep. Session wire version 2 keeps 1.6.0 programs out of version-2 sessions and rooms.",
         "changed_paths": [
-          "port/common/app/launcher.cpp",
-          "port/common/net/relay.cpp",
-          "port/common/net/relay.h",
-          "port/common/platform/host.cpp",
-          "port/common/platform/host.h",
-          "port/common/ui/address_events.h",
-          "port/common/ui/address_screen.cpp",
-          "port/tests/test_net_relay.cpp"
+          "port/common/net/game_protocol.h",
+          "port/common/net/session.cpp"
         ],
-        "evidence_scope": "Full Linux suite 305/306 (fidelity_map pending this review), every golden and net test; net_relay_addresses with the paste cases; web_check.mjs --relay in Chrome (the clipboard after the host's click on the ID, the page's paste into the game, browser host and native client reach PLAY); by hand under Xvfb: a host's click copied the ID to the X clipboard and a second program's Paste filled the room field and joined. Android: NDK syntax check of the changed C++ and javac of the activities only."
+        "evidence_scope": "All 26 network tests (ctest -R ^net_): LAN two and four instances, Internet address, impaired links, departures, background suspension, net_sb1_relay, net_sb1_relay_three (host and two members; a temporary probe confirmed members' messages arriving straight from each other), net_sb1_relay_wss, net_sb2_relay. Real-time measurement with tests/tcp_stall.py (port/docs/MULTIPLAYER.md). The goldens are not affected (no screen or game change) and were not rerun for this commit."
       }
     },
     {
@@ -7132,17 +7126,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "e30e57d9229a8b29c0d7553ecd0e148898781a06",
-        "disposition": "Reviewed: port-only additions to the server screen and the platform layer (clipboard on request, paste event, share sheet, invitation parser). The historical TUs, CNetwork's message flow and every game screen are unchanged; the server screen is drawn over the session screen as before. No 1.6.0 behaviour of the game changes.",
+        "commit": "86e4f1380d391acb0d4ac737ec8b46e900bc8088",
+        "disposition": "Reviewed: an intentional transport difference within the existing replacement. In play a member's messages reach the others through the server's route 2 instead of through the host; the host still relays before the start, so lobby order is unchanged; origin is checked against the sender's server connection. Link diagnostics only write to stderr and are off under the test lockstep. Session wire version 2 keeps 1.6.0 programs out of version-2 sessions and rooms.",
         "changed_paths": [
-          "port/common/app/launcher.cpp",
-          "port/common/net/relay.cpp",
-          "port/common/net/relay.h",
-          "port/common/platform/host.cpp",
-          "port/common/platform/host.h",
-          "port/tests/test_net_relay.cpp"
+          "port/common/net/game_protocol.h",
+          "port/common/net/session.cpp"
         ],
-        "evidence_scope": "Full Linux suite 305/306 (fidelity_map pending this review), every golden and net test; net_relay_addresses with the paste cases; web_check.mjs --relay in Chrome (the clipboard after the host's click on the ID, the page's paste into the game, browser host and native client reach PLAY); by hand under Xvfb: a host's click copied the ID to the X clipboard and a second program's Paste filled the room field and joined. Android: NDK syntax check of the changed C++ and javac of the activities only."
+        "evidence_scope": "All 26 network tests (ctest -R ^net_): LAN two and four instances, Internet address, impaired links, departures, background suspension, net_sb1_relay, net_sb1_relay_three (host and two members; a temporary probe confirmed members' messages arriving straight from each other), net_sb1_relay_wss, net_sb2_relay. Real-time measurement with tests/tcp_stall.py (port/docs/MULTIPLAYER.md). The goldens are not affected (no screen or game change) and were not rerun for this commit."
       }
     },
     {
@@ -20163,6 +20153,15 @@
         "F474"
       ],
       "scope": "Port UI and platform code only: the server screen's copy, paste and share (common/ui/address_screen.cpp, address_events.h), the host's clipboard, paste event and share sheet (platform/host.*, launcher.cpp's Paste event, BlupiActivity.shareText), the pasted-invitation parser (net/relay.*) and its test. No historical source, no game behaviour outside the port's own server screen."
+    },
+    {
+      "commit": "86e4f1380d391acb0d4ac737ec8b46e900bc8088",
+      "round": "Multiplayer through a Free Direct server: members' messages straight to each other in play (route 2), link diagnostics",
+      "reviewed_edges": [
+        "F056",
+        "F275"
+      ],
+      "scope": "Port network transport only (common/net/session.cpp, the session wire version in net/game_protocol.h) and its tests. The historical CNetwork contract, the game messages and their validation are unchanged: only which way a message travels through the server after the start, and stderr diagnostics."
     }
   ]
 }
