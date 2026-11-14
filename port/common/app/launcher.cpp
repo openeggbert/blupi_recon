@@ -306,6 +306,9 @@ void TranslateHostEvent(const blupi::host::Event& e, Game& game)
         if (PortAddressKey(WM_CHAR, (WPARAM)e.ch) || PortOptionsKey(WM_CHAR, (WPARAM)e.ch)) break;
         game.windowProc(WM_CHAR, (WPARAM)e.ch, 1);
         break;
+    case EventType::Paste:
+        PortAddressPaste(blupi::host::pasted_text());   // only the server screen asks for one
+        break;
     case EventType::MouseMove:
     case EventType::MouseDown:
     case EventType::MouseUp:

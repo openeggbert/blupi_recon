@@ -200,17 +200,29 @@ async function play() {
   Module.callMain(args);
 }
 
-// The game created a room on the server: show a link the other players can open.
-function roomCreated(room, server) {
-  console.log("room created: " + room);
+// A link that brings a friend to the room: this page with ?server= and ?room=.
+function roomLink(room, server) {
   const link = new URL(location.href);
   for (const key of [...link.searchParams.keys()]) if (key.startsWith("test-")) link.searchParams.delete(key);
   link.searchParams.set("server", server);
   link.searchParams.set("room", room);
+  return link;
+}
+
+// The game created a room on the server: show a link the other players can open.
+function roomCreated(room, server) {
+  console.log("room created: " + room);
+  const link = roomLink(room, server);
   $("room-id").textContent = room;
   $("room-link").href = link.href;
   $("room-link").textContent = link.href;
   $("room").hidden = false;
+}
+
+// The player clicked the room's ID on a touch screen (platform/host.cpp share_room): the system's
+// share sheet with the link, which also holds the ID.
+function shareRoom(room, server) {
+  navigator.share({ title: document.title, text: room, url: roomLink(room, server).href }).catch(() => {});
 }
 
 function start() {
@@ -218,6 +230,7 @@ function start() {
     noInitialRun: true,
     canvas: $("canvas"),
     blupiRoomCreated: roomCreated,
+    blupiShareRoom: shareRoom,
     print: (text) => log(text),
     printErr: (text) => log(text),
     locateFile: (path) => program + "/" + path,

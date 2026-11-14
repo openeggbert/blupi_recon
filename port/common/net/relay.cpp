@@ -3,6 +3,7 @@
 #include "net/relay.h"
 #include <cctype>
 #include <chrono>
+#include <cstdlib>
 #include <cstring>
 
 namespace blupi::net {
@@ -72,6 +73,84 @@ bool RoomId(const std::string& typed, std::string& id)
     if (out.size() != 20) return false;
     id = out;
     return true;
+}
+
+std::string RoomIdText(const std::string& id)
+{
+    std::string out;
+    for (size_t i = 0; i < id.size(); ++i) {
+        if (i != 0 && i % 5 == 0) out += '-';
+        out += id[i];
+    }
+    return out;
+}
+
+namespace {
+// A link's query value (?name= or &name=), percent-decoded; empty if the link has none.
+std::string LinkValue(const std::string& text, const std::string& name)
+{
+    const std::string key = name + "=";
+    for (size_t at = text.find(key); at != std::string::npos; at = text.find(key, at + 1)) {
+        if (at == 0 || (text[at - 1] != '?' && text[at - 1] != '&')) continue;
+        std::string value;
+        for (size_t i = at + key.size(); i < text.size(); ++i) {
+            const char c = text[i];
+            if (c == '&' || c == '#' || std::isspace((unsigned char)c)) break;
+            if (c == '%' && i + 2 < text.size() && std::isxdigit((unsigned char)text[i + 1]) &&
+                std::isxdigit((unsigned char)text[i + 2])) {
+                value += char(std::strtol(text.substr(i + 1, 2).c_str(), nullptr, 16));
+                i += 2;
+            } else {
+                value += c == '+' ? ' ' : c;
+            }
+        }
+        return value;
+    }
+    return {};
+}
+
+// A word of a sentence is a room ID only in the server's own form (five groups of five), so that
+// no ordinary word of twenty letters is taken for one.
+bool WrittenRoomId(const std::string& word, std::string& id)
+{
+    if (word.size() != 23 || word[5] != '-' || word[11] != '-' || word[17] != '-') return false;
+    return RoomId(word, id);
+}
+} // namespace
+
+bool Invite(const std::string& text, std::string& server, std::string& room)
+{
+    server.clear();
+    room.clear();
+    std::string id;
+    const std::string linkServer = LinkValue(text, "server"), linkRoom = LinkValue(text, "room");
+    if (!linkServer.empty() || !linkRoom.empty()) {
+        for (char c : linkServer) if (!std::isspace((unsigned char)c)) server += c;
+        if (RoomId(linkRoom, id)) room = RoomIdText(id);
+        return !server.empty() || !room.empty();
+    }
+    std::string trimmed = text;
+    while (!trimmed.empty() && std::isspace((unsigned char)trimmed.back())) trimmed.pop_back();
+    while (!trimmed.empty() && std::isspace((unsigned char)trimmed.front())) trimmed.erase(trimmed.begin());
+    if (RoomId(trimmed, id)) {   // the ID alone, however it was typed
+        room = RoomIdText(id);
+        return true;
+    }
+    // A word of a sentence; words end at anything but letters, digits and dashes.
+    std::string word;
+    for (size_t i = 0; i <= text.size(); ++i) {
+        const char c = i < text.size() ? text[i] : ' ';
+        if (std::isalnum((unsigned char)c) || c == '-') {
+            word += c;
+            continue;
+        }
+        if (WrittenRoomId(word, id)) {
+            room = RoomIdText(id);
+            return true;
+        }
+        word.clear();
+    }
+    return false;
 }
 
 bool Relay::Handle(const std::vector<uint8_t>& message, uint8_t want, std::vector<uint8_t>* reply)

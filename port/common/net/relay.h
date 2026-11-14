@@ -60,5 +60,12 @@ private:
 // Room IDs as the server writes them, read the way the server reads them (case, spaces, dashes,
 // O for 0, I and L for 1 ignored): false if the text cannot be one.
 bool RoomId(const std::string& typed, std::string& id);
+// A room ID as the server writes it: groups of five, joined by dashes.
+std::string RoomIdText(const std::string& id);
+// Pasted text on the server screen: a link with ?server= and ?room= (the web page's,
+// port/web/loader.js) gives both; otherwise a room ID alone (as RoomId reads it) or one word of a
+// sentence that is a room ID. room is then RoomIdText's form, server only from a link. False if
+// neither is in it.
+bool Invite(const std::string& text, std::string& server, std::string& room);
 } // namespace blupi::net
 #endif

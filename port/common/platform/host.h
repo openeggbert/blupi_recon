@@ -44,6 +44,7 @@ enum class EventType
     MouseMove,    // x, y logical; inside = within the 640x480 frame
     MouseDown,    // button: 1 left, 2 right
     MouseUp,
+    Paste,        // the clipboard's text that request_paste() asked for: pasted_text()
 };
 
 struct Event
@@ -146,8 +147,24 @@ void simulate_background(unsigned ms, bool bare);
 
 void set_title(const char* title);
 void message_box(const char* title, const char* text);
-// A new multiplayer room to pass on (the server screen): on the clipboard, and in a browser also
-// to the page (Module.blupiRoomCreated(room, server), port/web/loader.js), which offers a link.
+// A new multiplayer room (the server screen): in a browser the page is told
+// (Module.blupiRoomCreated(room, server), port/web/loader.js) and offers a link. Nothing is copied:
+// the player copies the ID with a click (copy_text).
+void room_created(const char* room, const char* server);
+// The system clipboard, only on the player's request (the server screen's click, Ctrl+C, Ctrl+V).
+// Nothing in a headless run. In a browser, writing needs a recent click and reading the page's
+// permission, which the browser asks for; a refusal changes nothing.
+void copy_text(const char* text);
+// Asks for the clipboard's text, which arrives as an EventType::Paste event with pasted_text():
+// at once on the desktop and Android, later in a browser. fromKeys: Ctrl+V or Shift+Insert, which a
+// browser handles itself: its own paste event arrives the same way.
+void request_paste(bool fromKeys);
+const std::string& pasted_text();
+// Ctrl (or Cmd) held: the server screen's copy and paste keys.
+bool control_held();
+bool shift_held();
+// The system's share sheet: Android, and a browser on a touch screen with navigator.share.
+bool can_share();
 void share_room(const char* room, const char* server);
 std::string base_path();   // directory of the executable, with trailing separator
 // Per-user writable directory of a program (SDL_GetPrefPath), with trailing separator.

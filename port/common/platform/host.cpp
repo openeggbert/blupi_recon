@@ -7,6 +7,9 @@
 #ifdef SDL_PLATFORM_EMSCRIPTEN
 #include <emscripten.h>
 #endif
+#ifdef SDL_PLATFORM_ANDROID
+#include <jni.h>
+#endif
 #ifdef SDL_PLATFORM_WINDOWS
 #include <io.h>
 #include <sys/stat.h>
@@ -54,7 +57,8 @@ bool g_headless = false;
 bool g_headlessPads = false;   // tests: gamepads without a window
 bool g_fullscreen = false;
 std::vector<SDL_Gamepad*> g_pads;   // in the order they were connected
-std::deque<Event> g_pending;        // synthesized events (touch), before SDL's
+std::deque<Event> g_pending;        // synthesized events (touch, a paste), before SDL's
+constexpr int kPasteBuffer = 1024;  // the longest pasted text from a browser, in bytes
 #ifdef SDL_PLATFORM_ANDROID
 const bool g_touchControls = true;  // on-screen controls in play (platform/touch.h)
 #else
@@ -500,6 +504,20 @@ bool init(const char* title, int logicalWidth, int logicalHeight, const Options&
     if (options.fullscreen) toggle_fullscreen();
     update_auto_width();
     if (!text_input_on_demand()) SDL_StartTextInput(g_window);
+#ifdef SDL_PLATFORM_EMSCRIPTEN
+    // The page's text for request_paste: the browser's own paste (Ctrl+V, Shift+Insert, a menu),
+    // and the clipboard read that request_paste starts.
+    EM_ASM({
+        Module.blupiPaste = function(text) {
+            if (typeof text !== 'string' || !text.length) return;
+            stringToUTF8(text, _blupi_host_paste_buffer(), $0);
+            _blupi_host_pasted();
+        };
+        document.addEventListener('paste', function(event) {
+            if (event.clipboardData) Module.blupiPaste(event.clipboardData.getData('text/plain'));
+        });
+    }, kPasteBuffer);
+#endif
     return true;
 }
 
@@ -849,14 +867,106 @@ void message_box(const char* title, const char* text)
     if (!g_headless) SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title, text, g_window);
 }
 
-void share_room(const char* room, const char* server)
+void room_created(const char* room, const char* server)
 {
-    if (!g_headless) SDL_SetClipboardText(room);
 #ifdef SDL_PLATFORM_EMSCRIPTEN
     EM_ASM({
         if (typeof Module.blupiRoomCreated === 'function') Module.blupiRoomCreated(UTF8ToString($0), UTF8ToString($1));
     }, room, server);
 #else
+    (void)room;
+    (void)server;
+#endif
+}
+
+namespace
+{
+std::string g_pasted;   // request_paste's text, for the EventType::Paste it queued
+
+void paste_arrived(const char* text)
+{
+    g_pasted = text != nullptr ? text : "";
+    g_pending.push_back(Event{EventType::Paste});
+}
+}  // namespace
+
+void copy_text(const char* text)
+{
+    if (g_headless) return;
+#ifdef SDL_PLATFORM_EMSCRIPTEN
+    // SDL has no browser clipboard; the click that asked for the copy lets the page write it.
+    EM_ASM({
+        if (navigator.clipboard && navigator.clipboard.writeText)
+            navigator.clipboard.writeText(UTF8ToString($0)).catch(function() {});
+    }, text);
+#else
+    SDL_SetClipboardText(text);
+#endif
+}
+
+void request_paste(bool fromKeys)
+{
+    if (g_headless) return;
+#ifdef SDL_PLATFORM_EMSCRIPTEN
+    // Ctrl+V and Shift+Insert are the browser's: its paste event follows (init's listener).
+    if (fromKeys) return;
+    EM_ASM({
+        if (navigator.clipboard && navigator.clipboard.readText)
+            navigator.clipboard.readText().then(function(text) { Module.blupiPaste(text); }).catch(function() {});
+    });
+#else
+    (void)fromKeys;
+    char* text = SDL_GetClipboardText();
+    paste_arrived(text);
+    SDL_free(text);
+#endif
+}
+
+const std::string& pasted_text() { return g_pasted; }
+
+bool control_held() { return !g_headless && (SDL_GetModState() & (SDL_KMOD_CTRL | SDL_KMOD_GUI)) != 0; }
+bool shift_held() { return !g_headless && (SDL_GetModState() & SDL_KMOD_SHIFT) != 0; }
+
+bool can_share()
+{
+    if (g_headless) return false;
+#if defined(SDL_PLATFORM_ANDROID)
+    return true;
+#elif defined(SDL_PLATFORM_EMSCRIPTEN)
+    // A phone's or tablet's browser; a desktop browser's share dialog would only get in the way.
+    return EM_ASM_INT({
+        return typeof Module.blupiShareRoom === 'function' && !!navigator.share &&
+               window.matchMedia('(pointer: coarse)').matches ? 1 : 0;
+    }) != 0;
+#else
+    return false;
+#endif
+}
+
+void share_room(const char* room, const char* server)
+{
+    if (g_headless) return;
+#if defined(SDL_PLATFORM_ANDROID)
+    // BlupiActivity.shareText (port/android): the system's share sheet with the room ID.
+    (void)server;
+    JNIEnv* env = static_cast<JNIEnv*>(SDL_GetAndroidJNIEnv());
+    jobject activity = static_cast<jobject>(SDL_GetAndroidActivity());
+    if (env == nullptr || activity == nullptr) return;
+    jclass type = env->GetObjectClass(activity);
+    jmethodID share = env->GetMethodID(type, "shareText", "(Ljava/lang/String;)V");
+    if (share != nullptr)
+    {
+        jstring text = env->NewStringUTF(room);
+        env->CallVoidMethod(activity, share, text);
+        env->DeleteLocalRef(text);
+    }
+    if (env->ExceptionCheck()) env->ExceptionClear();
+    env->DeleteLocalRef(type);
+    env->DeleteLocalRef(activity);
+#elif defined(SDL_PLATFORM_EMSCRIPTEN)
+    EM_ASM({ Module.blupiShareRoom(UTF8ToString($0), UTF8ToString($1)); }, room, server);
+#else
+    (void)room;
     (void)server;
 #endif
 }
@@ -1013,3 +1123,17 @@ void set_verbose(bool verbose)
     SDL_SetLogPriority(SDL_LOG_CATEGORY_APPLICATION, verbose ? SDL_LOG_PRIORITY_DEBUG : SDL_LOG_PRIORITY_INFO);
 }
 }  // namespace blupi::host
+
+#ifdef SDL_PLATFORM_EMSCRIPTEN
+// The page's pasted text (init's Module.blupiPaste) comes in through this buffer.
+EM_JS_DEPS(blupi_host_paste, "$stringToUTF8");
+extern "C" EMSCRIPTEN_KEEPALIVE char* blupi_host_paste_buffer()
+{
+    static char buffer[blupi::host::kPasteBuffer];
+    return buffer;
+}
+extern "C" EMSCRIPTEN_KEEPALIVE void blupi_host_pasted()
+{
+    blupi::host::paste_arrived(blupi_host_paste_buffer());
+}
+#endif

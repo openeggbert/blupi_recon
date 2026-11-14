@@ -22,6 +22,8 @@ def main():
     parser.add_argument("--build", default=os.path.join(ROOT, "build", "port-web", "port"))
     parser.add_argument("--site", default=os.path.join(ROOT, "build", "port-web", "site"))
     parser.add_argument("--sdl3-source", default=os.path.join(ROOT, "build", "third_party", "SDL3-3.4.16"))
+    parser.add_argument("--no-zip", action="store_true",
+                        help="only the site: leave build/release (a released version's zip) untouched")
     args = parser.parse_args()
     version = open(os.path.join(PORT, "VERSION.txt"), encoding="utf-8").readline().strip()
     shutil.rmtree(args.site, ignore_errors=True)
@@ -47,6 +49,9 @@ def main():
     for name in ("THIRD_PARTY.txt", "COPYING.txt"):
         shutil.copy(os.path.join(PORT, "release", name), args.site)
     shutil.copy(os.path.join(args.sdl3_source, "LICENSE.txt"), os.path.join(args.site, "LICENSE-SDL3.txt"))
+    if args.no_zip:
+        print("site: " + os.path.relpath(args.site, ROOT))
+        return
 
     out = os.path.join(ROOT, "build", "release")
     os.makedirs(out, exist_ok=True)

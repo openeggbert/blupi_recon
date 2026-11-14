@@ -59,8 +59,16 @@ different games or editions never do (the protocol id and the content check belo
   `ws://`/`wss://` URL) and a room. On the desktop and Android, `wss://name` reaches a server through
   its TLS front on port 443, as the web page does (since 1.5.2): for networks that let only 443 out, or
   a server password that should not cross the network in clear.
-  An empty room creates one; the screen then shows its ID (also on the clipboard, and in a browser as a
-  link with `?server=` and `?room=`) to give to the others, who type it. The last server and room are
+  An empty room creates one; the screen then shows its ID (in a browser also the page, as a link with
+  `?server=` and `?room=`) to give to the others. Nothing goes to the clipboard by itself: a click on
+  the ID (or Ctrl+C) copies it, and on Android and in a touch screen's browser also opens the system's
+  share sheet (`BlupiActivity.shareText`, `navigator.share` with the link). The others paste it into
+  the room field: Ctrl+V, Shift+Insert, a right click on a field, or the Paste text above the room field.
+  A paste takes the room ID alone, a sentence with an ID in the server's form, or the web page's link,
+  which fills the server as well (`Invite` in `common/net/relay.cpp`); a browser asks for permission to
+  read the clipboard on the first right click or Paste, while its own Ctrl+V needs none. Typing the ID
+  still works. (1.5.0 to 1.6.0 copied the ID as soon as the room existed, and in a browser not at all:
+  SDL 3.4 has no browser clipboard.) The last server and room are
   remembered (`netServer`, `netRoom`); `--net-server` and `--net-room` fill the screen, and the password
   of a server that has one comes from `BLUPI_NET_PASSWORD`.
   [DESIGN] The server's protocol ([directplay-relay-protocol.md](https://github.com/openeggbert/free-direct/blob/develop/docs/directplay-relay-protocol.md)) is a second
@@ -82,7 +90,11 @@ different games or editions never do (the protocol id and the content check belo
   `wss://` on port 443 (since 1.5.1; 1.5.0 kept 51325). The web page offers `fds.openeggbert.com`
   until the player has used another server (`--net-server-default`). Running a server for all of
   them, with nginx in front for `wss://`: [FREE_DIRECT_SERVER.md](FREE_DIRECT_SERVER.md).
-  [EVIDENCE] `net_relay_addresses` (`tests/test_net_relay.cpp`: addresses and room IDs as typed);
+  [EVIDENCE] `net_relay_addresses` (`tests/test_net_relay.cpp`: addresses and room IDs as typed, and
+  pastes); `port/tools/web_check.mjs --relay` also reads the browser's clipboard after the host's click on
+  the ID, and feeds the page's paste to the game; [EVIDENCE, 2026-11-14] by hand under Xvfb: a host's
+  click on the ID put it on the X clipboard, and a second program's Paste filled the room field and
+  joined the room. Not run: Android's share sheet (built only);
   `net_sb1_relay` and `net_sb2_relay` (`tests/net_session.py --relay <free-direct-server>`,
   scripts `tests/net/*_relay.input`): the host's server screen creates a room (its ID goes to the room file
   of `--net-room-file`), the client's screen joins it, then both play as in the LAN test, lockstepped; both
