@@ -42,7 +42,10 @@ unchanged, apart from the few points below. This is separate from the repository
   A page served over `https://` (GitHub Pages) can only reach a server over `wss://`, that is a server
   with a TLS certificate or behind a TLS proxy; there a plain name means `wss://` on port 443 (since
   1.5.1). The page offers `fds.openeggbert.com` (`DEFAULT_SERVER` in `web/loader.js`), run as described
-  in [FREE_DIRECT_SERVER.md](FREE_DIRECT_SERVER.md). Desktop and browser players can share a room. [EVIDENCE] `port/tools/web_check.mjs
+  in [FREE_DIRECT_SERVER.md](FREE_DIRECT_SERVER.md). Desktop and browser players can share a room.
+  Messages that need not arrive (positions) go over a WebRTC data channel to the server when it
+  offers one, as the desktop's go by UDP (port/docs/MULTIPLAYER.md, "Lag through a Free Direct
+  server"). [EVIDENCE] `port/tools/web_check.mjs
   --relay`: Chrome hosts, a native Linux program joins, both reach PLAY.
 - **The canvas's own pixels.** SDL sizes the canvas buffer in CSS pixels, so on a screen with a
   devicePixelRatio above 1 (Windows at 125 % or 150 %, a zoomed page) the browser stretches it once
