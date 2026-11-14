@@ -128,6 +128,16 @@ uninstall the debug build first, which also removes its imported game data.
 6. Tag `port-v<version>` on the release commit and publish a GitHub release with the three
    packages, `SHA256SUMS.txt` and the notes from `docs/RELEASE_NOTES.md`.
 
+## 1.7.0
+
+As 1.6.0, all four packages from one commit on the Debian 13 host (2026-11-14). The Linux package ran
+the whole suite (309 tests, with `-j 6`; it needs glibc 2.38); the Windows build ran the network,
+launcher and golden subset under Wine (47 tests, with the new `net_sb1_relay_three`); the web package passed `web_check.mjs` in
+Chrome and Firefox (all five programs, attract mode), and with `--relay --expect-webrtc` in both (the
+clipboard after the click on the room ID; datagrams through the page's WebRTC data channel). The relay
+tests ran against a free-direct-server with UDP datagrams and WebRTC (free-direct develop 8c42c49,
+libdatachannel v0.24.6). The Android APK was built and signed (versionCode 10700), not run.
+
 ## 1.6.0
 
 As 1.5.2, all four packages from one commit on the Debian 13 host (2026-11-13). The Linux package ran
