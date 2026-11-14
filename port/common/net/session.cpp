@@ -122,7 +122,8 @@ struct Session::Impl {
         for (auto& [origin, link] : links) {
             if (link.late150 == link.reported && !(last && link.messages)) continue;
             std::fprintf(stderr, "network: link from player %u%s: %u messages, %u over 150 ms late, "
-                         "%u over 250 ms, the latest %.0f ms\n", origin, relay ? " (server)" : "",
+                         "%u over 250 ms, the latest %.0f ms\n", origin,
+                         relay ? (relay->DatagramsOn() ? " (server, UDP)" : " (server)") : "",
                          link.messages, link.late150, link.late250, link.worst);
             link.reported = link.late150;
         }
@@ -142,7 +143,7 @@ struct Session::Impl {
             // choice for the receiver's checks. A host writes to one member, a member to its host.
             std::vector<uint8_t> payload; payload.reserve(b.size()+1);
             payload.push_back(reliable ? 1 : 0); payload.insert(payload.end(),b.begin(),b.end());
-            return host ? relay->Data(1,uint32_t(to),payload) : relay->Data(0,0,payload);
+            return host ? relay->Data(1,uint32_t(to),payload,reliable) : relay->Data(0,0,payload,reliable);
         }
         ENetPeer* peer=reinterpret_cast<ENetPeer*>(to);
         ENetPacket* packet = enet_packet_create(b.data(), b.size(), reliable ? ENET_PACKET_FLAG_RELIABLE : ENET_PACKET_FLAG_UNSEQUENCED);
@@ -161,7 +162,7 @@ struct Session::Impl {
         std::vector<uint8_t> payload; payload.reserve(b.size()+1);
         payload.push_back(uint8_t((reliable ? RelayReliable : 0) | RelayFannedOut));
         payload.insert(payload.end(),b.begin(),b.end());
-        return relay->Data(2,0,payload);
+        return relay->Data(2,0,payload,reliable);   // a message that need not arrive may go by UDP
     }
     void Fail(const char* why) {
         if (active) departures.push_back({1,true});

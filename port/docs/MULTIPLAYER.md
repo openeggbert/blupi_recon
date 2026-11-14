@@ -189,6 +189,16 @@ where one lost packet holds back every message behind it until TCP resends it; t
   names the version). [EVIDENCE] `net_sb1_relay_three` (`tests/net_session.py --relay --players 3`): a
   host and two members through a server, in play the members' messages straight to each other; both
   runs repeat exactly. `net_sb1_relay`, `net_sb1_relay_wss`, `net_sb2_relay` and the LAN tests pass.
+- **Datagrams (UDP):** [DESIGN] when the server offers them (Welcome's flags; Free Direct's
+  `docs/directplay-relay-protocol.md`, "Datagrams"), the relay client (`net/relay.cpp`) binds a UDP
+  socket's address to its connection, and game messages that need not arrive (the session's
+  unreliable flag: positions) go as datagrams; whatever must arrive, and everything when UDP gets no
+  answer within 3 s, stays on the WebSocket. A lost datagram loses only itself, as over ENet on a LAN.
+  ENet's sockets, so IPv4; not in a browser (no UDP there; WebRTC is planned). [EVIDENCE] The relay
+  tests check that every program binds (`network: server datagrams on`). With the measurement below
+  repeated with datagrams on, the client counted 1068 messages from the host, 2 over 150 ms late and
+  1 over 250 ms (the latest 271 ms), against 47 and 16 over the WebSocket alone; the late ones are
+  messages that must arrive (with game events), which still use the WebSocket.
 - **Link diagnostics:** in play, `session.cpp` measures how late each sender's messages arrive against
   the tick the sender stamped on them (the envelope's tick, now also outside the test lockstep): later
   than the earliest arrival of the last second by over 150 ms, and by over 250 ms. A player who stands

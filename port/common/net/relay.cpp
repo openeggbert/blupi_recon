@@ -3,8 +3,12 @@
 #include "net/relay.h"
 #include <cctype>
 #include <chrono>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#ifndef __EMSCRIPTEN__
+#include <enet/enet.h>
+#endif
 
 namespace blupi::net {
 namespace {
@@ -19,6 +23,26 @@ enum : uint8_t {
     SessionHosted = 0x86, SessionJoined = 0x87, PeerJoinedMsg = 0x88, PeerLeftMsg = 0x89,
     SessionEndedMsg = 0x8A, DeliverMsg = 0x8B,
 };
+// Datagrams (the protocol's "Datagrams"; ../free-direct/src/relay/RelayDatagram.hpp).
+constexpr uint32_t kDatagramMagic = 0x55524446;   // "FDRU"
+constexpr uint8_t kWelcomeFlagDatagrams = 0x02;
+constexpr size_t kMaxDatagram = 1200;
+constexpr uint8_t DatagramBind = 0x01, DatagramData = 0x02, DatagramBindAck = 0x81, DatagramDeliver = 0x82;
+constexpr auto kBindRetry = std::chrono::milliseconds(250), kBindTimeout = std::chrono::milliseconds(3000);
+constexpr auto kKeepAlive = std::chrono::seconds(15);
+uint32_t Get32(const uint8_t* p) { return uint32_t(p[0]) | uint32_t(p[1]) << 8 | uint32_t(p[2]) << 16 | uint32_t(p[3]) << 24; }
+// The host of a ws:// or wss:// URL (ServerUrl's form), without brackets.
+std::string UrlHost(const std::string& url)
+{
+    size_t at = url.find("://");
+    at = at == std::string::npos ? 0 : at + 3;
+    if (at < url.size() && url[at] == '[') {
+        const size_t end = url.find(']', at);
+        return end == std::string::npos ? std::string() : url.substr(at + 1, end - at - 1);
+    }
+    const size_t end = url.find_first_of(":/", at);
+    return url.substr(at, end == std::string::npos ? std::string::npos : end - at);
+}
 // The application GUID the port's sessions carry (the server does not interpret it).
 constexpr std::array<uint8_t, 16> kApplication = {0x42, 0x4c, 0x55, 0x50, 0x49, 0x2d, 0x53, 0x44,
                                                   0x4c, 0x33, 0x2d, 0x50, 0x4f, 0x52, 0x54, 0x01};
@@ -57,6 +81,110 @@ struct Reader {
     void Guid(std::array<uint8_t, 16>& g) { if (Need(16)) { std::memcpy(g.data(), b.data() + at, 16); at += 16; } }
 };
 } // namespace
+
+struct Relay::Datagrams {
+#ifndef __EMSCRIPTEN__
+    ENetSocket socket = ENET_SOCKET_NULL;
+    ENetAddress server{};
+#endif
+    std::array<uint8_t, 16> token{};
+    enum class State { Binding, Bound, Off } state = State::Binding;
+    Clock::time_point started{}, lastBind{};
+    std::vector<uint8_t> Header(uint8_t type) const {
+        std::vector<uint8_t> b;
+        for (int i = 0; i < 4; ++i) b.push_back(uint8_t(kDatagramMagic >> (8 * i)));
+        b.insert(b.end(), token.begin(), token.end());
+        b.push_back(type);
+        return b;
+    }
+    bool Send(const std::vector<uint8_t>& d) {
+#ifndef __EMSCRIPTEN__
+        ENetBuffer buffer;
+        buffer.data = const_cast<uint8_t*>(d.data());
+        buffer.dataLength = d.size();
+        return enet_socket_send(socket, &server, &buffer, 1) == int(d.size());
+#else
+        (void)d;
+        return false;
+#endif
+    }
+    ~Datagrams() {
+#ifndef __EMSCRIPTEN__
+        if (socket != ENET_SOCKET_NULL) enet_socket_destroy(socket);
+#endif
+    }
+};
+
+Relay::Relay() = default;
+Relay::~Relay() = default;
+
+bool Relay::DatagramsOn() const { return datagrams && datagrams->state == Datagrams::State::Bound; }
+
+void Relay::StartDatagrams(uint16_t port, const std::array<uint8_t, 16>& token)
+{
+    datagrams.reset();
+#ifndef __EMSCRIPTEN__
+    // ENet's sockets: IPv4 only, as the port's WebSocket over them.
+    auto d = std::make_unique<Datagrams>();
+    const std::string host = UrlHost(url);
+    if (port == 0 || host.empty() || enet_address_set_host(&d->server, host.c_str()) != 0) return;
+    d->server.port = port;
+    d->socket = enet_socket_create(ENET_SOCKET_TYPE_DATAGRAM);
+    if (d->socket == ENET_SOCKET_NULL) return;
+    ENetAddress any{};
+    any.host = ENET_HOST_ANY;
+    any.port = 0;
+    if (enet_socket_bind(d->socket, &any) < 0 || enet_socket_set_option(d->socket, ENET_SOCKOPT_NONBLOCK, 1) < 0) return;
+    d->token = token;
+    d->started = Clock::now();
+    datagrams = std::move(d);
+    ServiceDatagrams();   // the first Bind
+#else
+    (void)port;
+    (void)token;
+#endif
+}
+
+void Relay::ServiceDatagrams()
+{
+#ifndef __EMSCRIPTEN__
+    if (!datagrams) return;
+    Datagrams& d = *datagrams;
+    // The socket is read in every state: the server sends by UDP once it has a Bind, even if its
+    // BindAck never came back.
+    uint8_t buffer[kMaxDatagram + 1];
+    for (int i = 0; i < 256; ++i) {
+        ENetAddress from{};
+        ENetBuffer b;
+        b.data = buffer;
+        b.dataLength = sizeof(buffer);
+        const int n = enet_socket_receive(d.socket, &from, &b, 1);
+        if (n <= 0) break;
+        if (from.host != d.server.host || from.port != d.server.port || n < 5 || size_t(n) > kMaxDatagram ||
+            Get32(buffer) != kDatagramMagic) continue;
+        if (buffer[4] == DatagramBindAck && d.state == Datagrams::State::Binding) {
+            d.state = Datagrams::State::Bound;
+            std::fprintf(stderr, "network: server datagrams on (UDP port %u)\n", unsigned(d.server.port));
+        } else if (buffer[4] == DatagramDeliver && n >= 9) {
+            RelayEvent e;
+            e.kind = RelayEvent::Deliver;
+            e.connection = Get32(buffer + 5);
+            e.payload.assign(buffer + 9, buffer + n);
+            events.push_back(std::move(e));
+        }
+    }
+    const auto now = Clock::now();
+    if (d.state == Datagrams::State::Binding && now - d.started > kBindTimeout) {
+        d.state = Datagrams::State::Off;
+        std::fprintf(stderr, "network: server datagrams off: no answer over UDP; everything over the WebSocket\n");
+    }
+    if (d.state == Datagrams::State::Off) return;
+    if (now - d.lastBind >= (d.state == Datagrams::State::Binding ? Clock::duration(kBindRetry) : Clock::duration(kKeepAlive))) {
+        d.lastBind = now;   // a Bind again keeps a NAT's mapping open
+        d.Send(d.Header(DatagramBind));
+    }
+#endif
+}
 
 bool RoomId(const std::string& typed, std::string& id)
 {
@@ -223,8 +351,16 @@ bool Relay::Connect(const std::string& address, const std::string& password, con
     Reader r(reply);
     r.U16();
     connection = r.U32();
+    const uint8_t flags = r.U8();
     connected = r.ok;
-    if (!connected) { error = "the server's answer is not understood"; socket.Close(); }
+    if (!connected) { error = "the server's answer is not understood"; socket.Close(); return false; }
+    if (flags & kWelcomeFlagDatagrams) {
+        // The server's UDP port and this connection's token (a server before datagrams sends neither).
+        const uint16_t port = r.U16();
+        std::array<uint8_t, 16> token{};
+        for (auto& byte : token) byte = r.U8();
+        if (r.ok) StartDatagrams(port, token);
+    }
     return connected;
 }
 
@@ -295,9 +431,16 @@ void Relay::LeaveSession() { if (connected) socket.Send(Writer(LeaveSessionMsg).
 void Relay::Admit(uint32_t member) { if (connected) socket.Send(Writer(AdmitMsg).U32(member).b); }
 void Relay::Refuse(uint32_t member) { if (connected) socket.Send(Writer(RefuseMsg).U32(member).b); }
 
-bool Relay::Data(uint8_t route, uint32_t target, const std::vector<uint8_t>& payload)
+bool Relay::Data(uint8_t route, uint32_t target, const std::vector<uint8_t>& payload, bool reliable)
 {
     if (!connected) return false;
+    if (!reliable && DatagramsOn() && 4 + 16 + 1 + 1 + 4 + payload.size() <= kMaxDatagram) {
+        std::vector<uint8_t> d = datagrams->Header(DatagramData);
+        d.push_back(route);
+        for (int i = 0; i < 4; ++i) d.push_back(uint8_t(target >> (8 * i)));
+        d.insert(d.end(), payload.begin(), payload.end());
+        if (datagrams->Send(d)) return true;
+    }
     Writer w(DataMsg);
     w.U8(route).U32(target).Bytes(payload.data(), payload.size());
     return socket.Send(w.b);
@@ -308,6 +451,7 @@ void Relay::Service()
     if (!connected) return;
     std::vector<uint8_t> in;
     while (socket.Receive(in)) Handle(in, 0, nullptr);
+    ServiceDatagrams();
     if (socket.Status() != WebSocket::State::Open) {
         connected = false;
         error = socket.Error().empty() ? "the connection to the server broke" : socket.Error();
@@ -326,6 +470,7 @@ bool Relay::Next(RelayEvent& event)
 
 void Relay::Disconnect()
 {
+    datagrams.reset();
     socket.Close();
     connected = false;
     connection = 0;
