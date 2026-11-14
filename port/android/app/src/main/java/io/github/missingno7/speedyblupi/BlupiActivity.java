@@ -1,6 +1,8 @@
 package io.github.missingno7.speedyblupi;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.net.wifi.WifiManager;
 
 import org.libsdl.app.SDLActivity;
@@ -34,6 +36,25 @@ public class BlupiActivity extends SDLActivity {
             multicastLock = null;
         }
         super.onPause();
+    }
+
+    // The server screen's click on a new room's ID (port/common/ui/address_screen.cpp, through
+    // platform/host.cpp share_room): the system's share sheet with the ID, so that a player can send
+    // it in a chat. Called by JNI from the game's thread.
+    public void shareText(final String text) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Intent send = new Intent(Intent.ACTION_SEND);
+                send.setType("text/plain");
+                send.putExtra(Intent.EXTRA_TEXT, text);
+                try {
+                    startActivity(Intent.createChooser(send, null));
+                } catch (ActivityNotFoundException e) {
+                    // No app to share with: the ID is on the clipboard as well.
+                }
+            }
+        });
     }
 
     @Override

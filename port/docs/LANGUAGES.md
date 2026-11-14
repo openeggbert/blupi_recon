@@ -120,6 +120,28 @@ variant = de                           <- the original's code variant (see below
   | 9024 | This is not an address. |
   | 9025 | Internet (enter an address) |
 
+  The Free Direct server screen (port 1.5.0; 9042 to 9045 after 1.6.0, which copied the room's ID
+  without a click and showed 9040 instead):
+
+  | Id | English |
+  |---|---|
+  | 9030 | Internet through a Free Direct server |
+  | 9031 | Internet game through a server |
+  | 9032 | Free Direct server: |
+  | 9033 | Room (empty for a new one): |
+  | 9034 | A name or a number, with :port if it is not {port}. |
+  | 9035 | To join friends, type the ID of the room they created. |
+  | 9036 | New room |
+  | 9037 | This is not a server address. |
+  | 9038 | This is not a room ID. |
+  | 9039 | Give this room ID to the other players: |
+  | 9040 | It is on the clipboard. They choose the same server (no longer shown) |
+  | 9041 | and type the ID; the room's games show in the list. |
+  | 9042 | Click the ID to copy it. They choose the same server |
+  | 9043 | Click the ID to share it. They choose the same server (Android, a touch screen's browser) |
+  | 9044 | Copied to the clipboard. |
+  | 9045 | Paste |
+
 ## How the built-in packs are made
 
 `port/languages/*.txt` are generated from the original executables by

@@ -108,8 +108,10 @@ chooses other ports. If the host leaves, the session ends for everyone.
 Without open ports, play through a Free Direct server (free-direct-server,
 which anyone can run; fds.openeggbert.com is one): choose "Internet through
 a Free Direct server", type the server's address (with :port if it is not
-51325) and leave the room empty to create a room. The game shows the room's ID and puts it on the
-clipboard; the other players choose the same server and type the ID. The
+51325) and leave the room empty to create a room. The game shows the room's ID;
+a click on it copies it (on Android it opens the share sheet). The other
+players choose the same server and paste the ID (Ctrl+V, a right click, or
+Paste above the room field) or type it. The
 room's games are then listed as on a local network. Players of this program
 on Windows, Linux, Android and in a web browser can share a room. A plain
 server name means ws:// on port 51325; type wss://NAME (for example

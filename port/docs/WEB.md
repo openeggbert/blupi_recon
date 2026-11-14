@@ -68,7 +68,7 @@ emcmake cmake -S port -B build/port-web/port -G Ninja -DCMAKE_BUILD_TYPE=Release
   -DSDL3_DIR=$PWD/build/port-web/sdl3/lib/cmake/SDL3 -DBLUPI_BUNDLE_SOUNDFONT=OFF \
   -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
 cmake --build build/port-web/port -j 4
-python3 port/tools/package_web.py     # build/port-web/site and build/release/...-web.zip
+python3 port/tools/package_web.py     # build/port-web/site and build/release/...-web.zip (--no-zip: the site only)
 python3 build/port-web/site/serve.py  # http://localhost:8080/
 ```
 

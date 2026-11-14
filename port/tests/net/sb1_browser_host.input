@@ -5,6 +5,7 @@
 100 click 160 130   # service: provider row 0, the only one in a browser: the Free Direct server
 110 click 242 407   # service: OK -> CreateProvider(0), EnumSessions (no room yet) -> sessions + server screen
 120 key 13          # server screen: Enter (?server= filled it) -> connect, new room
+125 click 320 158   # room screen: a click on the ID copies it (web_check.mjs reads the clipboard)
 130 key 13          # room screen: Enter -> the session screen's refresh
 140 click 182 407   # sessions: create a session
 150 key 82          # R

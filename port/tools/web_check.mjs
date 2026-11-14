@@ -228,6 +228,10 @@ async function launchChrome(name) {
   const command = (method, params) => send(method, params, sessionId);
   await command("Runtime.enable");
   await command("Page.enable");
+  // The clipboard as a player's browser allows it after a click (the relay check's room ID), and a
+  // page that counts as focused, which a headless one otherwise does not.
+  await send("Browser.grantPermissions", {origin: base, permissions: ["clipboardReadWrite", "clipboardSanitizedWrite"]});
+  await command("Emulation.setFocusEmulationEnabled", {enabled: true});
   const evaluate = async (expression) => {
     const result = await command("Runtime.evaluate", {expression, awaitPromise: true, returnByValue: true});
     if (result.exceptionDetails) throw new Error(name + ": " + JSON.stringify(result.exceptionDetails));
@@ -297,6 +301,22 @@ async function relayCheck() {
   const link = await page.evaluate("document.querySelector('#room-link').href");
   console.log(`${name}: the browser created room ${room}; link ${link}`);
   if (!link.includes("room=" + room)) failures.push("the room link does not name the room");
+  if (options.browser !== "firefox") {
+    // The host's script clicks the room's ID on the room screen: that copies it (and only that does).
+    let copied = "";
+    for (let i = 0; i < 100 && copied !== room; i++) {
+      copied = await page.evaluate("navigator.clipboard.readText().catch((e) => 'error: ' + e.message)");
+      if (copied !== room) await new Promise((r) => setTimeout(r, 100));
+    }
+    console.log(`${name}: the clipboard after the click on the ID: ${copied}`);
+    if (copied !== room) failures.push("the click on the room ID did not copy it");
+    // The page's paste reaches the game (the session screen ignores it): Module.blupiPaste, as a
+    // clipboard read delivers it, and the browser's own paste event.
+    const pasted = await page.evaluate(`(() => { Module.blupiPaste(${JSON.stringify(room)});
+      const data = new DataTransfer(); data.setData("text/plain", ${JSON.stringify(room)});
+      document.dispatchEvent(new ClipboardEvent("paste", {clipboardData: data})); return true; })()`).catch((e) => e.message);
+    if (pasted !== true) failures.push("the page's paste failed: " + pasted);
+  }
   const user = path.join(output, "relay-client-user");
   await mkdir(user, {recursive: true});
   const client = spawn(path.resolve(options["relay-client"]), ["--data", path.resolve(dir), "--user", user, "--windowed",

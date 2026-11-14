@@ -9,7 +9,10 @@
 // running untouched.
 //
 // The Free Direct server entry uses the same screen with two fields, the server and a
-// room on it (empty: a new room). After a new room it shows the room's ID to pass on.
+// room on it (empty: a new room). After a new room it shows the room's ID to pass on: a
+// click on it copies it (and, where there is one, opens the system's share sheet); nothing
+// is copied without that click. The fields take a paste (Ctrl+V, Shift+Insert, a right
+// click, or the Paste text): a room ID, or the web page's link with both.
 
 #include "def.h"
 #include "pixmap.h"
@@ -24,6 +27,7 @@
 #include "ui/address_events.h"
 #include "ui/settings.h"
 
+#include <cctype>
 #include <cstdio>
 #include <cstring>
 #include <string>
@@ -31,6 +35,7 @@
 bool PortNetworkSetAddress(const char* text);   // common/net/cnetwork.cpp
 const char* PortNetworkSetServer(const char* server, const char* room, std::string* created);
 const std::string& PortNetworkRoomFile();
+namespace blupi::net { bool Invite(const std::string& text, std::string& server, std::string& room); }
 unsigned PortNetworkServerPort();   // the port a plain address gets (443 on an https:// page)
 
 namespace
@@ -65,6 +70,7 @@ std::string   s_server, s_room;    // the server and the room (Server mode)
 int           s_focus = 0;         // Server mode: 0 the server, 1 the room
 std::string   s_error;             // Server mode: why the last OK did not work
 std::string   s_created;           // Room mode: the new room's ID
+bool          s_copied = false;    // Room mode: the ID was copied
 CButton       s_ok, s_cancel;
 
 void Text(int x, int y, unsigned id, const char* english, int font)
@@ -138,7 +144,8 @@ void ConfirmServer()
 	s_room = created;
 	s_error.clear();
 	s_mode = Mode::Room;
-	blupi::host::share_room(created.c_str(), s_server.c_str());
+	s_copied = false;
+	blupi::host::room_created(created.c_str(), s_server.c_str());
 }
 
 void Confirm()
@@ -160,6 +167,81 @@ bool Allowed(int c)
 	if (s_mode == Mode::Server && s_focus == 1) return alnum || c == '-';   // a room ID
 	// Host names, IPv4 addresses and a port; for a server also a ws:// or wss:// URL and its path.
 	return alnum || c == '.' || c == '-' || c == ':' || (s_mode == Mode::Server && c == '/');
+}
+
+// The texts that act on a click: the new room's ID (Room mode) and Paste (Server mode).
+constexpr int kIdY = 0x96, kPasteY = kRoomY - 20;
+
+std::string PasteText()
+{
+	return PortLanguageText(9045, "Paste");
+}
+
+bool Over(POINT pos, int x, int y, const std::string& text)
+{
+	std::string t = text;
+	const int width = GetTextWidth(&t[0], 0);
+	return pos.x >= x - 8 && pos.x < x + width + 8 && pos.y >= y - 6 && pos.y < y + 22;
+}
+
+bool OverId(POINT pos)
+{
+	std::string t = s_created;
+	return s_mode == Mode::Room && Over(pos, LXIMAGE / 2 - GetTextWidth(&t[0], 0) / 2, kIdY, s_created);
+}
+
+int PasteX()
+{
+	std::string t = PasteText();
+	return LXIMAGE - 0x78 - GetTextWidth(&t[0], 0);
+}
+
+bool OverPaste(POINT pos)
+{
+	return s_mode == Mode::Server && Over(pos, PasteX(), kPasteY, PasteText());
+}
+
+void CopyRoom()
+{
+	blupi::host::copy_text(s_created.c_str());
+	if (blupi::host::can_share()) blupi::host::share_room(s_created.c_str(), s_server.c_str());
+	s_copied = true;
+}
+
+// A paste replaces a field (the screen has no cursor): a room ID goes to the room field, a link
+// fills both; any other text goes only to the server's or the address's field.
+void Paste(const std::string& text)
+{
+	if (s_mode == Mode::Room) return;
+	std::string server, room;
+	if (s_mode == Mode::Server && blupi::net::Invite(text, server, room))
+	{
+		if (!server.empty()) s_server.clear();
+		for (char c : server) if (s_server.size() < (size_t)kMaxLength && Allowed((unsigned char)c)) s_server += c;
+		if (!room.empty())
+		{
+			s_room = room;
+			s_focus = 1;
+		}
+		s_invalid = false;
+		s_error.clear();
+		return;
+	}
+	if (s_mode == Mode::Server && s_focus == 1)
+	{
+		if (!text.empty()) s_error = PortLanguageText(9038, "This is not a room ID.");
+		return;
+	}
+	std::string field;
+	for (char c : text)
+	{
+		if (std::isspace((unsigned char)c)) continue;
+		if (field.size() < (size_t)kMaxLength && Allowed((unsigned char)c)) field += c;
+	}
+	if (field.empty()) return;
+	Field() = field;
+	s_invalid = false;
+	s_error.clear();
 }
 
 // The room file of --net-room-file (tests): a room another instance created.
@@ -243,12 +325,25 @@ bool PortAddressMouse(UINT message, WPARAM wParam, LPARAM lParam)
 	const POINT pos = ConvLongToPos(lParam);
 	s_ok.TreatEvent(message, wParam, lParam);
 	if (s_mode != Mode::Room) s_cancel.TreatEvent(message, wParam, lParam);
-	if (s_mode == Mode::Server && message == WM_LBUTTONDOWN && pos.x >= 0x78 && pos.x < LXIMAGE - 0x78)
+	const bool inside = pos.x >= 0x78 && pos.x < LXIMAGE - 0x78;
+	if (s_mode == Mode::Server && (message == WM_LBUTTONDOWN || message == WM_RBUTTONDOWN) && inside)
 	{
-		if (pos.y >= kServerY - 4 && pos.y < kServerY + kFieldHeight) s_focus = 0;
-		if (pos.y >= kRoomY - 4 && pos.y < kRoomY + kFieldHeight) s_focus = 1;
+		int field = -1;
+		if (pos.y >= kServerY - 4 && pos.y < kServerY + kFieldHeight) field = 0;
+		if (pos.y >= kRoomY - 4 && pos.y < kRoomY + kFieldHeight) field = 1;
+		if (field >= 0) s_focus = field;
+		if (field >= 0 && message == WM_RBUTTONDOWN) blupi::host::request_paste(false);   // a right click pastes
 	}
-	Sprite(pos, s_ok.MouseOnButton(pos) || (s_mode != Mode::Room && s_cancel.MouseOnButton(pos)));
+	if (s_mode == Mode::Address && message == WM_RBUTTONDOWN && inside && pos.y >= 0x96 - 4 && pos.y < 0x96 + kFieldHeight)
+		blupi::host::request_paste(false);
+	if (message == WM_LBUTTONDOWN && OverPaste(pos))
+	{
+		s_focus = 1;
+		blupi::host::request_paste(false);
+	}
+	if (message == WM_LBUTTONDOWN && OverId(pos)) CopyRoom();
+	Sprite(pos, s_ok.MouseOnButton(pos) || (s_mode != Mode::Room && s_cancel.MouseOnButton(pos)) ||
+	                OverId(pos) || OverPaste(pos));
 	return true;
 }
 
@@ -257,7 +352,11 @@ bool PortAddressKey(UINT message, WPARAM wParam)
 	if (!s_open) return false;
 	if (message == WM_KEYDOWN)
 	{
-		if (wParam == VK_RETURN) Confirm();
+		const bool control = blupi::host::control_held(), shift = blupi::host::shift_held();
+		if (s_mode == Mode::Room && control && (wParam == 'C' || wParam == VK_INSERT)) CopyRoom();
+		else if (s_mode != Mode::Room && ((control && wParam == 'V') || (shift && wParam == VK_INSERT)))
+			blupi::host::request_paste(true);
+		else if (wParam == VK_RETURN) Confirm();
 		else if (wParam == VK_ESCAPE) { if (s_mode == Mode::Room) Refresh(); else Close(); }
 		else if (s_mode == Mode::Server && (wParam == VK_TAB || wParam == VK_UP || wParam == VK_DOWN))
 			s_focus = 1 - s_focus;
@@ -279,6 +378,11 @@ bool PortAddressKey(UINT message, WPARAM wParam)
 		}
 	}
 	return true;   // no keys for the game's screen underneath
+}
+
+void PortAddressPaste(const std::string& text)
+{
+	if (s_open) Paste(text);
 }
 
 bool PortAddressCommand(UINT message)
@@ -318,6 +422,8 @@ void DrawServer()
 	std::string server = s_server + (s_focus == 0 ? "_" : "");
 	DrawTextLeft(s_pixmap, POINT{0x78 + 20, kServerY}, &server[0], FONTWHITE);
 	Text(0x78, kRoomY - 20, 9033, "Room (empty for a new one):", FONTWHITE);
+	std::string paste = PasteText();
+	DrawTextLeft(s_pixmap, POINT{PasteX(), kPasteY}, &paste[0], FONTGOLD);
 	std::string room = s_room + (s_focus == 1 ? "_" : "");
 	DrawTextLeft(s_pixmap, POINT{0x78 + 20, kRoomY}, &room[0], FONTWHITE);
 	// The text is a language pack's: its "{port}" is replaced, it is never a format string.
@@ -339,8 +445,10 @@ void DrawRoom()
 {
 	Centred(36, PortLanguageText(9036, "New room"), FONTGOLD);
 	Text(0x78, 0x6e, 9039, "Give this room ID to the other players:", FONTWHITE);
-	Centred(0x96, s_created, FONTGOLD);
-	Text(0x78, 0xd2, 9040, "It is on the clipboard. They choose the same server", FONTLITTLE);
+	Centred(kIdY, s_created, FONTGOLD);
+	if (s_copied) Centred(kIdY + 22, PortLanguageText(9044, "Copied to the clipboard."), FONTLITTLE);
+	if (blupi::host::can_share()) Text(0x78, 0xd2, 9043, "Click the ID to share it. They choose the same server", FONTLITTLE);
+	else Text(0x78, 0xd2, 9042, "Click the ID to copy it. They choose the same server", FONTLITTLE);
 	Text(0x78, 0xe6, 9041, "and type the ID; the room's games show in the list.", FONTLITTLE);
 	s_ok.Draw();
 }
