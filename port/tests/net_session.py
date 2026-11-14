@@ -12,9 +12,10 @@ and wait is bounded; children are killed on failure. Never runs an original exec
 (<game>_client_internet.input), so it finds the host's session only through the address it types on the
 port's address screen ("N type TEXT" lines become one "char" per tick; {port} is the host's port).
 
---relay SERVER: two peers through a Free Direct server (free-direct-server, started here on a free port):
-both choose the provider list's server entry (<game>_<name>_relay.input). The host's server screen creates
-a room and writes its ID to the room file (--net-room-file); the client's screen reads it from there.
+--relay SERVER: two peers (or --players 3) through a Free Direct server (free-direct-server, started here
+on a free port): all choose the provider list's server entry (<game>_<name>_relay.input). The host's server
+screen creates a room and writes its ID to the room file (--net-room-file); the clients' screens read it
+from there.
 
 --tls (with --relay): the peers reach the server through wss://localhost and a TLS front for it, with test
 certificates (tls_front.py; SSL_CERT_FILE names the test CA). Exit 77 (skipped) without openssl.
@@ -264,7 +265,8 @@ def check(work, codes, players, internet_port=None, relay=False, scenario=None):
         expect["client"] = (f"Internet address 127.0.0.1:{internet_port}", "joined session")
     if relay:
         expect["host"] = ("provider Free Direct server", "server room created", "created session", "START")
-        expect["client"] = ("provider Free Direct server", "server room joined", "joined session")
+        for name in names[1:]:
+            expect[name] = ("provider Free Direct server", "server room joined", "joined session")
     if scenario.get("lobby"):
         # The session ends before its start: no START, no play, no moves.
         expect = {name: tuple(n for n in notes if n != "START") for name, notes in expect.items()}
@@ -322,7 +324,8 @@ def main():
     args.work = args.work.resolve()
     port = free_port()
     if args.internet or args.relay:
-        args.players = 2
+        if args.internet:
+            args.players = 2
         args.client_port = free_port()
         while args.client_port in (port, port + 1) or port in (args.client_port + 1,):
             args.client_port = free_port()

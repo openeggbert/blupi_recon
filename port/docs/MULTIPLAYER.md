@@ -169,6 +169,40 @@ What the tests found, and the changes:
   exit grant), so no peer sees another's departure in its last frame. Before, `net_sb1_two_instances`
   could fail that way.
 
+## Lag through a Free Direct server (after 1.6.0, 2026-11-14)
+
+Players reported lag and other players' Blupis "teleporting" in games through fds.openeggbert.com.
+The analysis, measurements and the proposed datagram transports are in Free Direct's
+[relay-latency.md](https://github.com/openeggbert/free-direct/blob/develop/docs/relay-latency.md).
+In short: [EVIDENCE] each player sends its own Blupi's position every tick, mostly unreliably; a
+receiver predicts a missing one for at most 5 ticks (250 ms, `CDecor::DoNetSmooth`) and then jumps to
+the next one that arrives. Through the server everything travels over one TCP connection (WebSocket),
+where one lost packet holds back every message behind it until TCP resends it; they then arrive at once.
+
+- **Route (session wire version 2):** [DESIGN] once the game has started, every member's game messages
+  go to all others straight through the server (the relay's route 2), no longer to the host and back:
+  two crossings of the Internet between members instead of four, and no wait for the host's loop. Before
+  the start the host still relays, so that every member sees the lobby (joins, readiness, chat) in one
+  order. The Members message names each member's connection on the server, and a member takes a
+  message straight from the server only from the connection of the member it names as its origin.
+  Version 2 sessions and rooms do not admit 1.6.0 and earlier programs (the compatibility identity
+  names the version). [EVIDENCE] `net_sb1_relay_three` (`tests/net_session.py --relay --players 3`): a
+  host and two members through a server, in play the members' messages straight to each other; both
+  runs repeat exactly. `net_sb1_relay`, `net_sb1_relay_wss`, `net_sb2_relay` and the LAN tests pass.
+- **Link diagnostics:** in play, `session.cpp` measures how late each sender's messages arrive against
+  the tick the sender stamped on them (the envelope's tick, now also outside the test lockstep): later
+  than the earliest arrival of the last second by over 150 ms, and by over 250 ms. A player who stands
+  still sends nothing, so idleness is not counted. `network: link from player N ...` goes to stderr every
+  30 s while new late messages occur, and when the session ends. Free Direct's DirectPlay counts the same
+  stalls for the Free API builds.
+- **`tests/tcp_stall.py`:** a TCP proxy that stalls one direction of a connection now and then and then
+  lets everything through at once, as TCP does after a loss; for measurements on this machine.
+  [EVIDENCE, 2026-11-14] Two SB1 programs in real time (offscreen video, both players walking for 78 s)
+  through a local free-direct-server, the client's connection through the proxy. Without stalls the
+  host counted 1031 messages from the client, none over 150 ms late (the latest 17 ms). With a 300 ms
+  stall every 3 s on average (server to client), the client counted 1025 messages from the host: 47 over
+  150 ms late and 16 over 250 ms, the latest 304 ms: sixteen stops and jumps of the host's Blupi.
+
 [OPEN] Not yet:
 
 - [EVIDENCE, 2026-10-25, user test] An SB1 session between an Android phone (1.2.0-rc1) and a Windows PC
